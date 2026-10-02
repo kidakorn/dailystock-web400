@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import Link from 'next/link';
@@ -25,11 +26,16 @@ export function Sidebar({ initialCollapsed }: { initialCollapsed: boolean }) {
       {/* The toggle sits at the top beside the logo and is never hidden by a breakpoint: it is the user's control, not a layout detail. */}
       <div className={styles.top}>
         <div className={styles.brand}>
-          <span className={styles.brandMark} aria-hidden="true">
-            IT
-          </span>
+          <img
+            src="/favicon.ico"
+            alt=""
+            aria-hidden="true"
+            className={styles.brandMark}
+            width={24}
+            height={24}
+          />
           <div className={styles.hideWhenCollapsed}>
-            <div className={styles.brandName}>IT WEB400</div>
+            <div className={styles.brandName}>DAILY STOCK</div>
             <div className={styles.brandSub}>Enterprise Monitoring</div>
           </div>
         </div>

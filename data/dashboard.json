@@ -1,181 +1,211 @@
 {
- "exceptions": 3,
- "processes": {
-  "labels": [
-   "Receiving",
-   "Sorting",
-   "Packing",
-   "Staging",
-   "Shipping",
-   "Returns"
-  ],
-  "plan": [
-   42000,
-   38000,
-   45000,
-   36000,
-   40000,
-   22000
-  ],
-  "actual": [
-   37000,
-   31833,
-   43323,
-   29451,
-   37358,
-   19611
-  ],
-  "target": 40000
- },
- "status": [
-  {
-   "label": "Active",
-   "value": 212480,
-   "tone": "success"
-  },
-  {
-   "label": "Pending",
-   "value": 36144,
-   "tone": "warning"
-  },
-  {
-   "label": "Cancelled",
-   "value": 6,
-   "tone": "danger"
-  }
- ],
- "trend": {
-  "labels": [
-   "D-6",
-   "D-5",
-   "D-4",
-   "D-3",
-   "D-2",
-   "D-1",
-   "Today"
-  ],
-  "plan": [
-   200,
-   205,
-   210,
-   212,
-   215,
-   218,
-   220
-  ],
-  "actual": [
-   190,
-   200,
-   204,
-   211,
-   209,
-   216,
-   221
-  ]
- },
- "alerts": [
-  {
-   "time": "21:09",
-   "package": "P-1004",
-   "message": "Stock below minimum",
-   "level": "High"
-  },
-  {
-   "time": "20:45",
-   "package": "P-1009",
-   "message": "Count mismatch",
-   "level": "High"
-  },
-  {
-   "time": "19:30",
-   "package": "P-1012",
-   "message": "Process delayed",
-   "level": "Medium"
-  },
-  {
-   "time": "18:12",
-   "package": "P-1002",
-   "message": "Pending over 24h",
-   "level": "Medium"
-  },
-  {
-   "time": "16:50",
-   "package": "P-1007",
-   "message": "Low progress",
-   "level": "Low"
-  }
- ],
- "systems": [
-  {
-   "name": "LANSA Web",
-   "status": "Normal"
-  },
-  {
-   "name": "IBM i (AS400)",
-   "status": "Normal"
-  },
-  {
-   "name": "Database",
-   "status": "Normal"
-  },
-  {
-   "name": "File Transfer",
-   "status": "Warning"
-  },
-  {
-   "name": "Web Service",
-   "status": "Normal"
-  },
-  {
-   "name": "Batch Job",
-   "status": "Normal"
-  }
- ],
- "spark": {
-  "total": [
-   217551,
-   218058,
-   211487,
-   232744,
-   237305,
-   242275,
-   248630
-  ],
-  "active": [
-   183264,
-   183746,
-   184642,
-   207193,
-   205843,
-   210743,
-   212480
-  ],
-  "cancelled": [
-   5,
-   6,
-   5,
-   5,
-   6,
-   6,
-   6
-  ],
-  "pending": [
-   34946,
-   31898,
-   35120,
-   34880,
-   35170,
-   35925,
-   36144
-  ],
-  "exceptions": [
-   3,
-   2,
-   3,
-   3,
-   3,
-   3,
-   3
-  ]
- }
+    "exceptions": 3,
+    "processes": {
+        "labels": [
+            "100 DICING",
+            "101 DIE BONDING",
+            "102 WIRE BONDING",
+            "104 MOLDING",
+            "200 RESIN CUT",
+            "201 REQUEST PLATING",
+            "202 PLATING",
+            "203 PLATING INCOMING INS.",
+            "204 TRIMMING",
+            "205 TRIMMING & BRANDING",
+            "302 BRANDING",
+            "303 TEST 1",
+            "310 EXTERNAL INS.",
+            "401 OUTGOING INS.",
+            "420 TAPING DIVISION",
+            "430 TEST & TAPING DIVISION"
+        ],
+        "plan": [
+            42000,
+            38000,
+            45000,
+            36000,
+            40000,
+            22000,
+            35000,
+            39000,
+            41000,
+            37000,
+            43000,
+            40000,
+            38000,
+            42000,
+            25000,
+            28000
+        ],
+        "actual": [
+            37000,
+            31833,
+            43323,
+            29451,
+            37358,
+            19611,
+            34120,
+            38500,
+            39800,
+            35200,
+            42150,
+            38900,
+            37200,
+            40500,
+            23400,
+            26900
+        ],
+        "target": 40000
+    },
+    "status": [
+        {
+            "label": "Active",
+            "value": 212480,
+            "tone": "success"
+        },
+        {
+            "label": "Pending",
+            "value": 36144,
+            "tone": "warning"
+        },
+        {
+            "label": "Cancelled",
+            "value": 6,
+            "tone": "danger"
+        }
+    ],
+    "trend": {
+        "labels": [
+            "D-6",
+            "D-5",
+            "D-4",
+            "D-3",
+            "D-2",
+            "D-1",
+            "Today"
+        ],
+        "plan": [
+            200,
+            205,
+            210,
+            212,
+            215,
+            218,
+            220
+        ],
+        "actual": [
+            190,
+            200,
+            204,
+            211,
+            209,
+            216,
+            221
+        ]
+    },
+    "alerts": [
+        {
+            "time": "21:09",
+            "package": "P-1004",
+            "message": "Stock below minimum",
+            "level": "High"
+        },
+        {
+            "time": "20:45",
+            "package": "P-1009",
+            "message": "Count mismatch",
+            "level": "High"
+        },
+        {
+            "time": "19:30",
+            "package": "P-1012",
+            "message": "Process delayed",
+            "level": "Medium"
+        },
+        {
+            "time": "18:12",
+            "package": "P-1002",
+            "message": "Pending over 24h",
+            "level": "Medium"
+        },
+        {
+            "time": "16:50",
+            "package": "P-1007",
+            "message": "Low progress",
+            "level": "Low"
+        }
+    ],
+    "systems": [
+        {
+            "name": "LANSA Web",
+            "status": "Normal"
+        },
+        {
+            "name": "IBM i (AS400)",
+            "status": "Normal"
+        },
+        {
+            "name": "Database",
+            "status": "Normal"
+        },
+        {
+            "name": "File Transfer",
+            "status": "Warning"
+        },
+        {
+            "name": "Web Service",
+            "status": "Normal"
+        },
+        {
+            "name": "Batch Job",
+            "status": "Normal"
+        }
+    ],
+    "spark": {
+        "total": [
+            217551,
+            218058,
+            211487,
+            232744,
+            237305,
+            242275,
+            248630
+        ],
+        "active": [
+            183264,
+            183746,
+            184642,
+            207193,
+            205843,
+            210743,
+            212480
+        ],
+        "cancelled": [
+            5,
+            6,
+            5,
+            5,
+            6,
+            6,
+            6
+        ],
+        "pending": [
+            34946,
+            31898,
+            35120,
+            34880,
+            35170,
+            35925,
+            36144
+        ],
+        "exceptions": [
+            3,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3
+        ]
+    }
 }
