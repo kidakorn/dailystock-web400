@@ -1,0 +1,229 @@
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  flex: none;
+  width: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  background: var(--color-charcoal-900);
+  color: var(--color-text-inverse);
+  transition: width 0.15s;
+  overflow: hidden;
+}
+.sidebar[data-collapsed='true'] {
+  width: var(--sidebar-width-collapsed);
+}
+.sidebar[data-collapsed='true'] .hideWhenCollapsed {
+  display: none;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+.sidebar[data-collapsed='true'] .top {
+  flex-direction: column;
+  padding: var(--space-3) 0;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  white-space: nowrap;
+}
+.brandMark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background: var(--color-danger);
+  font-family: var(--font-family-heading);
+}
+.brandName {
+  font-family: var(--font-family-heading);
+  line-height: 1.1;
+}
+.brandSub {
+  font-size: var(--fs-xs);
+  opacity: 0.7;
+}
+.toggle {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: var(--color-charcoal-700);
+  border: 1px solid var(--color-border);
+  color: inherit;
+  cursor: pointer;
+}
+.toggle:hover {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.nav {
+  flex: 1;
+  display: grid;
+  gap: var(--space-1);
+  align-content: start;
+  padding: var(--space-2);
+}
+.link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+}
+/* Collapsed: drop the side padding and centre the icon, otherwise 18px icons do not fit the narrow rail and get clipped. */
+.sidebar[data-collapsed='true'] .link {
+  justify-content: center;
+  padding-inline: 0;
+}
+.link:hover {
+  background: var(--color-charcoal-700);
+  opacity: 1;
+}
+.link[aria-current='page'] {
+  background: var(--color-danger);
+  opacity: 1;
+}
+.icon {
+  flex: none;
+}
+.tagline {
+  padding: 0 var(--space-4) var(--space-4);
+  font-size: var(--fs-xs);
+  opacity: 0.6;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+}
+.tabs {
+  display: flex;
+  gap: 2px;
+  padding: var(--space-1) var(--space-3) 0;
+  background: var(--color-charcoal-800);
+}
+.tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-4);
+  color: var(--color-text-inverse);
+  text-decoration: none;
+  background: var(--color-charcoal-700);
+  border: 1px solid var(--color-border);
+  border-bottom: 0;
+  font-size: var(--fs-sm);
+}
+.tab:hover {
+  background: var(--color-charcoal-900);
+}
+.tab[aria-current='page'] {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-top: 3px solid var(--color-danger);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: var(--topbar-height);
+  padding: 0 var(--space-4);
+  background: var(--color-surface);
+  border-bottom: 2px solid var(--color-charcoal-800);
+}
+.title {
+  font-size: var(--fs-lg);
+}
+.subtitle {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-family: var(--font-family-data);
+  font-size: var(--fs-sm);
+}
+.live {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-success);
+  font-family: var(--font-family-ui);
+}
+.liveDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Background art sits behind the content; cards are opaque so text stays readable. */
+.contentArea {
+  position: relative;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.content {
+  flex: 1;
+  overflow: auto;
+  padding: var(--space-4);
+  background: var(--color-bg) url('/images/warehouse-bg.svg') center top / 480px 320px repeat;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background: var(--color-charcoal-900);
+  color: var(--color-text-inverse);
+  font-size: var(--fs-xs);
+}
+.statusBrand {
+  background: var(--color-danger);
+  padding: var(--space-1) var(--space-4);
+}
+.statusItems {
+  display: flex;
+  gap: var(--space-4);
+  margin-left: auto;
+  padding-right: var(--space-4);
+  list-style: none;
+  padding-left: 0;
+}
+
+/* The sidebar is no longer forced narrow here: collapsing is the user's choice at every width. */
+@media (max-width: 900px) {
+  .tabs {
+    display: none;
+  }
+  .subtitle {
+    display: none;
+  }
+}

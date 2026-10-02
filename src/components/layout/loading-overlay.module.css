@@ -1,0 +1,15 @@
+/* Covers only the content area. The 150 ms delay (a backwards-filled fade) means quick loads never flash the overlay. */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--color-bg) 80%, transparent);
+  animation: fade-in 0.2s ease 0.15s backwards;
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}

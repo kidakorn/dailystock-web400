@@ -1,0 +1,13 @@
+.donut {
+  position: relative;
+}
+.donutTotal {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-family-data);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  pointer-events: none;
+}

@@ -1,0 +1,302 @@
+[
+ {
+  "code": "P-1001",
+  "name": "Housing A",
+  "rows": [
+   {
+    "product": "Item 1-1",
+    "process": "Shipping",
+    "plan": 2866,
+    "actual": 2964,
+    "in": 422,
+    "out": 535,
+    "status": "OK",
+    "remark": "",
+    "plant": "Plant 2"
+   },
+   {
+    "product": "Item 1-2",
+    "process": "Staging",
+    "plan": 1806,
+    "actual": 1337,
+    "in": 527,
+    "out": 541,
+    "status": "Critical",
+    "remark": "Check count",
+    "plant": "Plant 1"
+   },
+   {
+    "product": "Item 1-3",
+    "process": "Sorting",
+    "plan": 4763,
+    "actual": 3853,
+    "in": 154,
+    "out": 817,
+    "status": "Warning",
+    "remark": "Check count",
+    "plant": "Plant 2"
+   },
+   {
+    "product": "Item 1-4",
+    "process": "Staging",
+    "plan": 3606,
+    "actual": 3458,
+    "in": 898,
+    "out": 758,
+    "status": "OK",
+    "remark": "",
+    "plant": "Plant 2"
+   }
+  ]
+ },
+ {
+  "code": "P-1002",
+  "name": "Plate B",
+  "rows": [
+   {
+    "product": "Item 2-1",
+    "process": "Sorting",
+    "plan": 2122,
+    "actual": 1868,
+    "in": 590,
+    "out": 420,
+    "status": "Warning",
+    "remark": "Check count",
+    "plant": "Plant 1"
+   },
+   {
+    "product": "Item 2-2",
+    "process": "Receiving",
+    "plan": 2000,
+    "actual": 1883,
+    "in": 826,
+    "out": 590,
+    "status": "Warning",
+    "remark": "Check count",
+    "plant": "Plant 3"
+   },
+   {
+    "product": "Item 2-3",
+    "process": "Receiving",
+    "plan": 3241,
+    "actual": 3378,
+    "in": 762,
+    "out": 317,
+    "status": "OK",
+    "remark": "",
+    "plant": "Plant 1"
+   },
+   {
+    "product": "Item 2-4",
+    "process": "Sorting",
+    "plan": 5046,
+    "actual": 4179,
+    "in": 414,
+    "out": 840,
+    "status": "Warning",
+    "remark": "Check count",
+    "plant": "Plant 2"
+   }
+  ]
+ },
+ {
+  "code": "P-1003",
+  "name": "Valve C",
+  "rows": [
+   {
+    "product": "Item 3-1",
+    "process": "Shipping",
+    "plan": 2625,
+    "actual": 2326,
+    "in": 387,
+    "out": 701,
+    "status": "Warning",
+    "remark": "Check count",
+    "plant": "Plant 3"
+   },
+   {
+    "product": "Item 3-2",
+    "process": "Sorting",
+    "plan": 2627,
+    "actual": 2402,
+    "in": 875,
+    "out": 295,
+    "status": "Warning",
+    "remark": "Check count",
+    "plant": "Plant 3"
+   },
+   {
+    "product": "Item 3-3",
+    "process": "Sorting",
+    "plan": 4082,
+    "actual": 3914,
+    "in": 254,
+    "out": 580,
+    "status": "OK",
+    "remark": "",
+    "plant": "Plant 3"
+   },
+   {
+    "product": "Item 3-4",
+    "process": "Receiving",
+    "plan": 4836,
+    "actual": 3987,
+    "in": 78,
+    "out": 859,
+    "status": "Warning",
+    "remark": "Check count",
+    "plant": "Plant 3"
+   }
+  ]
+ },
+ {
+  "code": "P-1004",
+  "name": "Plate D",
+  "rows": [
+   {
+    "product": "Item 4-1",
+    "process": "Sorting",
+    "plan": 3088,
+    "actual": 2671,
+    "in": 759,
+    "out": 669,
+    "status": "Warning",
+    "remark": "Check count",
+    "plant": "Plant 2"
+   },
+   {
+    "product": "Item 4-2",
+    "process": "Returns",
+    "plan": 3620,
+    "actual": 3100,
+    "in": 407,
+    "out": 423,
+    "status": "Warning",
+    "remark": "Check count",
+    "plant": "Plant 2"
+   },
+   {
+    "product": "Item 4-3",
+    "process": "Sorting",
+    "plan": 1459,
+    "actual": 1133,
+    "in": 531,
+    "out": 251,
+    "status": "Critical",
+    "remark": "Check count",
+    "plant": "Plant 2"
+   },
+   {
+    "product": "Item 4-4",
+    "process": "Shipping",
+    "plan": 3566,
+    "actual": 2751,
+    "in": 674,
+    "out": 51,
+    "status": "Critical",
+    "remark": "Check count",
+    "plant": "Plant 3"
+   }
+  ]
+ },
+ {
+  "code": "P-1005",
+  "name": "Gear E",
+  "rows": [
+   {
+    "product": "Item 5-1",
+    "process": "Packing",
+    "plan": 4727,
+    "actual": 4813,
+    "in": 868,
+    "out": 708,
+    "status": "OK",
+    "remark": "",
+    "plant": "Plant 1"
+   },
+   {
+    "product": "Item 5-2",
+    "process": "Receiving",
+    "plan": 1494,
+    "actual": 1482,
+    "in": 447,
+    "out": 851,
+    "status": "OK",
+    "remark": "",
+    "plant": "Plant 1"
+   },
+   {
+    "product": "Item 5-3",
+    "process": "Sorting",
+    "plan": 2432,
+    "actual": 2109,
+    "in": 494,
+    "out": 858,
+    "status": "Warning",
+    "remark": "Check count",
+    "plant": "Plant 3"
+   },
+   {
+    "product": "Item 5-4",
+    "process": "Returns",
+    "plan": 3523,
+    "actual": 2573,
+    "in": 455,
+    "out": 524,
+    "status": "Critical",
+    "remark": "Check count",
+    "plant": "Plant 3"
+   }
+  ]
+ },
+ {
+  "code": "P-1006",
+  "name": "Gear F",
+  "rows": [
+   {
+    "product": "Item 6-1",
+    "process": "Receiving",
+    "plan": 4088,
+    "actual": 3925,
+    "in": 792,
+    "out": 212,
+    "status": "OK",
+    "remark": "",
+    "plant": "Plant 3"
+   },
+   {
+    "product": "Item 6-2",
+    "process": "Receiving",
+    "plan": 2192,
+    "actual": 2296,
+    "in": 204,
+    "out": 654,
+    "status": "OK",
+    "remark": "",
+    "plant": "Plant 1"
+   },
+   {
+    "product": "Item 6-3",
+    "process": "Sorting",
+    "plan": 4612,
+    "actual": 4530,
+    "in": 676,
+    "out": 896,
+    "status": "OK",
+    "remark": "",
+    "plant": "Plant 1"
+   },
+   {
+    "product": "Item 6-4",
+    "process": "Returns",
+    "plan": 5681,
+    "actual": 5925,
+    "in": 408,
+    "out": 209,
+    "status": "OK",
+    "remark": "",
+    "plant": "Plant 1"
+   }
+  ]
+ }
+]
