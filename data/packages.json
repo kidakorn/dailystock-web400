@@ -1,686 +1,212 @@
 [
  {
-  "code": "P-1001",
-  "name": "Housing A",
-  "process": "Staging",
+  "code": "02",
+  "name": "DIP-8",
+  "process": "102 WIRE BONDING",
+  "plant": "N/A",
   "status": "Active",
-  "qty": 18627,
-  "actual": 8387,
-  "progress": 45,
+  "qty": 4951432,
+  "actual": 749807,
+  "progress": 15,
   "spark": [
-   41,
-   36,
-   38,
-   40,
-   42,
-   44,
-   45
-  ],
-  "plant": "Plant 2"
+   749807,
+   749807
+  ]
  },
  {
-  "code": "P-1002",
-  "name": "Plate B",
-  "process": "Receiving",
+  "code": "08",
+  "name": "DMP-8N",
+  "process": "104 MOLDING",
+  "plant": "N/A",
   "status": "Active",
-  "qty": 9886,
-  "actual": 3593,
-  "progress": 36,
+  "qty": 28536193,
+  "actual": 2033068,
+  "progress": 7,
   "spark": [
-   33,
-   35,
-   31,
-   34,
-   34,
-   35,
-   36
-  ],
-  "plant": "Plant 1"
+   2033068,
+   2033068
+  ]
  },
  {
-  "code": "P-1003",
-  "name": "Valve C",
-  "process": "Returns",
-  "status": "Pending",
-  "qty": 6056,
-  "actual": 5833,
-  "progress": 96,
-  "spark": [
-   76,
-   94,
-   91,
-   85,
-   92,
-   92,
-   96
-  ],
-  "plant": "Plant 3"
- },
- {
-  "code": "P-1004",
-  "name": "Plate D",
-  "process": "Receiving",
+  "code": "09",
+  "name": "DMP-8N Cu",
+  "process": "303 TEST 1",
+  "plant": "N/A",
   "status": "Active",
-  "qty": 4027,
-  "actual": 2834,
-  "progress": 70,
+  "qty": 37309754,
+  "actual": 3072302,
+  "progress": 8,
   "spark": [
-   67,
-   61,
-   61,
-   67,
-   69,
-   69,
-   70
-  ],
-  "plant": "Plant 3"
+   3072302,
+   3072302
+  ]
  },
  {
-  "code": "P-1005",
-  "name": "Gear E",
-  "process": "Sorting",
-  "status": "Cancelled",
-  "qty": 3526,
-  "actual": 0,
-  "progress": 0,
-  "spark": [
-   0,
-   0,
-   0,
-   0,
-   0,
-   0,
-   0
-  ],
-  "plant": "Plant 3"
- },
- {
-  "code": "P-1006",
-  "name": "Gear F",
-  "process": "Packing",
+  "code": "10",
+  "name": "EMP-8",
+  "process": "104 MOLDING",
+  "plant": "N/A",
   "status": "Active",
-  "qty": 6726,
-  "actual": 4563,
-  "progress": 68,
+  "qty": 3164410,
+  "actual": 434891,
+  "progress": 14,
   "spark": [
-   55,
-   65,
-   64,
-   66,
-   67,
-   66,
-   68
-  ],
-  "plant": "Plant 3"
+   434891,
+   434891
+  ]
  },
  {
-  "code": "P-1007",
-  "name": "Gear A",
-  "process": "Shipping",
+  "code": "18",
+  "name": "SOT23-5",
+  "process": "101 DIE BONDING",
+  "plant": "N/A",
   "status": "Active",
-  "qty": 24347,
-  "actual": 10384,
-  "progress": 43,
+  "qty": 31233981,
+  "actual": 3649925,
+  "progress": 12,
   "spark": [
-   37,
-   39,
-   41,
-   39,
-   42,
-   42,
-   43
-  ],
-  "plant": "Plant 2"
+   3650325,
+   3649925
+  ]
  },
  {
-  "code": "P-1008",
-  "name": "Valve B",
-  "process": "Receiving",
-  "status": "Pending",
-  "qty": 14202,
-  "actual": 5229,
-  "progress": 37,
-  "spark": [
-   33,
-   35,
-   35,
-   33,
-   35,
-   36,
-   37
-  ],
-  "plant": "Plant 1"
- },
- {
-  "code": "P-1009",
-  "name": "Valve C",
-  "process": "Shipping",
+  "code": "21",
+  "name": "SOT89-3",
+  "process": "104 MOLDING",
+  "plant": "N/A",
   "status": "Active",
-  "qty": 22283,
-  "actual": 9897,
-  "progress": 44,
+  "qty": 15597078,
+  "actual": 1493473,
+  "progress": 10,
   "spark": [
-   41,
-   40,
-   38,
-   40,
-   43,
-   42,
-   44
-  ],
-  "plant": "Plant 3"
+   1493618,
+   1493473
+  ]
  },
  {
-  "code": "P-1010",
-  "name": "Plate D",
-  "process": "Packing",
+  "code": "23",
+  "name": "SOT89-5",
+  "process": "303 TEST 1",
+  "plant": "N/A",
   "status": "Active",
-  "qty": 12293,
-  "actual": 7694,
-  "progress": 63,
+  "qty": 17433614,
+  "actual": 1765777,
+  "progress": 10,
   "spark": [
-   58,
-   53,
-   59,
-   60,
-   62,
-   62,
-   63
-  ],
-  "plant": "Plant 1"
+   1765777,
+   1765777
+  ]
  },
  {
-  "code": "P-1011",
-  "name": "Cover E",
-  "process": "Receiving",
+  "code": "28",
+  "name": "SSOP-16N",
+  "process": "104 MOLDING",
+  "plant": "N/A",
   "status": "Active",
-  "qty": 28030,
-  "actual": 11936,
-  "progress": 43,
+  "qty": 248703,
+  "actual": 132355,
+  "progress": 53,
   "spark": [
-   40,
-   37,
-   40,
-   40,
-   40,
-   42,
-   43
-  ],
-  "plant": "Plant 1"
+   132355,
+   132355
+  ]
  },
  {
-  "code": "P-1012",
-  "name": "Shaft F",
-  "process": "Returns",
+  "code": "31",
+  "name": "SSOP-8/10",
+  "process": "102 WIRE BONDING",
+  "plant": "N/A",
   "status": "Active",
-  "qty": 19209,
-  "actual": 12420,
-  "progress": 65,
+  "qty": 26145935,
+  "actual": 1677349,
+  "progress": 6,
   "spark": [
-   51,
-   61,
-   62,
-   58,
-   61,
-   64,
-   65
-  ],
-  "plant": "Plant 2"
+   1677349,
+   1677349
+  ]
  },
  {
-  "code": "P-1013",
-  "name": "Housing A",
-  "process": "Shipping",
+  "code": "32",
+  "name": "SSOP-8/10 Cu",
+  "process": "111 PLASMA CLEANING",
+  "plant": "N/A",
   "status": "Active",
-  "qty": 21954,
-  "actual": 21649,
-  "progress": 99,
+  "qty": 17369653,
+  "actual": 1827540,
+  "progress": 11,
   "spark": [
-   81,
-   80,
-   94,
-   88,
-   92,
-   96,
-   99
-  ],
-  "plant": "Plant 2"
+   1827540,
+   1827540
+  ]
  },
  {
-  "code": "P-1014",
-  "name": "Plate B",
-  "process": "Staging",
+  "code": "37",
+  "name": "TO-252-5",
+  "process": "420 TAPING DIVISION",
+  "plant": "N/A",
   "status": "Active",
-  "qty": 26809,
-  "actual": 14461,
-  "progress": 54,
+  "qty": 8053170,
+  "actual": 858744,
+  "progress": 11,
   "spark": [
-   51,
-   52,
-   46,
-   52,
-   51,
-   53,
-   54
-  ],
-  "plant": "Plant 1"
+   858744,
+   858744
+  ]
  },
  {
-  "code": "P-1015",
-  "name": "Gear C",
-  "process": "Shipping",
+  "code": "42",
+  "name": "TVSP-8",
+  "process": "104 MOLDING",
+  "plant": "N/A",
   "status": "Active",
-  "qty": 23896,
-  "actual": 8467,
-  "progress": 35,
+  "qty": 27347300,
+  "actual": 2118068,
+  "progress": 8,
   "spark": [
-   30,
-   32,
-   33,
-   32,
-   34,
-   35,
-   35
-  ],
-  "plant": "Plant 3"
+   2118190,
+   2118068
+  ]
  },
  {
-  "code": "P-1016",
-  "name": "Valve D",
-  "process": "Packing",
-  "status": "Pending",
-  "qty": 28815,
-  "actual": 14972,
-  "progress": 52,
-  "spark": [
-   41,
-   45,
-   49,
-   46,
-   51,
-   52,
-   52
-  ],
-  "plant": "Plant 1"
- },
- {
-  "code": "P-1017",
-  "name": "Housing E",
-  "process": "Receiving",
+  "code": "46",
+  "name": "VSP-8",
+  "process": "205 TRIMMING & BRANDING",
+  "plant": "N/A",
   "status": "Active",
-  "qty": 21002,
-  "actual": 18016,
-  "progress": 86,
+  "qty": 20365810,
+  "actual": 1252681,
+  "progress": 6,
   "spark": [
-   75,
-   83,
-   82,
-   81,
-   82,
-   85,
-   86
-  ],
-  "plant": "Plant 2"
+   1252681,
+   1252681
+  ]
  },
  {
-  "code": "P-1018",
-  "name": "Valve F",
-  "process": "Returns",
-  "status": "Cancelled",
-  "qty": 17535,
-  "actual": 0,
-  "progress": 0,
-  "spark": [
-   0,
-   0,
-   0,
-   0,
-   0,
-   0,
-   0
-  ],
-  "plant": "Plant 3"
- },
- {
-  "code": "P-1019",
-  "name": "Valve A",
-  "process": "Shipping",
+  "code": "48",
+  "name": "VSP-8N",
+  "process": "108 WATER JET",
+  "plant": "N/A",
   "status": "Active",
-  "qty": 25958,
-  "actual": 20533,
-  "progress": 79,
+  "qty": 3233699,
+  "actual": 666296,
+  "progress": 21,
   "spark": [
-   62,
-   63,
-   70,
-   72,
-   75,
-   78,
-   79
-  ],
-  "plant": "Plant 3"
+   666296,
+   666296
+  ]
  },
  {
-  "code": "P-1020",
-  "name": "Plate B",
-  "process": "Packing",
-  "status": "Cancelled",
-  "qty": 28932,
-  "actual": 0,
-  "progress": 0,
-  "spark": [
-   0,
-   0,
-   0,
-   0,
-   0,
-   0,
-   0
-  ],
-  "plant": "Plant 1"
- },
- {
-  "code": "P-1021",
-  "name": "Plate C",
-  "process": "Packing",
-  "status": "Pending",
-  "qty": 23910,
-  "actual": 12980,
-  "progress": 54,
-  "spark": [
-   52,
-   44,
-   48,
-   48,
-   53,
-   53,
-   54
-  ],
-  "plant": "Plant 1"
- },
- {
-  "code": "P-1022",
-  "name": "Cover D",
-  "process": "Packing",
+  "code": "49",
+  "name": "SOT-89-5RH",
+  "process": "303 TEST 1",
+  "plant": "N/A",
   "status": "Active",
-  "qty": 5836,
-  "actual": 3767,
-  "progress": 65,
+  "qty": 2689408,
+  "actual": 149794,
+  "progress": 6,
   "spark": [
-   53,
-   60,
-   55,
-   64,
-   62,
-   63,
-   65
-  ],
-  "plant": "Plant 1"
- },
- {
-  "code": "P-1023",
-  "name": "Plate E",
-  "process": "Receiving",
-  "status": "Active",
-  "qty": 10113,
-  "actual": 5850,
-  "progress": 58,
-  "spark": [
-   47,
-   49,
-   50,
-   52,
-   56,
-   56,
-   58
-  ],
-  "plant": "Plant 2"
- },
- {
-  "code": "P-1024",
-  "name": "Cover F",
-  "process": "Staging",
-  "status": "Active",
-  "qty": 15161,
-  "actual": 10379,
-  "progress": 68,
-  "spark": [
-   54,
-   61,
-   59,
-   61,
-   65,
-   66,
-   68
-  ],
-  "plant": "Plant 2"
- },
- {
-  "code": "P-1025",
-  "name": "Shaft A",
-  "process": "Returns",
-  "status": "Pending",
-  "qty": 11123,
-  "actual": 8836,
-  "progress": 79,
-  "spark": [
-   67,
-   69,
-   77,
-   73,
-   73,
-   76,
-   79
-  ],
-  "plant": "Plant 3"
- },
- {
-  "code": "P-1026",
-  "name": "Cover B",
-  "process": "Sorting",
-  "status": "Pending",
-  "qty": 9561,
-  "actual": 3878,
-  "progress": 41,
-  "spark": [
-   36,
-   35,
-   37,
-   38,
-   38,
-   41,
-   41
-  ],
-  "plant": "Plant 3"
- },
- {
-  "code": "P-1027",
-  "name": "Gear C",
-  "process": "Sorting",
-  "status": "Active",
-  "qty": 9645,
-  "actual": 2974,
-  "progress": 31,
-  "spark": [
-   30,
-   27,
-   28,
-   30,
-   29,
-   30,
-   31
-  ],
-  "plant": "Plant 3"
- },
- {
-  "code": "P-1028",
-  "name": "Gear D",
-  "process": "Packing",
-  "status": "Active",
-  "qty": 2134,
-  "actual": 857,
-  "progress": 40,
-  "spark": [
-   31,
-   37,
-   39,
-   38,
-   38,
-   40,
-   40
-  ],
-  "plant": "Plant 3"
- },
- {
-  "code": "P-1029",
-  "name": "Valve E",
-  "process": "Shipping",
-  "status": "Pending",
-  "qty": 12440,
-  "actual": 12031,
-  "progress": 97,
-  "spark": [
-   76,
-   83,
-   89,
-   86,
-   94,
-   94,
-   97
-  ],
-  "plant": "Plant 3"
- },
- {
-  "code": "P-1030",
-  "name": "Valve F",
-  "process": "Returns",
-  "status": "Cancelled",
-  "qty": 23461,
-  "actual": 0,
-  "progress": 0,
-  "spark": [
-   0,
-   0,
-   0,
-   0,
-   0,
-   0,
-   0
-  ],
-  "plant": "Plant 1"
- },
- {
-  "code": "P-1031",
-  "name": "Valve A",
-  "process": "Shipping",
-  "status": "Active",
-  "qty": 27558,
-  "actual": 26629,
-  "progress": 97,
-  "spark": [
-   85,
-   81,
-   83,
-   87,
-   93,
-   95,
-   97
-  ],
-  "plant": "Plant 2"
- },
- {
-  "code": "P-1032",
-  "name": "Plate B",
-  "process": "Returns",
-  "status": "Active",
-  "qty": 15073,
-  "actual": 8680,
-  "progress": 58,
-  "spark": [
-   55,
-   52,
-   50,
-   52,
-   55,
-   56,
-   58
-  ],
-  "plant": "Plant 3"
- },
- {
-  "code": "P-1033",
-  "name": "Cover C",
-  "process": "Staging",
-  "status": "Active",
-  "qty": 8245,
-  "actual": 2862,
-  "progress": 35,
-  "spark": [
-   33,
-   31,
-   33,
-   34,
-   34,
-   34,
-   35
-  ],
-  "plant": "Plant 1"
- },
- {
-  "code": "P-1034",
-  "name": "Housing D",
-  "process": "Receiving",
-  "status": "Active",
-  "qty": 13142,
-  "actual": 9468,
-  "progress": 72,
-  "spark": [
-   65,
-   60,
-   61,
-   67,
-   71,
-   72,
-   72
-  ],
-  "plant": "Plant 1"
- },
- {
-  "code": "P-1035",
-  "name": "Shaft E",
-  "process": "Shipping",
-  "status": "Active",
-  "qty": 19583,
-  "actual": 7265,
-  "progress": 37,
-  "spark": [
-   36,
-   31,
-   33,
-   35,
-   35,
-   37,
-   37
-  ],
-  "plant": "Plant 2"
- },
- {
-  "code": "P-1036",
-  "name": "Cover F",
-  "process": "Returns",
-  "status": "Active",
-  "qty": 8814,
-  "actual": 6432,
-  "progress": 73,
-  "spark": [
-   64,
-   71,
-   63,
-   70,
-   72,
-   73,
-   73
-  ],
-  "plant": "Plant 3"
+   149788,
+   149794
+  ]
  }
 ]
