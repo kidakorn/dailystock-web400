@@ -1,0 +1,338 @@
+[
+ {
+  "seq": 1,
+  "label": "WAFER CUT4",
+  "processCode": 50,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 2,
+  "label": "DICING",
+  "processCode": 100,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 3,
+  "label": "DIE BOND",
+  "processCode": 101,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 4,
+  "label": "DIE BOND POST CURE",
+  "processCode": 101,
+  "subProcessCode": "101020"
+ },
+ {
+  "seq": 5,
+  "label": "BEFORE WIRE BOND",
+  "processCode": 101,
+  "subProcessCode": "102010"
+ },
+ {
+  "seq": 6,
+  "label": "PLASMA",
+  "processCode": 111,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 7,
+  "label": "PLASMA CLEANING",
+  "processCode": 111,
+  "subProcessCode": "111010"
+ },
+ {
+  "seq": 8,
+  "label": "WIRE BOND",
+  "processCode": 102,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 9,
+  "label": "CHIP COAT",
+  "processCode": 106,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 10,
+  "label": "CHIP COAT POST CURE",
+  "processCode": 106,
+  "subProcessCode": "106020"
+ },
+ {
+  "seq": 11,
+  "label": "INTNAL INS",
+  "processCode": 103,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 12,
+  "label": "INTERNAL INSPECTION",
+  "processCode": 103,
+  "subProcessCode": "103010"
+ },
+ {
+  "seq": 13,
+  "label": "MOLD",
+  "processCode": 104,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 14,
+  "label": "BEFORE MOLD",
+  "processCode": 104,
+  "subProcessCode": "104005"
+ },
+ {
+  "seq": 15,
+  "label": "MOLD POST CURE",
+  "processCode": 104,
+  "subProcessCode": "104020"
+ },
+ {
+  "seq": 16,
+  "label": "RQ WT JET",
+  "processCode": 107,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 17,
+  "label": "WATER JET",
+  "processCode": 108,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 18,
+  "label": "WATER JET-NO PLATING",
+  "processCode": 108,
+  "subProcessCode": "108010"
+ },
+ {
+  "seq": 19,
+  "label": "INCOMING-NO PLATING",
+  "processCode": 108,
+  "subProcessCode": "108020"
+ },
+ {
+  "seq": 20,
+  "label": "ED-NO PLATING",
+  "processCode": 108,
+  "subProcessCode": "108030"
+ },
+ {
+  "seq": 21,
+  "label": "INSPECTION-NO PLATING",
+  "processCode": 108,
+  "subProcessCode": "108050"
+ },
+ {
+  "seq": 22,
+  "label": "TRANSPORTATION-WJ",
+  "processCode": 108,
+  "subProcessCode": "108060"
+ },
+ {
+  "seq": 23,
+  "label": "WT JET INS",
+  "processCode": 109,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 24,
+  "label": "POST CURE",
+  "processCode": 112,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 25,
+  "label": "RESIN CUT",
+  "processCode": 200,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 26,
+  "label": "REFLOW",
+  "processCode": 110,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 27,
+  "label": "RQ PLATING",
+  "processCode": 201,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 28,
+  "label": "BEFORE PLATING",
+  "processCode": 201,
+  "subProcessCode": "202000"
+ },
+ {
+  "seq": 29,
+  "label": "PLATING",
+  "processCode": 202,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 30,
+  "label": "INCOMING  PLATING",
+  "processCode": 202,
+  "subProcessCode": "202020"
+ },
+ {
+  "seq": 31,
+  "label": "MANUAL ETCHING",
+  "processCode": 202,
+  "subProcessCode": "202030"
+ },
+ {
+  "seq": 32,
+  "label": "ED",
+  "processCode": 202,
+  "subProcessCode": "202040"
+ },
+ {
+  "seq": 33,
+  "label": "WATER JET",
+  "processCode": 202,
+  "subProcessCode": "202050"
+ },
+ {
+  "seq": 34,
+  "label": "PLATING INSPECTION",
+  "processCode": 202,
+  "subProcessCode": "202090"
+ },
+ {
+  "seq": 35,
+  "label": "PLAING INS",
+  "processCode": 203,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 36,
+  "label": "TRIMMING",
+  "processCode": 204,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 37,
+  "label": "SELECT 1",
+  "processCode": 300,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 38,
+  "label": "SELECT 2",
+  "processCode": 301,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 39,
+  "label": "BRANDING",
+  "processCode": 302,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 40,
+  "label": "BRANDING POST CURE",
+  "processCode": 302,
+  "subProcessCode": "302020"
+ },
+ {
+  "seq": 41,
+  "label": "EXT. INS.",
+  "processCode": 310,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 42,
+  "label": "TRIM&BRAND",
+  "processCode": 205,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 43,
+  "label": "TST&TPDIV",
+  "processCode": 430,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 44,
+  "label": "TEST 1",
+  "processCode": 303,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 45,
+  "label": "TEST 2",
+  "processCode": 305,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 46,
+  "label": "TEST 3",
+  "processCode": 306,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 47,
+  "label": "TEST 4",
+  "processCode": 307,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 48,
+  "label": "TEST 5",
+  "processCode": 308,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 49,
+  "label": "TEST 6",
+  "processCode": 309,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 50,
+  "label": "TEST 7",
+  "processCode": 311,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 51,
+  "label": "OUTGO INS",
+  "processCode": 401,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 52,
+  "label": "FORMING",
+  "processCode": 410,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 53,
+  "label": "TAPING DIV",
+  "processCode": 420,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 54,
+  "label": "TAPING",
+  "processCode": 421,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 55,
+  "label": "PACKING",
+  "processCode": 402,
+  "subProcessCode": ""
+ },
+ {
+  "seq": 56,
+  "label": "WAREHOUSING",
+  "processCode": 403,
+  "subProcessCode": ""
+ }
+]

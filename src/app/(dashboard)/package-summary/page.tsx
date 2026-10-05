@@ -5,14 +5,34 @@ import styles from '@/components/packages/packages.module.css';
 import { FilterBar } from '@/components/ui/filter-bar';
 import { KpiCard } from '@/components/ui/kpi-card';
 import ui from '@/components/ui/ui.module.css';
-import { getPackages } from '@/lib/data/repository';
-import { PAGE_SIZE, opts, queryPackages, uniq } from '@/lib/filters';
-import { param, hrefWith, type SearchParams } from '@/lib/query';
-import type { PackageStatus } from '@/types/domain';
+import { getPackageGroups, getStockLines } from '@/lib/data/repository';
+import { PAGE_SIZE, opts } from '@/lib/filters';
+import { formatIsoDate } from '@/lib/format';
+import { hrefWith, param, pick, type SearchParams } from '@/lib/query';
+import {
+  OTHER_GROUP,
+  filterSummaries,
+  listSnapshots,
+  sortSummaries,
+  summarizePackages,
+  type PackageKind,
+  type SortKey,
+} from '@/lib/summary/packages';
 
 export const metadata: Metadata = { title: 'Package Summary' };
 const PATH = '/package-summary';
-const TABS = ['All', 'Active', 'Pending', 'Cancelled'] as const;
+const TABS = [
+  { value: 'all', label: 'All' },
+  { value: 'normal', label: 'Normal' },
+  { value: 'new', label: 'New' },
+  { value: 'cancelled', label: 'Cancelled' },
+] as const;
+const SORTS: { value: SortKey; label: string }[] = [
+  { value: 'stock', label: 'Total stock' },
+  { value: 'name', label: 'Name' },
+  { value: 'code', label: 'Code' },
+  { value: 'processes', label: 'Processes with stock' },
+];
 
 export default async function PackageSummaryPage({
   searchParams,
@@ -20,51 +40,54 @@ export default async function PackageSummaryPage({
   searchParams: Promise<SearchParams>;
 }) {
   const sp = await searchParams;
+  const [lines, groups] = await Promise.all([getStockLines(), getPackageGroups()]);
+
+  const snapshots = listSnapshots(lines);
+  const latest = snapshots[snapshots.length - 1] ?? '';
+  const snapshot = pick(param(sp, 'date'), snapshots, latest);
+  const previous = snapshots[snapshots.indexOf(snapshot) - 1];
+  const previousLabel = previous ? formatIsoDate(previous) : null;
+
+  const groupNames = [...Object.keys(groups), OTHER_GROUP];
+  const group = pick(param(sp, 'group'), groupNames, '');
+  const tab = pick(
+    param(sp, 'tab'),
+    TABS.map((t) => t.value),
+    'all',
+  );
+  const sort = pick(
+    param(sp, 'sort'),
+    SORTS.map((s) => s.value),
+    'stock',
+  );
   const view = param(sp, 'view') === 'list' ? 'list' : 'grid';
-  const tab = TABS.find((t) => t === param(sp, 'tab')) ?? 'All';
-  const items = await getPackages();
-  const { base, rows } = queryPackages(items, {
-    plant: param(sp, 'plant'),
-    process: param(sp, 'process'),
-    tab,
-    q: param(sp, 'q'),
-    sort: param(sp, 'sort') || 'code',
+
+  // Group narrows the whole page (KPIs and tab counts); status tab and search narrow only the list.
+  const base = filterSummaries(summarizePackages(lines, groups, snapshot), {
+    group: group || undefined,
   });
+  const count = (kind: PackageKind) => base.filter((p) => p.kind === kind).length;
+  const kind = tab === 'all' ? undefined : tab;
+  const rows = sortSummaries(filterSummaries(base, { kind, query: param(sp, 'q') }), sort);
 
   const pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
-  // Clamp: a filter can shrink the page count below the page in the URL.
-  const page = Math.min(Math.max(1, Number(param(sp, 'page')) || 1), pages);
+  const page = Math.min(Math.max(1, Number(param(sp, 'page')) || 1), pages); // clamp: a filter can shrink the page count
   const slice = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const count = (s: PackageStatus) => base.filter((p) => p.status === s).length;
 
   return (
     <>
       <FilterBar
         fields={[
           {
-            name: 'plant',
-            label: 'Plant',
+            name: 'date',
+            label: 'Date',
             type: 'select',
-            options: opts(uniq(items.map((p) => p.plant))),
+            default: latest,
+            options: [...snapshots].reverse().map((s) => ({ value: s, label: formatIsoDate(s) })),
           },
-          {
-            name: 'process',
-            label: 'Process',
-            type: 'select',
-            options: opts(uniq(items.map((p) => p.process))),
-          },
+          { name: 'group', label: 'Group', type: 'select', options: opts(groupNames) },
           { name: 'q', label: 'Search', type: 'search' },
-          {
-            name: 'sort',
-            label: 'Sort',
-            type: 'select',
-            default: 'code',
-            options: [
-              { value: 'code', label: 'Code' },
-              { value: 'progress', label: 'Progress' },
-              { value: 'qty', label: 'Quantity' },
-            ],
-          },
+          { name: 'sort', label: 'Sort', type: 'select', default: 'stock', options: SORTS },
           {
             name: 'view',
             label: 'View',
@@ -78,27 +101,27 @@ export default async function PackageSummaryPage({
         ]}
       />
       <section className={ui.kpiGrid} data-cols="4" aria-label="Key figures">
-        <KpiCard label="Total packages" value={base.length} tone="primary" />
-        <KpiCard label="Active" value={count('Active')} tone="success" />
-        <KpiCard label="Cancelled" value={count('Cancelled')} tone="danger" />
-        <KpiCard label="Pending" value={count('Pending')} tone="warning" />
+        <KpiCard label="Packages" value={base.length} tone="primary" />
+        <KpiCard label="Total stock" value={base.reduce((t, p) => t + p.stock, 0)} tone="success" />
+        <KpiCard label="New" value={count('new')} tone="warning" />
+        <KpiCard label="Cancelled" value={count('cancelled')} tone="danger" />
       </section>
       <nav className={styles.tabs} aria-label="Status">
         {TABS.map((t) => (
           <Link
-            key={t}
-            href={hrefWith(PATH, sp, { tab: t === 'All' ? null : t, page: null })}
+            key={t.value}
+            href={hrefWith(PATH, sp, { tab: t.value === 'all' ? null : t.value, page: null })}
             className={ui.btn}
-            aria-current={tab === t ? 'page' : undefined}
+            aria-current={tab === t.value ? 'page' : undefined}
           >
-            {t} ({t === 'All' ? base.length : count(t)})
+            {t.label} ({t.value === 'all' ? base.length : count(t.value)})
           </Link>
         ))}
       </nav>
       {slice.length ? (
         <div className={styles.grid} data-view={view}>
           {slice.map((p) => (
-            <PackageCard key={p.code} item={p} />
+            <PackageCard key={p.code} item={p} previousLabel={previousLabel} />
           ))}
         </div>
       ) : (

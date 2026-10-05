@@ -3,7 +3,14 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { cache } from 'react';
 import { z } from 'zod';
-import { dashboardSchema, packageSchema, stockGroupSchema } from './schemas';
+import {
+  dashboardSchema,
+  packageGroupsSchema,
+  packageSchema,
+  processSeqSchema,
+  stockGroupSchema,
+  stockLineSchema,
+} from './schemas';
 
 /*
  * Data access layer. Pages call these functions and never touch files or
@@ -21,3 +28,8 @@ async function readJson<T>(file: string, schema: z.ZodType<T>): Promise<T> {
 export const getDashboard = cache(() => readJson('dashboard.json', dashboardSchema));
 export const getPackages = cache(() => readJson('packages.json', z.array(packageSchema)));
 export const getStock = cache(() => readJson('stock.json', z.array(stockGroupSchema)));
+
+// Real AS400 data (see scripts/import-wgpgbl.py and scripts/extract-workbook-config.py).
+export const getStockLines = cache(() => readJson('wgpgbl.json', z.array(stockLineSchema)));
+export const getProcessSeq = cache(() => readJson('process-seq.json', z.array(processSeqSchema)));
+export const getPackageGroups = cache(() => readJson('package-groups.json', packageGroupsSchema));
