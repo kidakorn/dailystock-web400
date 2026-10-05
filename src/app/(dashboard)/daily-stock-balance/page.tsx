@@ -7,18 +7,13 @@ import ui from '@/components/ui/ui.module.css';
 import { getPackageGroups, getProcessSeq, getStockLines } from '@/lib/data/repository';
 import { opts, uniq } from '@/lib/filters';
 import { formatIsoDate } from '@/lib/format';
-import { param, pick, type SearchParams } from '@/lib/query';
+// import { param, pick, type SearchParams } from '@/lib/query';
 import { buildDailyStock } from '@/lib/summary/daily-stock';
 import { OTHER_GROUP, groupOf, listSnapshots } from '@/lib/summary/packages';
 
 export const metadata: Metadata = { title: 'Daily Stock Balance' };
 
-export default async function DailyStockBalancePage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>;
-}) {
-  const sp = await searchParams;
+export default async function DailyStockBalancePage() {
   const [lines, seq, groups] = await Promise.all([
     getStockLines(),
     getProcessSeq(),
@@ -26,16 +21,24 @@ export default async function DailyStockBalancePage({
   ]);
 
   const snapshots = listSnapshots(lines);
+
   const latest = snapshots[snapshots.length - 1] ?? '';
-  const snapshot = pick(param(sp, 'date'), snapshots, latest);
+
+  const snapshot = latest;
+
   const groupNames = [...Object.keys(groups), OTHER_GROUP];
-  const group = pick(param(sp, 'group'), groupNames, '');
-  // The package list follows the chosen group, so it can never offer a package the group filter would hide.
+
+  const group = '';
+
   const packageNames = uniq(
-    lines.filter((l) => l.snapshot === snapshot).map((l) => l.packageName),
-  ).filter((n) => !group || groupOf(n, groups) === group);
-  const packageName = pick(param(sp, 'package'), packageNames, '');
-  const hideEmpty = param(sp, 'rows') === 'active';
+    lines
+      .filter((l) => l.snapshot === snapshot)
+      .map((l) => l.packageName),
+  );
+
+  const packageName = '';
+
+  const hideEmpty = false;
 
   const result = buildDailyStock(lines, seq, groups, {
     snapshot,
