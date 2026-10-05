@@ -34,7 +34,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     href: '/daily-stock-balance',
     label: 'Daily Stock Balance',
     title: 'Daily Stock Balance',
-    subtitle: 'Detail stock by package, process and product',
+    subtitle: 'Daily stock balance by process and sub-process',
   },
 ];
 

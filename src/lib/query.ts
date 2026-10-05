@@ -23,3 +23,7 @@ export function hrefWith(
   const qs = next.toString();
   return qs ? `${path}?${qs}` : path;
 }
+
+/** URL params are user input: anything outside the allowed list quietly falls back instead of breaking the page. */
+export const pick = <T extends string>(value: string, allowed: readonly T[], fallback: T): T =>
+  allowed.find((a) => a === value) ?? fallback;

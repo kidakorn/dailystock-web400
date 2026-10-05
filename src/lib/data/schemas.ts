@@ -65,3 +65,35 @@ export const dashboardSchema = z.object({
   systems: z.array(z.object({ name: z.string(), status: z.enum(['Normal', 'Warning']) })),
   spark: z.record(z.string(), z.array(z.number())),
 });
+
+/*
+ * Raw AS400 stock lines (data/wgpgbl.json), one per snapshot x package x process x sub-process.
+ * Field names follow the Power Query renames in Daily_Stock.xlsx: QTST34 balance, QTBW34 balDay,
+ * QTSTKP stock, QTWRKP actual, QTPDSH pending. packageKind: '0' normal, '1' new, '2' cancelled (KBGPGS).
+ */
+export const stockLineSchema = z.object({
+  snapshot: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  packageCode: z.number().int(),
+  packageName: z.string(),
+  packageKind: z.enum(['0', '1', '2']),
+  processCode: z.number().int(),
+  processName: z.string(),
+  subProcessCode: z.string(),
+  subProcessName: z.string(),
+  balance: z.number(),
+  balDay: z.number(),
+  stock: z.number(),
+  actual: z.number(),
+  pending: z.number(),
+});
+
+/** Display order of processes and sub-processes (the hidden PROCESS_SEQ sheet). */
+export const processSeqSchema = z.object({
+  seq: z.number().int(),
+  label: z.string(),
+  processCode: z.number().int(),
+  subProcessCode: z.string(),
+});
+
+/** Package names per group, e.g. { IC2: [...], IC3: [...] }. Edit data/package-groups.json to move a package. */
+export const packageGroupsSchema = z.record(z.string(), z.array(z.string()));

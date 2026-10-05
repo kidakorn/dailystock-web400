@@ -1,98 +1,92 @@
 import type { Metadata } from 'next';
-import { StockPanel } from '@/components/stock/stock-panel';
-import styles from '@/components/stock/stock.module.css';
-import { StockTable } from '@/components/stock/stock-table';
+import { DailyStockTable } from '@/components/stock/daily-stock-table';
+import { ExportCsvButton } from '@/components/stock/export-csv-button';
 import { FilterBar } from '@/components/ui/filter-bar';
 import { KpiCard } from '@/components/ui/kpi-card';
 import ui from '@/components/ui/ui.module.css';
-import { getStock } from '@/lib/data/repository';
-import { STOCK_STATUSES, filterStock, flattenStock, groupStock, opts, uniq } from '@/lib/filters';
-import { formatNumber, pct } from '@/lib/format';
-import { param, type SearchParams } from '@/lib/query';
+import { getPackageGroups, getProcessSeq, getStockLines } from '@/lib/data/repository';
+import { opts, uniq } from '@/lib/filters';
+import { formatIsoDate } from '@/lib/format';
+// import { param, pick, type SearchParams } from '@/lib/query';
+import { buildDailyStock } from '@/lib/summary/daily-stock';
+import { OTHER_GROUP, groupOf, listSnapshots } from '@/lib/summary/packages';
 
 export const metadata: Metadata = { title: 'Daily Stock Balance' };
 
-export default async function DailyStockBalancePage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>;
-}) {
-  const sp = await searchParams;
-  const all = flattenStock(await getStock());
-  const groupBy = param(sp, 'group') === 'process' ? 'process' : 'package';
-  // An absent status param means "all"; unknown values are dropped so a hand-edited URL cannot break the filter.
-  const statuses = param(sp, 'status')
-    ? param(sp, 'status')
-        .split(',')
-        .filter((s) => (STOCK_STATUSES as readonly string[]).includes(s))
-    : [...STOCK_STATUSES];
-  const rows = filterStock(all, {
-    plant: param(sp, 'plant'),
-    process: param(sp, 'process'),
-    package: param(sp, 'package'),
-    statuses,
-    attention: param(sp, 'attention') === '1',
-    remark: param(sp, 'remark') === '1',
+export default async function DailyStockBalancePage() {
+  const [lines, seq, groups] = await Promise.all([
+    getStockLines(),
+    getProcessSeq(),
+    getPackageGroups(),
+  ]);
+
+  const snapshots = listSnapshots(lines);
+
+  const latest = snapshots[snapshots.length - 1] ?? '';
+
+  const snapshot = latest;
+
+  const groupNames = [...Object.keys(groups), OTHER_GROUP];
+
+  const group = '';
+
+  const packageNames = uniq(
+    lines
+      .filter((l) => l.snapshot === snapshot)
+      .map((l) => l.packageName),
+  );
+
+  const packageName = '';
+
+  const hideEmpty = false;
+
+  const result = buildDailyStock(lines, seq, groups, {
+    snapshot,
+    group: group || undefined,
+    packageName: packageName || undefined,
+    hideEmpty,
   });
-  const groups = groupStock(rows, groupBy);
-  const sum = (k: 'plan' | 'actual') => rows.reduce((t, r) => t + r[k], 0);
-  const critical = rows.filter((r) => r.status === 'Critical').length;
+  const { totals } = result;
 
   return (
     <>
       <FilterBar
         fields={[
           {
-            name: 'plant',
-            label: 'Plant',
+            name: 'date',
+            label: 'Date',
             type: 'select',
-            options: opts(uniq(all.map((r) => r.plant))),
+            default: latest,
+            options: [...snapshots].reverse().map((s) => ({ value: s, label: formatIsoDate(s) })),
           },
+          { name: 'group', label: 'Group', type: 'select', options: opts(groupNames) },
+          { name: 'package', label: 'Package', type: 'select', options: opts(packageNames) },
           {
-            name: 'process',
-            label: 'Process',
+            name: 'rows',
+            label: 'Lines',
             type: 'select',
-            options: opts(uniq(all.map((r) => r.process))),
+            default: 'all',
+            options: [
+              { value: 'all', label: 'All lines' },
+              { value: 'active', label: 'Hide empty lines' },
+            ],
           },
-          {
-            name: 'package',
-            label: 'Package',
-            type: 'select',
-            options: opts(uniq(all.map((r) => r.package))),
-          },
-          { name: 'date', label: 'Date', type: 'date' },
         ]}
       />
-      <section className={ui.kpiGrid} data-cols="3" aria-label="Key figures">
-        <KpiCard label="Total stock" value={sum('actual')} tone="primary" />
-        <KpiCard label="Plan" value={sum('plan')} tone="success" />
-        <KpiCard label="Critical rows" value={critical} tone="danger" />
+      <section className={ui.kpiGrid} data-cols="4" aria-label="Key figures">
+        <KpiCard label="Stock" value={totals.stock} tone="primary" />
+        <KpiCard label="Actual" value={totals.actual} tone="success" />
+        <KpiCard label="Pending" value={totals.pending} tone="warning" />
+        <KpiCard label="Difference" value={totals.difference} tone="danger" />
       </section>
-      <div className={styles.layout}>
-        {/* key resets the expand/collapse state when the grouping changes, because the old keys no longer exist. */}
-        <StockTable key={groupBy} groups={groups} groupBy={groupBy} />
-        <StockPanel
-          rows={rows}
-          groupBy={groupBy}
-          statuses={statuses}
-          attention={param(sp, 'attention') === '1'}
-          remark={param(sp, 'remark') === '1'}
-        >
-          <h3>Summary</h3>
-          <dl className={styles.summary}>
-            <dt>Rows</dt>
-            <dd>{rows.length}</dd>
-            <dt>Plan</dt>
-            <dd>{formatNumber(sum('plan'))}</dd>
-            <dt>Actual</dt>
-            <dd>{formatNumber(sum('actual'))}</dd>
-            <dt>Progress</dt>
-            <dd>{pct(sum('actual'), sum('plan'))}%</dd>
-            <dt>Critical</dt>
-            <dd>{critical}</dd>
-          </dl>
-        </StockPanel>
+      <div className={ui.toolbar}>
+        <p className={ui.muted}>
+          {result.rows.length} process lines, {result.packageCount} packages,{' '}
+          {formatIsoDate(snapshot)}
+        </p>
+        <ExportCsvButton rows={result.rows} filename={`daily-stock-${snapshot}.csv`} />
       </div>
+      <DailyStockTable result={result} />
     </>
   );
 }

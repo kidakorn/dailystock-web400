@@ -224,3 +224,12 @@
     transform: rotate(360deg);
   }
 }
+
+/* Daily stock table: zero values fade so the lines that hold stock stand out; totals sit on a tinted row. */
+.table .num[data-zero='true'] {
+  color: var(--color-text-muted);
+}
+.table tfoot td {
+  font-weight: 600;
+  background: var(--color-bg);
+}

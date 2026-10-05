@@ -10,27 +10,21 @@ import ui from '@/components/ui/ui.module.css';
 import { opts } from '@/lib/filters';
 import { formatNumber } from '@/lib/format';
 import { getDashboard } from '@/lib/data/repository';
-import { param, type SearchParams } from '@/lib/query';
+// import { param, type SearchParams } from '@/lib/query';
 import styles from './dashboard.module.css';
 
 export const metadata: Metadata = { title: 'Dashboard' };
 
-export default async function DashboardPage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>;
-}) {
-  const process = param(await searchParams, 'process');
+export default async function DashboardPage() {
   const d = await getDashboard();
 
   // Only Process narrows the chart: dashboard.json is an aggregate with no plant dimension.
   const bars = d.processes.labels
-    .map((name, i) => ({
-      name,
-      plan: d.processes.plan[i] ?? 0,
-      actual: d.processes.actual[i] ?? 0,
-    }))
-    .filter((b) => !process || b.name === process);
+  .map((name, i) => ({
+    name,
+    plan: d.processes.plan[i] ?? 0,
+    actual: d.processes.actual[i] ?? 0,
+  }))
   const trend = d.trend.labels.map((name, i) => ({
     name,
     plan: d.trend.plan[i] ?? 0,
