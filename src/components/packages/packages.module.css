@@ -80,7 +80,8 @@
   gap: var(--space-1);
   align-items: center;
   justify-content: flex-end;
-  margin-top: var(--space-3);
+  margin-top: auto;
+  padding-top: var(--space-3);
 }
 .pagerInfo {
   margin-right: auto;
