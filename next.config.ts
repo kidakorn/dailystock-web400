@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 // Development is served from the site root (http://localhost:3000/); the production build is deployed under
-const basePath = process.env.NODE_ENV === 'production' ? '/kidakorn' : '';
+const basePath = process.env.NODE_ENV === 'production' ? '/kidakorn/dailystock' : '';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
