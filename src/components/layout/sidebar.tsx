@@ -7,6 +7,7 @@ import { useSyncExternalStore } from 'react';
 import { NAV_ITEMS, isActive } from '@/lib/nav';
 import { NAV_ICONS } from './nav-icons';
 import styles from './shell.module.css';
+import faviconIcon from '../../assets/favicon.ico';
 
 /*
  * The collapsed/expanded choice lives in a cookie that the BROWSER reads. A statically exported page has no server
@@ -42,7 +43,7 @@ export function Sidebar() {
       <div className={styles.top}>
         <div className={styles.brand}>
           <img
-            src="/favicon.ico"
+            src={faviconIcon.src}
             alt=""
             aria-hidden="true"
             className={styles.brandMark}
@@ -50,7 +51,7 @@ export function Sidebar() {
             height={24}
           />
           <div className={styles.hideWhenCollapsed}>
-            <div className={styles.brandName}>DAILY STOCK</div>
+            <div className={styles.brandName}>Daily Stock</div>
             <div className={styles.brandSub}>Enterprise Monitoring</div>
           </div>
         </div>
@@ -76,6 +77,7 @@ export function Sidebar() {
               title={item.label}
               aria-label={item.label}
               aria-current={isActive(pathname, item.href) ? 'page' : undefined}
+              prefetch={false}
             >
               <Icon size={18} className={styles.icon} aria-hidden="true" />
               <span className={styles.hideWhenCollapsed}>{item.label}</span>
