@@ -1,7 +1,6 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import { activeItem } from '@/lib/nav';
-import { Clock } from './clock';
 import styles from './shell.module.css';
 
 export function Header() {
@@ -17,10 +16,12 @@ export function Header() {
         <p className={styles.subtitle}>{item.subtitle}</p>
       </div>
       <div className={styles.headerMeta}>
-        <div id="header-tools" className={styles.headerTools} />
-        <div className={styles.meta}>
-          <Clock />
-        </div>
+        <div
+          id="header-tools"
+          className={styles.headerTools}
+          data-daily-stock={pathname.startsWith('/daily-stock-balance') ? 'true' : undefined}
+          data-process-master={pathname.startsWith('/process-master') ? 'true' : undefined}
+        />
       </div>
     </header>
   );

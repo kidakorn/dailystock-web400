@@ -1,7 +1,7 @@
 'use client';
 
-import { ArrowDown, ArrowUp, Download, RotateCcw, Upload } from 'lucide-react';
-import { useRef, useState, type FormEvent } from 'react';
+import { ArrowDown, ArrowUp, Download, Plus, RotateCcw, Upload, X } from 'lucide-react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { HeaderPortal } from '@/components/layout/header-portal';
 import { FilterBar } from '@/components/ui/filter-bar';
 import ui from '@/components/ui/ui.module.css';
@@ -18,24 +18,55 @@ import { resetProcessSeq, saveProcessSeq, useProcessSeq } from '@/lib/use-proces
 import type { ProcessSeqEntry } from '@/types/domain';
 import styles from './process-master.module.css';
 
-type Draft = { label: string; processCode: string; subProcessCode: string };
-const emptyDraft: Draft = { label: '', processCode: '', subProcessCode: '' };
+type Draft = {
+  processCode: string;
+  processName: string;
+  subProcessCode: string;
+  subProcessName: string;
+};
+const emptyDraft: Draft = {
+  processCode: '',
+  processName: '',
+  subProcessCode: '',
+  subProcessName: '',
+};
 
-function draftFrom(entry: ProcessSeqEntry): Draft {
+function processNameOf(entry: ProcessSeqEntry, entries: ProcessSeqEntry[]) {
+  const parent = entries.find(
+    (candidate) => candidate.processCode === entry.processCode && !candidate.subProcessCode,
+  );
+  return entry.processName || parent?.processName || parent?.label || (!entry.subProcessCode ? entry.label : '');
+}
+
+function subProcessNameOf(entry: ProcessSeqEntry) {
+  return entry.subProcessName || (entry.subProcessCode ? entry.label : '');
+}
+
+function draftFrom(entry: ProcessSeqEntry, entries: ProcessSeqEntry[]): Draft {
   return {
-    label: entry.label,
     processCode: String(entry.processCode),
+    processName: processNameOf(entry, entries),
     subProcessCode: entry.subProcessCode,
+    subProcessName: subProcessNameOf(entry),
   };
 }
 
 function entryFrom(draft: Draft): Omit<ProcessSeqEntry, 'seq'> {
   const processCode = Number(draft.processCode);
   if (!Number.isInteger(processCode)) throw new Error('Process code must be an integer');
+  const processName = draft.processName.trim();
+  const subProcessCode = draft.subProcessCode.trim();
+  const subProcessName = draft.subProcessName.trim();
+  if (!processName) throw new Error('Process name is required');
+  if (Boolean(subProcessCode) !== Boolean(subProcessName)) {
+    throw new Error('Sub-process code and name are both required');
+  }
   return {
-    label: draft.label.trim(),
+    label: subProcessCode ? subProcessName : processName,
     processCode,
-    subProcessCode: draft.subProcessCode.trim(),
+    processName,
+    subProcessCode,
+    subProcessName,
   };
 }
 
@@ -54,10 +85,19 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
   const searchParams = useSearchRecord();
   const query = param(searchParams, 'q').trim().toLowerCase();
   const [newDraft, setNewDraft] = useState(emptyDraft);
+  const [isAddOpen, setIsAddOpen] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editDraft, setEditDraft] = useState(emptyDraft);
   const [error, setError] = useState('');
   const fileInput = useRef<HTMLInputElement>(null);
+  const addDialog = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = addDialog.current;
+    if (!dialog) return;
+    if (isAddOpen && !dialog.open) dialog.showModal();
+    if (!isAddOpen && dialog.open) dialog.close();
+  }, [isAddOpen]);
 
   function commit(operation: () => ProcessSeqEntry[]) {
     try {
@@ -72,7 +112,10 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
 
   function handleAdd(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (commit(() => addProcessSeq(entries, entryFrom(newDraft)))) setNewDraft(emptyDraft);
+    if (commit(() => addProcessSeq(entries, entryFrom(newDraft)))) {
+      setNewDraft(emptyDraft);
+      setIsAddOpen(false);
+    }
   }
 
   function handleEdit(event: FormEvent<HTMLFormElement>, index: number) {
@@ -97,7 +140,7 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
     <section className={styles.page}>
       <FilterBar fields={[{ name: 'q', label: 'Process name', type: 'search' }]} />
       <HeaderPortal>
-        <div className={styles.headerActions}>
+        <div className={styles.headerActions} data-process-master-actions>
           <button
             type="button"
             className={`${ui.btn} ${styles.exportButton}`}
@@ -126,11 +169,37 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
           >
             <RotateCcw size={16} aria-hidden="true" /> Reset
           </button>
+          <button
+            type="button"
+            className={`${ui.btn} ${styles.addButton}`}
+            onClick={() => {
+              setError('');
+              setIsAddOpen(true);
+            }}
+          >
+            <Plus size={16} aria-hidden="true" /> Add process
+          </button>
         </div>
       </HeaderPortal>
-      <fieldset className={styles.addForm}>
-        <legend>Add process / sub-process</legend>
+      <dialog
+        ref={addDialog}
+        className={styles.addDialog}
+        aria-labelledby="add-process-title"
+        onClose={() => setIsAddOpen(false)}
+      >
+        <div className={styles.dialogHeader}>
+          <h2 id="add-process-title">Add process / sub-process</h2>
+          <button
+            type="button"
+            className={styles.closeDialog}
+            aria-label="Close dialog"
+            onClick={() => setIsAddOpen(false)}
+          >
+            <X size={18} aria-hidden="true" />
+          </button>
+        </div>
         <form onSubmit={handleAdd} aria-label="Add process">
+          <div className={styles.dialogFields}>
           <label className={ui.field}>
             <span>Process code</span>
             <input
@@ -141,12 +210,12 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
               onChange={(event) => setNewDraft({ ...newDraft, processCode: event.target.value })}
             />
           </label>
-          <label className={`${ui.field} ${styles.labelField}`}>
-            <span>Process / sub-process name</span>
+          <label className={ui.field}>
+            <span>Process name</span>
             <input
               required
-              value={newDraft.label}
-              onChange={(event) => setNewDraft({ ...newDraft, label: event.target.value })}
+              value={newDraft.processName}
+              onChange={(event) => setNewDraft({ ...newDraft, processName: event.target.value })}
             />
           </label>
           <label className={ui.field}>
@@ -156,24 +225,43 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
               onChange={(event) => setNewDraft({ ...newDraft, subProcessCode: event.target.value })}
             />
           </label>
-          <button type="submit" className={`${ui.btn} ${styles.addButton}`}>
-            Add entry
-          </button>
+          <label className={ui.field}>
+            <span>Sub-process name</span>
+            <input
+              value={newDraft.subProcessName}
+              onChange={(event) => setNewDraft({ ...newDraft, subProcessName: event.target.value })}
+            />
+          </label>
+          </div>
+          {error ? (
+            <p className={styles.error} role="alert">
+              {error}
+            </p>
+          ) : null}
+          <div className={styles.dialogActions}>
+            <button type="button" className={ui.btn} onClick={() => setIsAddOpen(false)}>
+              Cancel
+            </button>
+            <button type="submit" className={`${ui.btn} ${styles.addButton}`}>
+              Add entry
+            </button>
+          </div>
         </form>
-      </fieldset>
+      </dialog>
       {error ? (
         <p className={styles.error} role="alert">
           {error}
         </p>
       ) : null}
-      <div className={`${ui.card} ${styles.tableWrap}`}>
+      <div className={styles.tableWrap}>
         <table className={ui.table} aria-label="Process sequence master">
           <thead>
             <tr>
               <th>Order</th>
               <th>Process code</th>
-              <th>Process / sub-process name</th>
+              <th>Process name</th>
               <th>Sub-process code</th>
+              <th>Sub-process name</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -181,7 +269,7 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
             {entries.map((entry, index) => {
               if (
                 query &&
-                !`${entry.processCode} ${entry.label} ${entry.subProcessCode}`
+                !`${entry.processCode} ${processNameOf(entry, entries)} ${entry.subProcessCode} ${subProcessNameOf(entry)}`
                   .toLowerCase()
                   .includes(query)
               )
@@ -203,9 +291,9 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
                   <td>
                     <input
                       aria-label="Edit process name"
-                      value={editDraft.label}
+                      value={editDraft.processName}
                       onChange={(event) =>
-                        setEditDraft({ ...editDraft, label: event.target.value })
+                        setEditDraft({ ...editDraft, processName: event.target.value })
                       }
                     />
                   </td>
@@ -215,6 +303,15 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
                       value={editDraft.subProcessCode}
                       onChange={(event) =>
                         setEditDraft({ ...editDraft, subProcessCode: event.target.value })
+                      }
+                    />
+                  </td>
+                  <td>
+                    <input
+                      aria-label="Edit sub-process name"
+                      value={editDraft.subProcessName}
+                      onChange={(event) =>
+                        setEditDraft({ ...editDraft, subProcessName: event.target.value })
                       }
                     />
                   </td>
@@ -236,8 +333,9 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
                 <tr key={`${entry.processCode}|${entry.subProcessCode}`}>
                   <td className={ui.num}>{entry.seq}</td>
                   <td>{entry.processCode}</td>
-                  <td>{entry.label}</td>
+                  <td>{processNameOf(entry, entries) || '—'}</td>
                   <td>{entry.subProcessCode || '—'}</td>
+                  <td>{subProcessNameOf(entry) || '—'}</td>
                   <td>
                     <div className={styles.rowActions}>
                       <button
@@ -265,7 +363,7 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
                         className={ui.btn}
                         onClick={() => {
                           setEditIndex(index);
-                          setEditDraft(draftFrom(entry));
+                          setEditDraft(draftFrom(entry, entries));
                         }}
                       >
                         Edit

@@ -141,7 +141,7 @@ export function DailyStockTable({
   return (
     <div className={ui.dailyStockPanel}>
       <HeaderPortal>
-        <div className={ui.dailyStockHeaderInfo}>
+        <div className={ui.dailyStockHeaderInfo} data-daily-stock-info>
           <div className={ui.dailyStockHeaderStats} aria-label="Daily stock summary">
             <span>
               <Rows3 size={15} aria-hidden="true" />

@@ -1,6 +1,5 @@
 'use client';
 
-import { CalendarDays, Package, Rows3 } from 'lucide-react';
 import { useSearchRecord } from '@/lib/use-search-record';
 import type { PackageGroups, ProcessSeqEntry, StockLine } from '@/types/domain';
 import { DailyStockTable } from '@/components/stock/daily-stock-table';
@@ -57,7 +56,6 @@ export function DailyStockView({
   return (
     <section className={ui.dailyStockPage}>
       <FilterBar
-        inHeader={false}
         fields={[
           {
             name: 'date',
@@ -82,7 +80,7 @@ export function DailyStockView({
         ]}
       />
       <HeaderPortal>
-        <div className={ui.dailyStockHeaderActions}>
+        <div className={ui.dailyStockHeaderActions} data-daily-stock-actions>
           <ExportCsvButton rows={result.rows} filename={`daily-stock-${snapshot}.csv`} />
         </div>
       </HeaderPortal>

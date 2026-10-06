@@ -151,7 +151,7 @@ export function CalendarFilter({
                 endMonth={maxDate}
                 disabled={(date) => !available.has(toIsoDate(date))}
                 modifiers={{ hasStock: marked }}
-                modifiersClassNames={{ hasStock: styles.hasStock }}
+                modifiersClassNames={{ hasStock: styles.hasStock! }}
                 weekStartsOn={1}
                 showOutsideDays
                 onSelect={(date) => {

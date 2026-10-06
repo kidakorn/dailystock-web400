@@ -47,4 +47,16 @@ describe('process sequence master', () => {
     ]);
     expect(() => parseProcessSeq([{ seq: 1, label: '', processCode: 1, subProcessCode: '' }])).toThrow();
   });
+
+  it('derives explicit process and sub-process names from legacy labels', () => {
+    const parsed = parseProcessSeq([
+      { seq: 1, label: 'DICING', processCode: 100, subProcessCode: '' },
+      { seq: 2, label: 'POST CURE', processCode: 100, subProcessCode: '100010' },
+    ]);
+
+    expect(parsed.map(({ label, processName, subProcessName }) => [label, processName, subProcessName])).toEqual([
+      ['DICING', 'DICING', ''],
+      ['POST CURE', 'DICING', 'POST CURE'],
+    ]);
+  });
 });

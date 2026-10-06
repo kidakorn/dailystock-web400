@@ -7,14 +7,33 @@ export function normalizeProcessSeq(entries: readonly ProcessSeqEntry[]): Proces
 
 export function parseProcessSeq(value: unknown): ProcessSeqEntry[] {
   const parsed = processSeqSchema.array().parse(value).sort((a, b) => a.seq - b.seq);
-  const keys = new Set<string>();
+  const processNames = new Map<number, string>();
   for (const entry of parsed) {
+    if (!entry.subProcessCode) {
+      processNames.set(entry.processCode, entry.processName?.trim() || entry.label.trim());
+    }
+  }
+  const normalized = parsed.map((entry) => {
+    const processName =
+      entry.processName?.trim() ||
+      processNames.get(entry.processCode) ||
+      (!entry.subProcessCode ? entry.label.trim() : '');
+    const subProcessName = entry.subProcessName?.trim() || (entry.subProcessCode ? entry.label.trim() : '');
+    return {
+      ...entry,
+      label: entry.subProcessCode ? subProcessName : processName || entry.label.trim(),
+      processName,
+      subProcessName,
+    };
+  });
+  const keys = new Set<string>();
+  for (const entry of normalized) {
     if (!entry.label.trim()) throw new Error('Process label is required');
     const key = `${entry.processCode}|${entry.subProcessCode}`;
     if (keys.has(key)) throw new Error(`Duplicate process and sub-process: ${key}`);
     keys.add(key);
   }
-  return normalizeProcessSeq(parsed);
+  return normalizeProcessSeq(normalized);
 }
 
 export function addProcessSeq(

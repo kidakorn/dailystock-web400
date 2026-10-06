@@ -11,7 +11,7 @@ import {
 } from 'recharts';
 import { formatNumber } from '@/lib/format';
 
-const AXIS = { fontSize: 13, fill: 'var(--color-text-muted)' };
+const AXIS = { fontSize: 14, fill: 'var(--color-text-muted)' };
 export interface TrendDatum {
   name: string;
   stock: number;
@@ -24,7 +24,7 @@ export function TrendLineChart({ data }: { data: TrendDatum[] }) {
       <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
         <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 3" vertical={false} />
         <XAxis dataKey="name" tick={AXIS} />
-        <YAxis tick={AXIS} width={44} />
+        <YAxis tick={AXIS} width={80} tickFormatter={(v: number) => formatNumber(v)} />
         <Tooltip formatter={(v) => formatNumber(Number(v))} />
         <Legend />
         <Line

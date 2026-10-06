@@ -103,6 +103,13 @@
   .trendCard {
     grid-column: auto;
   }
+  .processCard,
+  .trendCard {
+    min-height: 320px;
+  }
+  .statusCard {
+    min-height: 334px;
+  }
   .trendCard {
     grid-column: 1;
   }
@@ -118,5 +125,44 @@
 @media (max-width: 480px) {
   .dashboardPage :global([data-cols='5']) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .dashboardPage {
+    gap: var(--space-2);
+  }
+  .grid {
+    gap: var(--space-2);
+  }
+  .processCard > div,
+  .trendCard > div {
+    min-height: 220px;
+  }
+  .processCard,
+  .trendCard {
+    min-height: 290px;
+  }
+  .statusBreakdown > div {
+    height: 200px;
+    min-height: 0;
+  }
+  .statusCard {
+    min-height: 0;
+  }
+}
+
+@media (max-height: 780px) and (min-width: 1101px) {
+  .dashboardPage {
+    height: auto;
+    min-height: 100%;
+  }
+  .grid {
+    flex: none;
+    grid-template-rows: auto auto;
+  }
+  .processCard,
+  .trendCard {
+    min-height: 320px;
+  }
+  .statusCard {
+    min-height: 334px;
   }
 }

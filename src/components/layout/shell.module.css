@@ -116,13 +116,36 @@
   flex: 1;
   min-width: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto auto minmax(0, 1fr) auto;
+}
+.navigationRow {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  min-width: 0;
+  background: var(--color-charcoal-800);
 }
 .tabs {
   display: flex;
   gap: 2px;
   padding: var(--space-1) var(--space-3) 0;
   background: var(--color-charcoal-800);
+}
+.navigationRow > .tabs {
+  flex: 1;
+  min-width: 0;
+}
+.navClock {
+  display: flex;
+  flex: none;
+  align-items: center;
+  margin-left: auto;
+  padding: 0 var(--space-4);
+  color: var(--color-text-inverse);
+  font-family: var(--font-family-data);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
 }
 .tab {
   display: flex;
@@ -178,6 +201,58 @@
   min-width: 0;
   max-width: 100%;
 }
+.headerTools > form {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+}
+.headerTools[data-daily-stock='true'] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+.headerTools[data-daily-stock='true'] > form {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  grid-auto-flow: row;
+  grid-auto-columns: auto;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  min-width: 0;
+  width: 100%;
+}
+.headerTools[data-daily-stock='true'] > [data-daily-stock-actions] {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: end;
+}
+.headerTools[data-daily-stock='true'] > [data-daily-stock-info] {
+  grid-column: 1;
+  grid-row: 2;
+}
+.headerTools[data-process-master='true'] {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: end;
+  gap: var(--space-2);
+}
+.headerTools[data-process-master='true'] > form {
+  grid-column: span 2;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-flow: row;
+  grid-auto-columns: auto;
+  width: 100%;
+  min-width: 0;
+}
+.headerTools[data-process-master='true'] > [data-process-master-actions] {
+  display: contents;
+}
+.headerTools[data-process-master='true'] > [data-process-master-actions] > button {
+  width: 100%;
+  height: 40px;
+  justify-content: center;
+  align-self: end;
+}
 .title {
   font-size: var(--fs-lg);
 }
@@ -188,16 +263,6 @@
 .header[data-daily-stock='true'] .subtitle {
   display: none;
 }
-.meta {
-  display: flex;
-  flex: none;
-  align-items: center;
-  gap: var(--space-4);
-  margin-left: auto;
-  font-family: var(--font-family-data);
-  font-size: var(--fs-sm);
-}
-
 /* The image is bundled (not served from /public) so the build adds the deployment prefix to its URL. Background art sits behind the content; cards are opaque so text stays readable. */
 .contentArea {
   position: relative;
@@ -240,7 +305,171 @@
   .tabs {
     display: none;
   }
+  .navigationRow {
+    min-height: 36px;
+  }
   .subtitle {
     display: none;
+  }
+  .sidebar,
+  .sidebar[data-collapsed='true'] {
+    width: var(--sidebar-width-collapsed);
+  }
+  .sidebar .hideWhenCollapsed {
+    display: none;
+  }
+  .top {
+    flex-direction: column;
+    padding: var(--space-3) 0;
+  }
+  .brand {
+    justify-content: center;
+  }
+  .toggle {
+    border: 0;
+  }
+  .link {
+    justify-content: center;
+    padding-inline: 0;
+  }
+  .header {
+    flex-wrap: wrap;
+  }
+  .headerMeta {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .headerTools {
+    display: grid;
+    flex: 1 1 100%;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .headerTools > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .headerTools > form {
+    width: 100%;
+  }
+  .headerTools[data-daily-stock='true'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .headerTools[data-daily-stock='true'] > [data-daily-stock-actions] {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: start;
+  }
+  .headerTools[data-daily-stock='true'] > [data-daily-stock-info] {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .headerTools[data-process-master='true'] {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .app {
+    display: block;
+    height: auto;
+    min-height: 100dvh;
+    padding-bottom: calc(56px + env(safe-area-inset-bottom));
+  }
+  .sidebar,
+  .sidebar[data-collapsed='true'] {
+    position: fixed;
+    z-index: 20;
+    inset: auto 0 0;
+    width: 100%;
+    height: calc(56px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    flex-direction: row;
+    background: var(--color-charcoal-900);
+  }
+  .top,
+  .tagline {
+    display: none;
+  }
+  .nav {
+    display: grid;
+    flex: 1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-content: stretch;
+    align-items: center;
+    gap: 0;
+    padding: 0 var(--space-2);
+  }
+  .link,
+  .sidebar[data-collapsed='true'] .link {
+    display: grid;
+    min-width: 0;
+    height: 100%;
+    place-items: center;
+    padding: 0;
+  }
+  .main {
+    display: flex;
+    min-height: 100dvh;
+    flex-direction: column;
+  }
+  .header {
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-3);
+  }
+  .headerTitle,
+  .headerMeta {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+  .headerMeta {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .headerTools {
+    flex: 1 1 100%;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .headerTools > form {
+    width: 100%;
+    flex: none;
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+    touch-action: auto;
+  }
+  .headerTools[data-daily-stock='true'] > form {
+    grid-template-columns: repeat(5, minmax(120px, 1fr));
+    overflow-x: auto;
+    overflow-y: hidden;
+    touch-action: pan-x;
+  }
+  .headerTools[data-process-master='true'] {
+    grid-template-columns: repeat(6, minmax(120px, 1fr));
+    overflow-x: auto;
+    overflow-y: hidden;
+    touch-action: pan-x;
+  }
+  .meta {
+    margin-left: auto;
+    font-size: var(--fs-xs);
+  }
+  .contentArea {
+    min-height: 0;
+  }
+  .content {
+    flex: none;
+    overflow: visible;
+    padding: var(--space-3);
+  }
+  .statusItems {
+    display: none;
+  }
+  .status {
+    min-height: 28px;
   }
 }

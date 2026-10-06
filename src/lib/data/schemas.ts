@@ -93,6 +93,8 @@ export const processSeqSchema = z.object({
   label: z.string(),
   processCode: z.number().int(),
   subProcessCode: z.string(),
+  processName: z.string().optional(),
+  subProcessName: z.string().optional(),
 });
 
 /** Package names per group, e.g. { IC2: [...], IC3: [...] }. Edit data/package-groups.json to move a package. */

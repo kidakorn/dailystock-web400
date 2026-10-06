@@ -24,13 +24,15 @@
 
   /* Role-based font tokens: heading, data (tables and numbers), UI (menu, button, filter). */
   --font-family-heading: var(--font-heading), 'Segoe UI', sans-serif;
+    --font-family-heading: var(--font-ui), 'Segoe UI', sans-serif;
   --font-family-data: var(--font-data), 'Consolas', monospace;
   --font-family-ui: var(--font-ui), 'Segoe UI', sans-serif;
 
   /* Rajdhani runs small for its nominal size, so the base is a touch larger than before. */
   --fs-xs: 0.75rem;
-  --fs-sm: 0.8125rem;
-  --fs-md: 0.875rem;
+  --fs-xs: 0.8125rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 0.9375rem;
   --fs-lg: 1.25rem;
   --fs-kpi: 2rem;
 

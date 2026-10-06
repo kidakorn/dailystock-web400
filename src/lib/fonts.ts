@@ -1,4 +1,4 @@
-import { IBM_Plex_Mono, IBM_Plex_Sans_Thai, Oxanium } from 'next/font/google';
+import { IBM_Plex_Mono, IBM_Plex_Sans_Thai } from 'next/font/google';
 
 /*
  * Each font is exposed as a CSS variable instead of a className so that CSS
@@ -6,12 +6,6 @@ import { IBM_Plex_Mono, IBM_Plex_Sans_Thai, Oxanium } from 'next/font/google';
  * every component importing font objects. next/font downloads and self-hosts
  * the files at build time, so users' browsers never call Google.
  */
-export const oxanium = Oxanium({
-  subsets: ['latin'],
-  weight: '600',
-  variable: '--font-heading',
-  display: 'swap',
-});
 export const plexMono = IBM_Plex_Mono({
   subsets: ['latin'],
   weight: ['400', '500', '600'],

@@ -11,7 +11,7 @@ import {
 } from 'recharts';
 import { formatNumber } from '@/lib/format';
 
-const AXIS = { fontSize: 13, fill: 'var(--color-text-muted)' };
+const AXIS = { fontSize: 14, fill: 'var(--color-text-muted)' };
 export interface BarDatum {
   name: string;
   stock: number;
@@ -27,7 +27,7 @@ const X_AXIS_TICK = (props: any) => {
     <g transform={`translate(${x},${y})`}>
       <text
         dy={10}
-        fontSize={11}
+        fontSize={12}
         fill="var(--color-text-muted)"
         textAnchor="end"
         transform="rotate(-45)"
@@ -44,8 +44,8 @@ export function StockBarChart({ data }: { data: BarDatum[] }) {
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 12 }}>
         <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 3" vertical={false} />
-        <XAxis dataKey="name" tick={X_AXIS_TICK} interval={0} height={74} />
-        <YAxis tick={AXIS} width={56} tickFormatter={(v: number) => formatNumber(v)} />
+        <XAxis dataKey="name" tick={X_AXIS_TICK} interval="preserveStartEnd" height={74} />
+        <YAxis tick={AXIS} width={76} tickFormatter={(v: number) => formatNumber(v)} />
         <Tooltip formatter={(v) => formatNumber(Number(v))} />
         <Legend
           wrapperStyle={{

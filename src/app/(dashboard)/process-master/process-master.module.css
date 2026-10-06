@@ -12,6 +12,54 @@
   align-items: center;
   gap: var(--space-2);
 }
+.addDialog {
+  width: min(920px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+.addDialog::backdrop {
+  background: rgb(31 33 36 / 55%);
+}
+.dialogHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.dialogHeader h2 {
+  font-size: var(--fs-lg);
+}
+.closeDialog {
+  display: grid;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+.dialogFields {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: end;
+  gap: var(--space-3);
+}
+.dialogFields input {
+  width: 100%;
+  height: 40px;
+  min-width: 0;
+}
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
 .exportButton {
   color: var(--color-primary);
   background: var(--tint-info);
@@ -31,23 +79,6 @@
 .fileInput {
   display: none;
 }
-.addForm {
-  flex: none;
-  margin-bottom: var(--space-3);
-  padding: var(--space-3);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-}
-.addForm legend {
-  padding: 0 var(--space-2);
-  font-weight: 600;
-}
-.addForm > form {
-  display: grid;
-  grid-template-columns: minmax(120px, 0.7fr) minmax(220px, 1.5fr) minmax(150px, 1fr) auto;
-  align-items: end;
-  gap: var(--space-3);
-}
 .addForm input,
 .tableWrap input {
   min-width: 100px;
@@ -56,8 +87,16 @@
   background: var(--color-surface);
   color: var(--color-text);
 }
-.labelField {
-  min-width: 220px;
+.addForm input {
+  width: 100%;
+  height: 40px;
+  min-width: 0;
+}
+.addForm > form > button {
+  grid-column: 4;
+  width: 100%;
+  height: 40px;
+  justify-content: center;
 }
 .error {
   margin: 0 0 var(--space-3);
@@ -68,6 +107,8 @@
   min-height: 0;
   overflow: auto;
   padding: 0;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
 }
 .tableWrap th {
   position: sticky;
@@ -77,8 +118,13 @@
 .tableWrap td:last-child {
   min-width: 235px;
 }
-@media (max-width: 700px) {
-  .addForm > form {
+@media (max-width: 900px) {
+  .dialogFields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .dialogFields {
     grid-template-columns: 1fr;
   }
   .headerActions {
