@@ -44,7 +44,7 @@
   place-items: center;
   width: 32px;
   height: 32px;
-  background: var(--color-danger);
+  /* background: var(--color-danger); */
   font-family: var(--font-family-heading);
 }
 .brandName {
