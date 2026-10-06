@@ -44,7 +44,7 @@
   place-items: center;
   width: 32px;
   height: 32px;
-  /* background: var(--color-danger); */
+  background: var(--color-danger);
   font-family: var(--font-family-heading);
 }
 .brandName {
@@ -183,7 +183,7 @@
   background: currentColor;
 }
 
-/* Background art sits behind the content; cards are opaque so text stays readable. */
+/* The image is bundled (not served from /public) so the build adds the deployment prefix to its URL. Background art sits behind the content; cards are opaque so text stays readable. */
 .contentArea {
   position: relative;
   min-height: 0;
@@ -194,9 +194,7 @@
   flex: 1;
   overflow: auto;
   padding: var(--space-4);
-  background: var(--color-bg) url('/images/warehouse-bg.svg') center top / 480px 320px repeat;
-  display: flex;
-  flex-direction: column;
+  background: var(--color-bg) url('../../assets/warehouse-bg.svg') center top / 480px 320px repeat;
 }
 
 .status {

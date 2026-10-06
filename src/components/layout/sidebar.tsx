@@ -1,23 +1,37 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import { NAV_ITEMS, isActive } from '@/lib/nav';
 import { NAV_ICONS } from './nav-icons';
 import styles from './shell.module.css';
 
-export function Sidebar({ initialCollapsed }: { initialCollapsed: boolean }) {
-  const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(initialCollapsed);
+/*
+ * The collapsed/expanded choice lives in a cookie that the BROWSER reads. A statically exported page has no server
+ * to read it per request, so the first paint is always "expanded" and a stored "collapsed" applies right after
+ * hydration. useSyncExternalStore gives exactly that: the server snapshot is the default, the client snapshot is the cookie.
+ */
+const COOKIE = 'sidebar';
+// Scoped to the app's base path so other apps on the same host cannot read or overwrite it.
+const COOKIE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '/';
 
-  const toggle = () => {
-    const next = !collapsed;
-    setCollapsed(next);
-    // A cookie, not localStorage: the server reads it, so the first paint already has the right width.
-    document.cookie = `sidebar=${next ? 'collapsed' : 'expanded'}; path=/; max-age=31536000; samesite=lax`;
-  };
+const listeners = new Set<() => void>();
+const subscribe = (listener: () => void) => {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+};
+const readCollapsed = (): boolean => document.cookie.split('; ').includes(`${COOKIE}=collapsed`);
+const defaultCollapsed = (): boolean => false;
+
+function writeCollapsed(collapsed: boolean) {
+  document.cookie = `${COOKIE}=${collapsed ? 'collapsed' : 'expanded'}; path=${COOKIE_PATH}; max-age=31536000; samesite=lax`;
+  listeners.forEach((listener) => listener());
+}
+
+export function Sidebar() {
+  const pathname = usePathname();
+  const collapsed = useSyncExternalStore(subscribe, readCollapsed, defaultCollapsed);
   const label = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
   const ToggleIcon = collapsed ? PanelLeftOpen : PanelLeftClose;
 
@@ -26,23 +40,18 @@ export function Sidebar({ initialCollapsed }: { initialCollapsed: boolean }) {
       {/* The toggle sits at the top beside the logo and is never hidden by a breakpoint: it is the user's control, not a layout detail. */}
       <div className={styles.top}>
         <div className={styles.brand}>
-          <img
-            src="/favicon.ico"
-            alt=""
-            aria-hidden="true"
-            className={styles.brandMark}
-            width={24}
-            height={24}
-          />
+          <span className={styles.brandMark} aria-hidden="true">
+            IT
+          </span>
           <div className={styles.hideWhenCollapsed}>
-            <div className={styles.brandName}>DAILY STOCK</div>
+            <div className={styles.brandName}>IT WEB400</div>
             <div className={styles.brandSub}>Enterprise Monitoring</div>
           </div>
         </div>
         <button
           type="button"
           className={styles.toggle}
-          onClick={toggle}
+          onClick={() => writeCollapsed(!collapsed)}
           aria-expanded={!collapsed}
           aria-label={label}
           title={label}

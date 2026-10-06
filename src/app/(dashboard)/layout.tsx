@@ -6,10 +6,11 @@ import styles from '@/components/layout/shell.module.css';
 import { StatusBar } from '@/components/layout/status-bar';
 import { TopTabs } from '@/components/layout/top-tabs';
 
-export default async function DashboardLayout({ children }: { children: ReactNode }) {
+// No cookies() here: a statically exported layout cannot read request data. The sidebar restores its saved state in the browser.
+export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <div className={styles.app}>
-      <Sidebar initialCollapsed={false} />
+      <Sidebar />
       <div className={styles.main}>
         <TopTabs />
         <Header />

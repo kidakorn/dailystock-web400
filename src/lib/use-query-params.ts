@@ -34,6 +34,10 @@ export function useQueryParams() {
     },
     [pathname, router, search],
   );
-  const refresh = useCallback(() => start(() => router.refresh()), [router]);
+  // A static export has no server to re-ask, so Refresh reloads the page (and so picks up a freshly deployed build).
+  const refresh = useCallback(() => {
+    beginLoading();
+    window.location.reload();
+  }, []);
   return { get, set, refresh, pending };
 }

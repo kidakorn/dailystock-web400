@@ -13,22 +13,26 @@ vi.mock('next/link', () => ({
   ),
 }));
 
+const clearCookie = () => {
+  document.cookie = 'sidebar=; max-age=0; path=/';
+};
 afterEach(() => {
   cleanup();
-  document.cookie = 'sidebar=; max-age=0; path=/';
+  clearCookie();
 });
 
 describe('Sidebar', () => {
   it('always renders a toggle button, in both states', () => {
-    render(<Sidebar initialCollapsed={false} />);
+    render(<Sidebar />);
     expect(screen.getByRole('button', { name: 'Collapse sidebar' })).toBeTruthy();
     cleanup();
-    render(<Sidebar initialCollapsed />);
+    document.cookie = 'sidebar=collapsed; path=/';
+    render(<Sidebar />);
     expect(screen.getByRole('button', { name: 'Expand sidebar' })).toBeTruthy();
   });
 
-  it('collapses and expands, and remembers the choice in a cookie', () => {
-    render(<Sidebar initialCollapsed={false} />);
+  it('starts expanded without a cookie, collapses and expands, and remembers the choice in a cookie', () => {
+    render(<Sidebar />);
     const aside = screen.getByRole('complementary');
     expect(aside.getAttribute('data-collapsed')).toBe('false');
 

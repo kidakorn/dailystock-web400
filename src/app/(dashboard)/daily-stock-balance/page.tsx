@@ -1,92 +1,22 @@
 import type { Metadata } from 'next';
-import { DailyStockTable } from '@/components/stock/daily-stock-table';
-import { ExportCsvButton } from '@/components/stock/export-csv-button';
-import { FilterBar } from '@/components/ui/filter-bar';
-import { KpiCard } from '@/components/ui/kpi-card';
-import ui from '@/components/ui/ui.module.css';
+import { Suspense } from 'react';
+import { PageLoading } from '@/components/ui/page-loading';
 import { getPackageGroups, getProcessSeq, getStockLines } from '@/lib/data/repository';
-import { opts, uniq } from '@/lib/filters';
-import { formatIsoDate } from '@/lib/format';
-// import { param, pick, type SearchParams } from '@/lib/query';
-import { buildDailyStock } from '@/lib/summary/daily-stock';
-import { OTHER_GROUP, groupOf, listSnapshots } from '@/lib/summary/packages';
+import { DailyStockView } from './daily-stock-view';
 
 export const metadata: Metadata = { title: 'Daily Stock Balance' };
 
+// Runs once, at build time. The query string (filters, tab, sort, page) is read in the browser by the view,
+// which keeps this page statically exportable. Suspense is required around anything that calls useSearchParams.
 export default async function DailyStockBalancePage() {
   const [lines, seq, groups] = await Promise.all([
     getStockLines(),
     getProcessSeq(),
     getPackageGroups(),
   ]);
-
-  const snapshots = listSnapshots(lines);
-
-  const latest = snapshots[snapshots.length - 1] ?? '';
-
-  const snapshot = latest;
-
-  const groupNames = [...Object.keys(groups), OTHER_GROUP];
-
-  const group = '';
-
-  const packageNames = uniq(
-    lines
-      .filter((l) => l.snapshot === snapshot)
-      .map((l) => l.packageName),
-  );
-
-  const packageName = '';
-
-  const hideEmpty = false;
-
-  const result = buildDailyStock(lines, seq, groups, {
-    snapshot,
-    group: group || undefined,
-    packageName: packageName || undefined,
-    hideEmpty,
-  });
-  const { totals } = result;
-
   return (
-    <>
-      <FilterBar
-        fields={[
-          {
-            name: 'date',
-            label: 'Date',
-            type: 'select',
-            default: latest,
-            options: [...snapshots].reverse().map((s) => ({ value: s, label: formatIsoDate(s) })),
-          },
-          { name: 'group', label: 'Group', type: 'select', options: opts(groupNames) },
-          { name: 'package', label: 'Package', type: 'select', options: opts(packageNames) },
-          {
-            name: 'rows',
-            label: 'Lines',
-            type: 'select',
-            default: 'all',
-            options: [
-              { value: 'all', label: 'All lines' },
-              { value: 'active', label: 'Hide empty lines' },
-            ],
-          },
-        ]}
-      />
-      <section className={ui.kpiGrid} data-cols="4" aria-label="Key figures">
-        <KpiCard label="Stock" value={totals.stock} tone="primary" />
-        <KpiCard label="Actual" value={totals.actual} tone="success" />
-        <KpiCard label="Pending" value={totals.pending} tone="warning" />
-        <KpiCard label="Difference" value={totals.difference} tone="danger" />
-      </section>
-      <div className={ui.toolbar}>
-        <p className={ui.muted}>
-          {result.rows.length} process lines, {result.packageCount} packages,{' '}
-          {formatIsoDate(snapshot)}
-        </p>
-        <ExportCsvButton rows={result.rows} filename={`daily-stock-${snapshot}.csv`} />
-      </div>
-      <DailyStockTable result={result} />
-    </>
+    <Suspense fallback={<PageLoading />}>
+      <DailyStockView lines={lines} seq={seq} groups={groups} />
+    </Suspense>
   );
 }
