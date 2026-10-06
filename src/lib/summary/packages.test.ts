@@ -5,6 +5,8 @@ import type { StockLine } from '@/types/domain';
 import {
   filterPackageTab,
   filterSummaries,
+  listActiveSnapshots,
+  listActiveStockSnapshots,
   listSnapshots,
   sortSummaries,
   summarizePackages,
@@ -136,6 +138,15 @@ describe('listSnapshots, filterSummaries, sortSummaries', () => {
     expect(listStockSnapshots(lines)).toEqual(['2026-05-05']);
     expect(resolveSnapshot(['2026-04-01', '2026-05-05'], '2026-05-03')).toBe('2026-04-01');
     expect(resolveSnapshot(['2026-04-01', '2026-05-05'], '2025-01-01')).toBe('2026-04-01');
+  });
+  it('lists default dates and stock markers from normal and new packages only', () => {
+    const withCancelledOnlyDate = [
+      ...lines,
+      line({ snapshot: '2026-05-07', packageKind: '2', stock: 20 }),
+    ];
+    expect(listSnapshots(withCancelledOnlyDate).at(-1)).toBe('2026-05-07');
+    expect(listActiveSnapshots(withCancelledOnlyDate).at(-1)).toBe('2026-05-05');
+    expect(listActiveStockSnapshots(withCancelledOnlyDate)).toEqual(['2026-05-05']);
   });
   it('filters by group, status and text', () => {
     expect(filterSummaries(list, { group: 'IC3' }).map((p) => p.name)).toEqual(['SSOP-8']);

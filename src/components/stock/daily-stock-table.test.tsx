@@ -1,9 +1,17 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { DailyStockResult } from '@/lib/summary/daily-stock';
 import { DailyStockTable } from './daily-stock-table';
 
-afterEach(cleanup);
+beforeEach(() => {
+  const headerTools = document.createElement('div');
+  headerTools.id = 'header-tools';
+  document.body.append(headerTools);
+});
+afterEach(() => {
+  cleanup();
+  document.getElementById('header-tools')?.remove();
+});
 const base = { balance: 0, balDay: 0, stock: 0, actual: 0, pending: 0, difference: 0 };
 const result: DailyStockResult = {
   packageCount: 2,
@@ -88,6 +96,7 @@ describe('DailyStockTable', () => {
   it('collapses grouped process rows and can collapse or expand all groups', () => {
     render(<DailyStockTable result={groupedResult} />);
     expect(screen.getByText('AFTER WIRE BOND')).toBeTruthy();
+    expect(document.getElementById('header-tools')?.contains(screen.getByRole('button', { name: 'Collapse all' }))).toBe(true);
     expect(screen.getByRole('button', { name: 'Toggle 101' }).getAttribute('aria-expanded')).toBe(
       'true',
     );
@@ -114,6 +123,7 @@ describe('DailyStockTable', () => {
     expect(screen.getByText('PKG-9')).toBeTruthy();
     expect(screen.queryByText('PKG-1')).toBeNull();
     expect(screen.getByText('Page 2 of 2')).toBeTruthy();
+    expect(document.getElementById('header-tools')?.textContent).toContain('Showing 1 of 9 packages');
   });
 
   it('places each package subtotal after its process rows', () => {

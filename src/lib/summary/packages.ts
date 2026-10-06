@@ -47,6 +47,10 @@ export const listSnapshots = (lines: readonly StockLine[]): string[] =>
   [...new Set(lines.map((l) => l.snapshot))].sort();
 export const listStockSnapshots = (lines: readonly StockLine[]): string[] =>
   [...new Set(lines.filter((line) => line.stock > 0).map((line) => line.snapshot))].sort();
+export const listActiveSnapshots = (lines: readonly StockLine[]): string[] =>
+  listSnapshots(lines.filter((line) => line.packageKind !== '2'));
+export const listActiveStockSnapshots = (lines: readonly StockLine[]): string[] =>
+  listStockSnapshots(lines.filter((line) => line.packageKind !== '2'));
 
 export function resolveSnapshot(
   snapshots: readonly string[],

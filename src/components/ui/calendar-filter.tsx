@@ -162,7 +162,7 @@ export function CalendarFilter({
                 }}
               />
               <div className={styles.legend}>
-                <i aria-hidden="true" /> Days with stock
+                <i aria-hidden="true" /> Normal/New package stock
               </div>
             </div>,
             document.body,

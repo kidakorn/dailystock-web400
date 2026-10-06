@@ -39,12 +39,17 @@ function SearchInput({ name }: { name: string }) {
   );
 }
 
-export function FilterBar({ fields }: { fields: FilterField[] }) {
+export function FilterBar({
+  fields,
+  inHeader = true,
+}: {
+  fields: FilterField[];
+  inHeader?: boolean;
+}) {
   const { get, set, refresh, pending } = useQueryParams();
-  return (
-    <HeaderPortal>
+  const form = (
       <form
-        className={`${styles.toolbar} ${styles.filterBar}`}
+        className={`${styles.toolbar} ${styles.filterBar} ${inHeader ? '' : styles.contentFilterBar}`}
         onSubmit={(e) => e.preventDefault()}
         aria-label="Filters"
       >
@@ -87,6 +92,6 @@ export function FilterBar({ fields }: { fields: FilterField[] }) {
           Refresh
         </button>
       </form>
-    </HeaderPortal>
   );
+  return inHeader ? <HeaderPortal>{form}</HeaderPortal> : form;
 }

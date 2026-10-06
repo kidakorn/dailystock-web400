@@ -144,6 +144,17 @@
 .filterBar .field input {
   min-width: 130px;
 }
+.contentFilterBar {
+  width: 100%;
+  flex: none;
+  flex-wrap: wrap;
+  overflow: visible;
+  margin-bottom: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  touch-action: auto;
+}
 .field {
   display: grid;
   gap: var(--space-1);
@@ -209,12 +220,58 @@
   flex: 1;
   height: 100%;
   min-height: 0;
+  min-width: 0;
   flex-direction: column;
+}
+.dailyStockHeaderInfo {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-width: 0;
+  order: 1;
+}
+.dailyStockHeaderActions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  order: 2;
+}
+.dailyStockHeaderStats,
+.dailyStockHeaderGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  white-space: nowrap;
+}
+.dailyStockHeaderStats {
+  flex: 1 1 auto;
+  justify-content: space-around;
+  gap: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+}
+.dailyStockHeaderStats span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.dailyStockHeaderStats span + span {
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--color-border);
+}
+.dailyStockHeaderGroup {
+  flex: none;
+  gap: var(--space-2);
+  margin-left: auto;
 }
 .dailyStockPanel {
   display: flex;
   flex: 1;
   min-height: 0;
+  min-width: 0;
   flex-direction: column;
 }
 .dailyStockPager {
@@ -226,6 +283,20 @@
   padding: var(--space-2);
   border: 1px solid var(--color-border);
   background: var(--color-surface);
+}
+@media (max-width: 1200px) {
+  .dailyStockHeaderInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+  .dailyStockHeaderStats {
+    flex: none;
+    justify-content: flex-start;
+  }
+  .dailyStockHeaderGroup {
+    margin-left: 0;
+  }
 }
 .measureLegend {
   display: flex;
@@ -285,9 +356,28 @@
   top: 0;
   z-index: 1;
 }
+.dailyStockTableWrap .table {
+  min-width: 980px;
+}
+.dailyStockTableWrap .table tbody tr:hover td {
+  filter: brightness(0.97);
+}
+.table .processColumn {
+  min-width: 180px;
+}
+.table .subProcessColumn {
+  min-width: 220px;
+}
+.table tbody tr:nth-child(even):not(.grp):not(.packageTotal) td:not(.measureCell) {
+  background-color: var(--color-bg);
+}
+.dailyStockTableWrap .table td.num {
+  white-space: nowrap;
+}
 .grp td {
   background: var(--color-bg);
   font-weight: 600;
+  border-top: 2px solid var(--color-charcoal-700);
 }
 .indent {
   padding-left: var(--space-5) !important;

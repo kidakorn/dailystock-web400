@@ -21,7 +21,7 @@ describe('CalendarFilter', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Choose Snapshot' }));
     const dialog = screen.getByRole('dialog', { name: 'Snapshot calendar' });
     expect(dialog.querySelector(`.${styles.hasStock}`)).toBeTruthy();
-    expect(screen.getByText('Days with stock')).toBeTruthy();
+    expect(screen.getByText('Normal/New package stock')).toBeTruthy();
 
     const availableDate = screen
       .getAllByRole('button')

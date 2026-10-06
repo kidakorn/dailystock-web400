@@ -2,6 +2,8 @@
 
 import { Fragment, useState } from 'react';
 import Link from 'next/link';
+import { CalendarDays, Package, Rows3 } from 'lucide-react';
+import { HeaderPortal } from '@/components/layout/header-portal';
 import ui from '@/components/ui/ui.module.css';
 import { formatDecimal3, formatNumber } from '@/lib/format';
 import { differenceOf } from '@/lib/summary/daily-stock';
@@ -97,9 +99,11 @@ function Row({ row }: { row: DailyStockRow }) {
 export function DailyStockTable({
   result,
   searchParams = {},
+  summary = { processLines: 0, packages: 0, date: '' },
 }: {
   result: DailyStockResult;
   searchParams?: SearchParams;
+  summary?: { processLines: number; packages: number; date: string };
 }) {
   const { rows, totals } = result;
   const packageView = Boolean(result.packages?.length);
@@ -136,26 +140,46 @@ export function DailyStockTable({
 
   return (
     <div className={ui.dailyStockPanel}>
-      {hasGroups ? (
-        <div className={ui.toolbar}>
-          <button
-            type="button"
-            className={ui.btn}
-            onClick={() =>
-              setCollapsed(
-                allCollapsed ? new Set() : new Set(expandableGroups.map((group) => group.key)),
-              )
-            }
-          >
-            {allCollapsed ? 'Expand all' : 'Collapse all'}
-          </button>
-          {packageView ? (
-            <span className={ui.muted}>
-              Showing {visibleGroups.length} of {groups.length} packages
+      <HeaderPortal>
+        <div className={ui.dailyStockHeaderInfo}>
+          <div className={ui.dailyStockHeaderStats} aria-label="Daily stock summary">
+            <span>
+              <Rows3 size={15} aria-hidden="true" />
+              {summary.processLines} process lines
             </span>
+            <span>
+              <Package size={15} aria-hidden="true" />
+              {summary.packages} packages
+            </span>
+            <span>
+              <CalendarDays size={15} aria-hidden="true" />
+              {summary.date}
+            </span>
+          </div>
+          {packageView || expandableGroups.length > 0 ? (
+            <div className={ui.dailyStockHeaderGroup}>
+              {packageView ? (
+                <span className={ui.muted}>
+                  Showing {visibleGroups.length} of {groups.length} packages
+                </span>
+              ) : null}
+              {expandableGroups.length > 0 ? (
+                <button
+                  type="button"
+                  className={ui.btn}
+                  onClick={() =>
+                    setCollapsed(
+                      allCollapsed ? new Set() : new Set(expandableGroups.map((group) => group.key)),
+                    )
+                  }
+                >
+                  {allCollapsed ? 'Expand all' : 'Collapse all'}
+                </button>
+              ) : null}
+            </div>
           ) : null}
         </div>
-      ) : null}
+      </HeaderPortal>
       <div className={ui.measureLegend} aria-label="Table color legend">
         <span>
           <i data-tone="info" /> Balance / Bal per day
@@ -177,8 +201,8 @@ export function DailyStockTable({
         <table className={ui.table} aria-label="Daily stock balance by process">
           <thead>
             <tr>
-              <th>Process name</th>
-              <th>Sub-process name</th>
+              <th className={ui.processColumn}>Process name</th>
+              <th className={ui.subProcessColumn}>Sub-process name</th>
               {MEASURE_COLUMNS.map(([key, label]) => (
                 <th key={key} className={ui.num}>
                   {label}

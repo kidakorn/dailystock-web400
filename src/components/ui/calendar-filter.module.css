@@ -64,8 +64,9 @@
   position: absolute;
   bottom: 1px;
   left: 50%;
-  width: 5px;
-  height: 5px;
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--color-surface);
   border-radius: 50%;
   background: var(--color-success);
   content: '';
@@ -85,8 +86,9 @@
   font-size: var(--fs-xs);
 }
 .legend i {
-  width: 7px;
-  height: 7px;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--color-surface);
   border-radius: 50%;
   background: var(--color-success);
 }

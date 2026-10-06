@@ -5,9 +5,13 @@ import { Clock } from './clock';
 import styles from './shell.module.css';
 
 export function Header() {
-  const item = activeItem(usePathname());
+  const pathname = usePathname();
+  const item = activeItem(pathname);
   return (
-    <header className={styles.header}>
+    <header
+      className={styles.header}
+      data-daily-stock={pathname.startsWith('/daily-stock-balance') ? 'true' : undefined}
+    >
       <div className={styles.headerTitle}>
         <h1 className={styles.title}>{item.title}</h1>
         <p className={styles.subtitle}>{item.subtitle}</p>

@@ -1,11 +1,12 @@
 'use client';
 
+import { CalendarDays, Package, Rows3 } from 'lucide-react';
 import { useSearchRecord } from '@/lib/use-search-record';
 import type { PackageGroups, ProcessSeqEntry, StockLine } from '@/types/domain';
 import { DailyStockTable } from '@/components/stock/daily-stock-table';
 import { ExportCsvButton } from '@/components/stock/export-csv-button';
+import { HeaderPortal } from '@/components/layout/header-portal';
 import { FilterBar } from '@/components/ui/filter-bar';
-import { KpiCard } from '@/components/ui/kpi-card';
 import ui from '@/components/ui/ui.module.css';
 import { opts, uniq } from '@/lib/filters';
 import { formatIsoDate } from '@/lib/format';
@@ -14,8 +15,9 @@ import { buildDailyStock } from '@/lib/summary/daily-stock';
 import {
   OTHER_GROUP,
   groupOf,
+  listActiveSnapshots,
+  listActiveStockSnapshots,
   listSnapshots,
-  listStockSnapshots,
   resolveSnapshot,
 } from '@/lib/summary/packages';
 import { useProcessSeq } from '@/lib/use-process-seq';
@@ -33,9 +35,10 @@ export function DailyStockView({
   const activeSeq = useProcessSeq(seq);
 
   const snapshots = listSnapshots(lines);
-  const latest = snapshots[snapshots.length - 1] ?? '';
+  const activeSnapshots = listActiveSnapshots(lines);
+  const latest = activeSnapshots.at(-1) ?? snapshots.at(-1) ?? '';
   const snapshot = resolveSnapshot(snapshots, param(sp, 'date'), latest);
-  const stockDates = listStockSnapshots(lines);
+  const stockDates = listActiveStockSnapshots(lines);
   const groupNames = [...Object.keys(groups), OTHER_GROUP];
   const group = pick(param(sp, 'group'), groupNames, '');
   // The package list follows the chosen group, so it can never offer a package the group filter would hide.
@@ -51,11 +54,10 @@ export function DailyStockView({
     packageName: packageName || undefined,
     hideEmpty,
   });
-  const { totals } = result;
-
   return (
     <section className={ui.dailyStockPage}>
       <FilterBar
+        inHeader={false}
         fields={[
           {
             name: 'date',
@@ -79,20 +81,20 @@ export function DailyStockView({
           },
         ]}
       />
-      <section className={ui.kpiGrid} data-cols="4" aria-label="Key figures">
-        <KpiCard label="Stock" value={totals.stock} tone="primary" />
-        <KpiCard label="Actual" value={totals.actual} tone="success" />
-        <KpiCard label="Pending" value={totals.pending} tone="warning" />
-        <KpiCard label="Difference" value={totals.difference} tone="danger" />
-      </section>
-      <div className={ui.toolbar}>
-        <p className={ui.muted}>
-          {result.rows.length} process lines, {result.packageCount} packages,{' '}
-          {formatIsoDate(snapshot)}
-        </p>
-        <ExportCsvButton rows={result.rows} filename={`daily-stock-${snapshot}.csv`} />
-      </div>
-      <DailyStockTable result={result} searchParams={sp} />
+      <HeaderPortal>
+        <div className={ui.dailyStockHeaderActions}>
+          <ExportCsvButton rows={result.rows} filename={`daily-stock-${snapshot}.csv`} />
+        </div>
+      </HeaderPortal>
+      <DailyStockTable
+        result={result}
+        searchParams={sp}
+        summary={{
+          processLines: result.rows.length,
+          packages: result.packageCount,
+          date: formatIsoDate(snapshot),
+        }}
+      />
     </section>
   );
 }
