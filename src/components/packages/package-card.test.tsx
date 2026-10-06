@@ -30,9 +30,11 @@ describe('PackageCard', () => {
   it('shows a status badge only for new and cancelled packages', () => {
     render(<PackageCard item={{ ...item, kind: 'new' }} previousLabel={null} />);
     expect(screen.getByText('New')).toBeTruthy();
+    expect(screen.getByText('New').closest('span')?.querySelector('svg')).toBeTruthy();
     cleanup();
     render(<PackageCard item={{ ...item, kind: 'cancelled' }} previousLabel={null} />);
     expect(screen.getByText('Cancelled')).toBeTruthy();
+    expect(screen.getByText('Cancelled').closest('span')?.querySelector('svg')).toBeTruthy();
   });
 
   it('says so when there is nothing to compare with, and never shows -0.00%', () => {

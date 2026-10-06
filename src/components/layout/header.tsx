@@ -8,16 +8,15 @@ export function Header() {
   const item = activeItem(usePathname());
   return (
     <header className={styles.header}>
-      <div>
+      <div className={styles.headerTitle}>
         <h1 className={styles.title}>{item.title}</h1>
         <p className={styles.subtitle}>{item.subtitle}</p>
       </div>
-      <div className={styles.meta}>
-        <Clock />
-        <span className={styles.live}>
-          <span className={styles.liveDot} aria-hidden="true" />
-          Live
-        </span>
+      <div className={styles.headerMeta}>
+        <div id="header-tools" className={styles.headerTools} />
+        <div className={styles.meta}>
+          <Clock />
+        </div>
       </div>
     </header>
   );

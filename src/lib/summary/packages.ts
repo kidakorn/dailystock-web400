@@ -13,6 +13,7 @@ export const INCLUDE_SUB_PROCESS = true;
 export const OTHER_GROUP = 'Other';
 
 export type PackageKind = 'normal' | 'new' | 'cancelled';
+export type PackageTab = PackageKind | 'active' | 'all';
 export type SortKey = 'stock' | 'name' | 'code' | 'processes';
 
 export interface PackageSummary {
@@ -44,6 +45,17 @@ const SEVERITY: Record<PackageKind, number> = { normal: 0, new: 1, cancelled: 2 
 
 export const listSnapshots = (lines: readonly StockLine[]): string[] =>
   [...new Set(lines.map((l) => l.snapshot))].sort();
+export const listStockSnapshots = (lines: readonly StockLine[]): string[] =>
+  [...new Set(lines.filter((line) => line.stock > 0).map((line) => line.snapshot))].sort();
+
+export function resolveSnapshot(
+  snapshots: readonly string[],
+  requested: string,
+  fallback = snapshots[snapshots.length - 1] ?? '',
+): string {
+  if (!requested) return fallback;
+  return snapshots.filter((date) => date <= requested).at(-1) ?? snapshots[0] ?? fallback;
+}
 
 // A name found in several groups belongs to the first group in the file's order.
 export const groupOf = (name: string, groups: PackageGroups): string =>
@@ -131,6 +143,15 @@ export function filterSummaries(
       (!f.kind || p.kind === f.kind) &&
       (!q || `${p.code} ${p.name}`.toLowerCase().includes(q)),
   );
+}
+
+export function filterPackageTab(
+  list: readonly PackageSummary[],
+  tab: PackageTab,
+): PackageSummary[] {
+  if (tab === 'all') return [...list];
+  if (tab === 'active') return list.filter((item) => item.kind !== 'cancelled');
+  return list.filter((item) => item.kind === tab);
 }
 
 const byName = (a: PackageSummary, b: PackageSummary) => a.name.localeCompare(b.name);

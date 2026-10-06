@@ -14,13 +14,13 @@ import { formatNumber } from '@/lib/format';
 const AXIS = { fontSize: 13, fill: 'var(--color-text-muted)' };
 export interface TrendDatum {
   name: string;
-  plan: number;
+  stock: number;
   actual: number;
 }
 
 export function TrendLineChart({ data }: { data: TrendDatum[] }) {
   return (
-    <ResponsiveContainer width="100%" height={220}>
+    <ResponsiveContainer width="100%" height="100%">
       <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
         <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 3" vertical={false} />
         <XAxis dataKey="name" tick={AXIS} />
@@ -29,11 +29,12 @@ export function TrendLineChart({ data }: { data: TrendDatum[] }) {
         <Legend />
         <Line
           type="monotone"
-          dataKey="plan"
-          name="Plan"
+          dataKey="stock"
+          name="Stock"
           stroke="var(--color-primary)"
           strokeWidth={2}
-          dot={{ r: 3 }}
+          dot={{ r: 5, strokeWidth: 2, fill: 'var(--color-surface)' }}
+          activeDot={{ r: 7 }}
         />
         <Line
           type="monotone"
@@ -41,7 +42,8 @@ export function TrendLineChart({ data }: { data: TrendDatum[] }) {
           name="Actual"
           stroke="var(--color-success)"
           strokeWidth={2}
-          dot={{ r: 3 }}
+          dot={{ r: 5, strokeWidth: 2, fill: 'var(--color-surface)' }}
+          activeDot={{ r: 7 }}
         />
       </LineChart>
     </ResponsiveContainer>

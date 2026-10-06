@@ -1,212 +1,212 @@
 [
- {
-  "code": "02",
-  "name": "DIP-8",
-  "process": "102 WIRE BONDING",
-  "plant": "N/A",
-  "status": "Active",
-  "qty": 4951432,
-  "actual": 749807,
-  "progress": 15,
-  "spark": [
-   749807,
-   749807
-  ]
- },
- {
-  "code": "08",
-  "name": "DMP-8N",
-  "process": "104 MOLDING",
-  "plant": "N/A",
-  "status": "Active",
-  "qty": 28536193,
-  "actual": 2033068,
-  "progress": 7,
-  "spark": [
-   2033068,
-   2033068
-  ]
- },
- {
-  "code": "09",
-  "name": "DMP-8N Cu",
-  "process": "303 TEST 1",
-  "plant": "N/A",
-  "status": "Active",
-  "qty": 37309754,
-  "actual": 3072302,
-  "progress": 8,
-  "spark": [
-   3072302,
-   3072302
-  ]
- },
- {
-  "code": "10",
-  "name": "EMP-8",
-  "process": "104 MOLDING",
-  "plant": "N/A",
-  "status": "Active",
-  "qty": 3164410,
-  "actual": 434891,
-  "progress": 14,
-  "spark": [
-   434891,
-   434891
-  ]
- },
- {
-  "code": "18",
-  "name": "SOT23-5",
-  "process": "101 DIE BONDING",
-  "plant": "N/A",
-  "status": "Active",
-  "qty": 31233981,
-  "actual": 3649925,
-  "progress": 12,
-  "spark": [
-   3650325,
-   3649925
-  ]
- },
- {
-  "code": "21",
-  "name": "SOT89-3",
-  "process": "104 MOLDING",
-  "plant": "N/A",
-  "status": "Active",
-  "qty": 15597078,
-  "actual": 1493473,
-  "progress": 10,
-  "spark": [
-   1493618,
-   1493473
-  ]
- },
- {
-  "code": "23",
-  "name": "SOT89-5",
-  "process": "303 TEST 1",
-  "plant": "N/A",
-  "status": "Active",
-  "qty": 17433614,
-  "actual": 1765777,
-  "progress": 10,
-  "spark": [
-   1765777,
-   1765777
-  ]
- },
- {
-  "code": "28",
-  "name": "SSOP-16N",
-  "process": "104 MOLDING",
-  "plant": "N/A",
-  "status": "Active",
-  "qty": 248703,
-  "actual": 132355,
-  "progress": 53,
-  "spark": [
-   132355,
-   132355
-  ]
- },
- {
-  "code": "31",
-  "name": "SSOP-8/10",
-  "process": "102 WIRE BONDING",
-  "plant": "N/A",
-  "status": "Active",
-  "qty": 26145935,
-  "actual": 1677349,
-  "progress": 6,
-  "spark": [
-   1677349,
-   1677349
-  ]
- },
- {
-  "code": "32",
-  "name": "SSOP-8/10 Cu",
-  "process": "111 PLASMA CLEANING",
-  "plant": "N/A",
-  "status": "Active",
-  "qty": 17369653,
-  "actual": 1827540,
-  "progress": 11,
-  "spark": [
-   1827540,
-   1827540
-  ]
- },
- {
-  "code": "37",
-  "name": "TO-252-5",
-  "process": "420 TAPING DIVISION",
-  "plant": "N/A",
-  "status": "Active",
-  "qty": 8053170,
-  "actual": 858744,
-  "progress": 11,
-  "spark": [
-   858744,
-   858744
-  ]
- },
- {
-  "code": "42",
-  "name": "TVSP-8",
-  "process": "104 MOLDING",
-  "plant": "N/A",
-  "status": "Active",
-  "qty": 27347300,
-  "actual": 2118068,
-  "progress": 8,
-  "spark": [
-   2118190,
-   2118068
-  ]
- },
- {
-  "code": "46",
-  "name": "VSP-8",
-  "process": "205 TRIMMING & BRANDING",
-  "plant": "N/A",
-  "status": "Active",
-  "qty": 20365810,
-  "actual": 1252681,
-  "progress": 6,
-  "spark": [
-   1252681,
-   1252681
-  ]
- },
- {
-  "code": "48",
-  "name": "VSP-8N",
-  "process": "108 WATER JET",
-  "plant": "N/A",
-  "status": "Active",
-  "qty": 3233699,
-  "actual": 666296,
-  "progress": 21,
-  "spark": [
-   666296,
-   666296
-  ]
- },
- {
-  "code": "49",
-  "name": "SOT-89-5RH",
-  "process": "303 TEST 1",
-  "plant": "N/A",
-  "status": "Active",
-  "qty": 2689408,
-  "actual": 149794,
-  "progress": 6,
-  "spark": [
-   149788,
-   149794
-  ]
- }
+    {
+        "code": "02",
+        "name": "DIP-8",
+        "process": "102 WIRE BONDING",
+        "plant": "N/A",
+        "status": "Active",
+        "qty": 4951432,
+        "actual": 749807,
+        "progress": 15,
+        "spark": [
+            749807,
+            749807
+        ]
+    },
+    {
+        "code": "08",
+        "name": "DMP-8N",
+        "process": "104 MOLDING",
+        "plant": "N/A",
+        "status": "Active",
+        "qty": 28536193,
+        "actual": 2033068,
+        "progress": 7,
+        "spark": [
+            2033068,
+            2033068
+        ]
+    },
+    {
+        "code": "09",
+        "name": "DMP-8N Cu",
+        "process": "303 TEST 1",
+        "plant": "N/A",
+        "status": "Active",
+        "qty": 37309754,
+        "actual": 3072302,
+        "progress": 8,
+        "spark": [
+            3072302,
+            3072302
+        ]
+    },
+    {
+        "code": "10",
+        "name": "EMP-8",
+        "process": "104 MOLDING",
+        "plant": "N/A",
+        "status": "Active",
+        "qty": 3164410,
+        "actual": 434891,
+        "progress": 14,
+        "spark": [
+            434891,
+            434891
+        ]
+    },
+    {
+        "code": "18",
+        "name": "SOT23-5",
+        "process": "101 DIE BONDING",
+        "plant": "N/A",
+        "status": "Active",
+        "qty": 31233981,
+        "actual": 3649925,
+        "progress": 12,
+        "spark": [
+            3650325,
+            3649925
+        ]
+    },
+    {
+        "code": "21",
+        "name": "SOT89-3",
+        "process": "104 MOLDING",
+        "plant": "N/A",
+        "status": "Active",
+        "qty": 15597078,
+        "actual": 1493473,
+        "progress": 10,
+        "spark": [
+            1493618,
+            1493473
+        ]
+    },
+    {
+        "code": "23",
+        "name": "SOT89-5",
+        "process": "303 TEST 1",
+        "plant": "N/A",
+        "status": "Active",
+        "qty": 17433614,
+        "actual": 1765777,
+        "progress": 10,
+        "spark": [
+            1765777,
+            1765777
+        ]
+    },
+    {
+        "code": "28",
+        "name": "SSOP-16N",
+        "process": "104 MOLDING",
+        "plant": "N/A",
+        "status": "Active",
+        "qty": 248703,
+        "actual": 132355,
+        "progress": 53,
+        "spark": [
+            132355,
+            132355
+        ]
+    },
+    {
+        "code": "31",
+        "name": "SSOP-8/10",
+        "process": "102 WIRE BONDING",
+        "plant": "N/A",
+        "status": "Active",
+        "qty": 26145935,
+        "actual": 1677349,
+        "progress": 6,
+        "spark": [
+            1677349,
+            1677349
+        ]
+    },
+    {
+        "code": "32",
+        "name": "SSOP-8/10 Cu",
+        "process": "111 PLASMA CLEANING",
+        "plant": "N/A",
+        "status": "Active",
+        "qty": 17369653,
+        "actual": 1827540,
+        "progress": 11,
+        "spark": [
+            1827540,
+            1827540
+        ]
+    },
+    {
+        "code": "37",
+        "name": "TO-252-5",
+        "process": "420 TAPING DIVISION",
+        "plant": "N/A",
+        "status": "Active",
+        "qty": 8053170,
+        "actual": 858744,
+        "progress": 11,
+        "spark": [
+            858744,
+            858744
+        ]
+    },
+    {
+        "code": "42",
+        "name": "TVSP-8",
+        "process": "104 MOLDING",
+        "plant": "N/A",
+        "status": "Active",
+        "qty": 27347300,
+        "actual": 2118068,
+        "progress": 8,
+        "spark": [
+            2118190,
+            2118068
+        ]
+    },
+    {
+        "code": "46",
+        "name": "VSP-8",
+        "process": "205 TRIMMING & BRANDING",
+        "plant": "N/A",
+        "status": "Active",
+        "qty": 20365810,
+        "actual": 1252681,
+        "progress": 6,
+        "spark": [
+            1252681,
+            1252681
+        ]
+    },
+    {
+        "code": "48",
+        "name": "VSP-8N",
+        "process": "108 WATER JET",
+        "plant": "N/A",
+        "status": "Active",
+        "qty": 3233699,
+        "actual": 666296,
+        "progress": 21,
+        "spark": [
+            666296,
+            666296
+        ]
+    },
+    {
+        "code": "49",
+        "name": "SOT-89-5RH",
+        "process": "303 TEST 1",
+        "plant": "N/A",
+        "status": "Active",
+        "qty": 2689408,
+        "actual": 149794,
+        "progress": 6,
+        "spark": [
+            149788,
+            149794
+        ]
+    }
 ]

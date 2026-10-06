@@ -2,7 +2,17 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { StockLine } from '@/types/domain';
-import { filterSummaries, listSnapshots, sortSummaries, summarizePackages } from './packages';
+import {
+  filterPackageTab,
+  filterSummaries,
+  listSnapshots,
+  sortSummaries,
+  summarizePackages,
+} from './packages';
+import {
+  listStockSnapshots,
+  resolveSnapshot,
+} from './packages';
 
 let n = 0;
 const line = (o: Partial<StockLine>): StockLine => ({
@@ -122,10 +132,18 @@ describe('listSnapshots, filterSummaries, sortSummaries', () => {
 
   it('lists snapshots oldest first', () =>
     expect(listSnapshots(lines)).toEqual(['2026-04-01', '2026-05-05']));
+  it('marks only snapshots with positive stock and resolves dates to available snapshots', () => {
+    expect(listStockSnapshots(lines)).toEqual(['2026-05-05']);
+    expect(resolveSnapshot(['2026-04-01', '2026-05-05'], '2026-05-03')).toBe('2026-04-01');
+    expect(resolveSnapshot(['2026-04-01', '2026-05-05'], '2025-01-01')).toBe('2026-04-01');
+  });
   it('filters by group, status and text', () => {
     expect(filterSummaries(list, { group: 'IC3' }).map((p) => p.name)).toEqual(['SSOP-8']);
     expect(filterSummaries(list, { kind: 'cancelled' }).map((p) => p.name)).toEqual(['SIP-8']);
     expect(filterSummaries(list, { query: ' ssop' }).map((p) => p.name)).toEqual(['SSOP-8']);
+  });
+  it('uses normal and new as the active package tab, excluding cancelled packages', () => {
+    expect(filterPackageTab(list, 'active').map((p) => p.name)).toEqual(['DIP-8', 'SSOP-8']);
   });
   it('sorts by stock, name, code and process count without changing the input', () => {
     expect(sortSummaries(list, 'stock').map((p) => p.name)).toEqual(['SSOP-8', 'SIP-8', 'DIP-8']);

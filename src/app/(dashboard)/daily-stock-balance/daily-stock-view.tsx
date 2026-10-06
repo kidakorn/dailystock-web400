@@ -11,7 +11,14 @@ import { opts, uniq } from '@/lib/filters';
 import { formatIsoDate } from '@/lib/format';
 import { param, pick } from '@/lib/query';
 import { buildDailyStock } from '@/lib/summary/daily-stock';
-import { OTHER_GROUP, groupOf, listSnapshots } from '@/lib/summary/packages';
+import {
+  OTHER_GROUP,
+  groupOf,
+  listSnapshots,
+  listStockSnapshots,
+  resolveSnapshot,
+} from '@/lib/summary/packages';
+import { useProcessSeq } from '@/lib/use-process-seq';
 
 export function DailyStockView({
   lines,
@@ -23,10 +30,12 @@ export function DailyStockView({
   groups: PackageGroups;
 }) {
   const sp = useSearchRecord();
+  const activeSeq = useProcessSeq(seq);
 
   const snapshots = listSnapshots(lines);
   const latest = snapshots[snapshots.length - 1] ?? '';
-  const snapshot = pick(param(sp, 'date'), snapshots, latest);
+  const snapshot = resolveSnapshot(snapshots, param(sp, 'date'), latest);
+  const stockDates = listStockSnapshots(lines);
   const groupNames = [...Object.keys(groups), OTHER_GROUP];
   const group = pick(param(sp, 'group'), groupNames, '');
   // The package list follows the chosen group, so it can never offer a package the group filter would hide.
@@ -36,7 +45,7 @@ export function DailyStockView({
   const packageName = pick(param(sp, 'package'), packageNames, '');
   const hideEmpty = param(sp, 'rows') === 'active';
 
-  const result = buildDailyStock(lines, seq, groups, {
+  const result = buildDailyStock(lines, activeSeq, groups, {
     snapshot,
     group: group || undefined,
     packageName: packageName || undefined,
@@ -45,18 +54,19 @@ export function DailyStockView({
   const { totals } = result;
 
   return (
-    <>
+    <section className={ui.dailyStockPage}>
       <FilterBar
         fields={[
           {
             name: 'date',
             label: 'Date',
-            type: 'select',
+            type: 'date',
             default: latest,
-            options: [...snapshots].reverse().map((s) => ({ value: s, label: formatIsoDate(s) })),
+            availableDates: snapshots,
+            stockDates,
           },
           { name: 'group', label: 'Group', type: 'select', options: opts(groupNames) },
-          { name: 'package', label: 'Package', type: 'select', options: opts(packageNames) },
+          { name: 'package', label: 'Package name', type: 'select', options: opts(packageNames) },
           {
             name: 'rows',
             label: 'Lines',
@@ -82,7 +92,7 @@ export function DailyStockView({
         </p>
         <ExportCsvButton rows={result.rows} filename={`daily-stock-${snapshot}.csv`} />
       </div>
-      <DailyStockTable result={result} />
-    </>
+      <DailyStockTable result={result} searchParams={sp} />
+    </section>
   );
 }

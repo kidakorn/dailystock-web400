@@ -20,6 +20,12 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
 }
+.pkg[data-kind='new'] {
+  border-top: 3px solid var(--color-warning);
+}
+.pkg[data-kind='cancelled'] {
+  border-top: 3px solid var(--color-danger);
+}
 .head {
   display: flex;
   justify-content: space-between;
@@ -39,6 +45,23 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: var(--space-1);
+}
+.kind {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 1px var(--space-2);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  border: 1px solid currentColor;
+}
+.kind[data-kind='new'] {
+  color: #8a5600;
+  background: var(--tint-warning);
+}
+.kind[data-kind='cancelled'] {
+  color: var(--color-danger);
+  background: var(--tint-danger);
 }
 .group {
   padding: 1px var(--space-2);

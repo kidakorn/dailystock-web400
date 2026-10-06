@@ -1,0 +1,92 @@
+.trigger {
+  display: inline-flex;
+  flex: none;
+  min-width: 142px;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.trigger:hover,
+.trigger[aria-expanded='true'] {
+  border-color: var(--color-primary);
+  background: var(--tint-info);
+}
+.popover {
+  position: fixed;
+  z-index: 10000;
+  width: min(300px, calc(100vw - 16px));
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 22%);
+}
+.calendar {
+  width: 100%;
+  --rdp-accent-color: var(--color-primary);
+  --rdp-accent-background-color: var(--tint-info);
+  --rdp-day-height: 34px;
+  --rdp-day-width: 38px;
+  --rdp-day_button-height: 30px;
+  --rdp-day_button-width: 30px;
+  --rdp-day_button-border-radius: 2px;
+  --rdp-nav_button-height: 30px;
+  --rdp-nav_button-width: 30px;
+  --rdp-nav-height: 36px;
+}
+.calendar :global(.rdp-months) {
+  justify-content: center;
+}
+.calendar :global(.rdp-weekday) {
+  color: var(--color-text-muted);
+  font-size: var(--fs-xs);
+}
+.calendar :global(.rdp-day_button) {
+  font-size: var(--fs-sm);
+}
+.calendar :global(.rdp-day_button:hover) {
+  background: var(--color-bg);
+}
+.calendar :global(.rdp-selected .rdp-day_button) {
+  border: var(--rdp-selected-border);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+.calendar :global(.rdp-day).hasStock {
+  position: relative;
+}
+.calendar :global(.rdp-day).hasStock::after {
+  position: absolute;
+  bottom: 1px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-success);
+  content: '';
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.calendar :global(.rdp-selected).hasStock::after {
+  background: var(--color-text-inverse);
+}
+.legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2) 0;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--fs-xs);
+}
+.legend i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-success);
+}

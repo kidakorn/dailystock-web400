@@ -4,7 +4,7 @@
  * "icon" is a key, not a component: this module stays free of React imports
  * and the UI layer maps keys to lucide icons.
  */
-export type NavKey = 'dashboard' | 'packages' | 'stock';
+export type NavKey = 'dashboard' | 'packages' | 'stock' | 'processMaster';
 
 export interface NavItem {
   key: NavKey;
@@ -35,6 +35,13 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: 'Daily Stock Balance',
     title: 'Daily Stock Balance',
     subtitle: 'Daily stock balance by process and sub-process',
+  },
+  {
+    key: 'processMaster',
+    href: '/process-master',
+    label: 'Process Master',
+    title: 'Process Master',
+    subtitle: 'Maintain process and sub-process display order',
   },
 ];
 

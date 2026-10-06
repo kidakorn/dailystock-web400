@@ -111,12 +111,33 @@ describe('buildDailyStock', () => {
   });
 
   it('uses the most common name when packages disagree about a line', () => {
-    const { rows } = run([
-      line({ processName: 'DICING' }),
-      line({ packageCode: 2, processName: 'DICING B' }),
-      line({ packageCode: 3, processName: 'DICING B' }),
-    ]);
+    const { rows } = buildDailyStock(
+      [
+        line({ processName: 'DICING' }),
+        line({ packageCode: 2, processName: 'DICING B' }),
+        line({ packageCode: 3, processName: 'DICING B' }),
+      ],
+      [],
+      groups,
+      { snapshot: '2026-05-05' },
+    );
     expect(rows[0]?.processName).toBe('DICING B');
+  });
+
+  it('uses process-sequence master labels for process and sub-process display names', () => {
+    const { rows } = buildDailyStock(
+      [line({ subProcessCode: '102010', subProcessName: 'Old sub-process label' })],
+      [
+        { seq: 1, label: 'Master process label', processCode: 100, subProcessCode: '' },
+        { seq: 2, label: 'Master sub-process label', processCode: 100, subProcessCode: '102010' },
+      ],
+      groups,
+      { snapshot: '2026-05-05' },
+    );
+    expect(rows[0]).toMatchObject({
+      processName: 'Master process label',
+      subProcessName: 'Master sub-process label',
+    });
   });
 });
 

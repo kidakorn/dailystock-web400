@@ -1,5 +1,5 @@
 import { Sparkline } from '@/components/charts/sparkline';
-import { Badge } from '@/components/ui/badge';
+import { Ban, Sparkles } from 'lucide-react';
 import { formatNumber } from '@/lib/format';
 import type { PackageSummary } from '@/lib/summary/packages';
 import styles from './packages.module.css';
@@ -18,7 +18,7 @@ export function PackageCard({
   previousLabel: string | null;
 }) {
   return (
-    <article className={styles.pkg}>
+    <article className={styles.pkg} data-kind={item.kind}>
       <header className={styles.head}>
         <div>
           <h3 className={styles.name}>{item.name}</h3>
@@ -26,9 +26,15 @@ export function PackageCard({
         </div>
         <div className={styles.badges}>
           <span className={styles.group}>{item.group}</span>
-          {item.kind === 'normal' ? null : (
-            <Badge status={item.kind === 'new' ? 'New' : 'Cancelled'} />
-          )}
+          {item.kind === 'new' ? (
+            <span className={styles.kind} data-kind="new">
+              <Sparkles size={14} aria-hidden="true" /> New
+            </span>
+          ) : item.kind === 'cancelled' ? (
+            <span className={styles.kind} data-kind="cancelled">
+              <Ban size={14} aria-hidden="true" /> Cancelled
+            </span>
+          ) : null}
         </div>
       </header>
       <div>

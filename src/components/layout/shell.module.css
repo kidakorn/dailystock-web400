@@ -147,13 +147,36 @@
 
 .header {
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
+  gap: var(--space-3);
+  min-width: 0;
   min-height: var(--topbar-height);
-  padding: 0 var(--space-4);
+  padding: var(--space-2) var(--space-3);
   background: var(--color-surface);
   border-bottom: 2px solid var(--color-charcoal-800);
+}
+.headerTitle {
+  flex: none;
+  min-width: 0;
+}
+.headerMeta {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.headerTools:empty {
+  display: none;
+}
+.headerTools {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  max-width: 100%;
 }
 .title {
   font-size: var(--fs-lg);
@@ -164,23 +187,12 @@
 }
 .meta {
   display: flex;
+  flex: none;
   align-items: center;
   gap: var(--space-4);
+  margin-left: auto;
   font-family: var(--font-family-data);
   font-size: var(--fs-sm);
-}
-.live {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  color: var(--color-success);
-  font-family: var(--font-family-ui);
-}
-.liveDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: currentColor;
 }
 
 /* The image is bundled (not served from /public) so the build adds the deployment prefix to its URL. Background art sits behind the content; cards are opaque so text stays readable. */

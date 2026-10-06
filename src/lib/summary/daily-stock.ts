@@ -34,6 +34,12 @@ export interface DailyStockResult {
   rows: DailyStockRow[];
   totals: Measures & { difference: number };
   packageCount: number;
+  packages?: DailyStockPackage[];
+}
+export interface DailyStockPackage {
+  key: string;
+  name: string;
+  result: DailyStockResult;
 }
 
 const MEASURES = ['balance', 'balDay', 'stock', 'actual', 'pending'] as const;
@@ -54,8 +60,9 @@ export function buildDailyStock(
   seq: readonly ProcessSeqEntry[],
   groups: PackageGroups,
   q: DailyStockQuery,
+  includePackages = true,
 ): DailyStockResult {
-  const position = new Map(seq.map((s) => [`${s.processCode}|${s.subProcessCode}`, s.seq]));
+  const sequenceByKey = new Map(seq.map((entry) => [`${entry.processCode}|${entry.subProcessCode}`, entry]));
   // A package filter wins over the group filter, as picking one package is the more specific request.
   const selected = lines.filter(
     (l) =>
@@ -95,15 +102,16 @@ export function buildDailyStock(
     return {
       key,
       processCode: e.processCode,
-      processName,
+      processName: sequenceByKey.get(`${e.processCode}|`)?.label ?? processName,
       subProcessCode: e.subProcessCode,
-      subProcessName,
+      subProcessName:
+        sequenceByKey.get(`${e.processCode}|${e.subProcessCode}`)?.label ?? subProcessName,
       balance: e.balance,
       balDay: e.balDay,
       stock: e.stock,
       actual: e.actual,
       pending: e.pending,
-      seq: position.get(key) ?? null,
+      seq: sequenceByKey.get(key)?.seq ?? null,
       difference: differenceOf(e),
     };
   });
@@ -112,5 +120,19 @@ export function buildDailyStock(
   const totals = { balance: 0, balDay: 0, stock: 0, actual: 0, pending: 0, difference: 0 };
   for (const r of shown) for (const k of MEASURES) totals[k] += r[k];
   totals.difference = differenceOf(totals);
-  return { rows: shown, totals, packageCount: new Set(selected.map((l) => l.packageCode)).size };
+  const packages = includePackages
+    ? [...new Map(selected.map((line) => [line.packageName, line])).keys()]
+        .sort((a, b) => a.localeCompare(b))
+        .map((name) => ({
+          key: name,
+          name,
+          result: buildDailyStock(lines, seq, groups, { ...q, packageName: name }, false),
+        }))
+    : undefined;
+  return {
+    rows: shown,
+    totals,
+    packageCount: new Set(selected.map((l) => l.packageCode)).size,
+    packages,
+  };
 }

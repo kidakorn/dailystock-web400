@@ -13,14 +13,16 @@ export function StatusDonut({ data }: { data: DonutDatum[] }) {
   const total = data.reduce((t, d) => t + d.value, 0);
   return (
     <div className={styles.donut}>
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={data}
             dataKey="value"
             nameKey="label"
-            innerRadius={60}
-            outerRadius={85}
+            cx="50%"
+            cy="50%"
+            innerRadius={70}
+            outerRadius={100}
             stroke="none"
           >
             {data.map((d) => (

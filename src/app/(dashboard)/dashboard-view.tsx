@@ -1,129 +1,87 @@
 'use client';
 
 import { useSearchRecord } from '@/lib/use-search-record';
-import type { DashboardData } from '@/types/domain';
-import { DonutDatum, StatusDonut } from '@/components/charts/donut-chart';
+import type { ProcessSeqEntry, StockLine } from '@/types/domain';
+import { StatusDonut } from '@/components/charts/donut-chart';
 import { TrendLineChart } from '@/components/charts/line-chart';
 import { StockBarChart } from '@/components/charts/bar-chart';
-import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { FilterBar } from '@/components/ui/filter-bar';
 import { KpiCard } from '@/components/ui/kpi-card';
 import ui from '@/components/ui/ui.module.css';
-import { opts } from '@/lib/filters';
+import { opts, uniq } from '@/lib/filters';
 import { formatNumber } from '@/lib/format';
-import { param } from '@/lib/query';
+import { formatIsoDate } from '@/lib/format';
+import { param, pick } from '@/lib/query';
+import { buildAnalyticalDashboard } from '@/lib/summary/analytical-dashboard';
+import { listSnapshots, listStockSnapshots, resolveSnapshot } from '@/lib/summary/packages';
+import { useProcessSeq } from '@/lib/use-process-seq';
 import styles from './dashboard.module.css';
 
-export function DashboardView({ d }: { d: DashboardData }) {
+export function DashboardView({
+  lines,
+  seq,
+}: {
+  lines: StockLine[];
+  seq: ProcessSeqEntry[];
+}) {
   const sp = useSearchRecord();
-  const process = param(sp, 'process');
-
-  // Only Process narrows the chart: dashboard.json is an aggregate with no plant dimension.
-  const bars = d.processes.labels
-    .map((name, i) => ({
-      name,
-      plan: d.processes.plan[i] ?? 0,
-      actual: d.processes.actual[i] ?? 0,
-    }))
-    .filter((b) => !process || b.name === process);
-  const trend = d.trend.labels.map((name, i) => ({
-    name,
-    plan: d.trend.plan[i] ?? 0,
-    actual: d.trend.actual[i] ?? 0,
-  }));
-  const total = d.status.reduce((t, s) => t + s.value, 0);
-  // KPIs derive from the status list so headline numbers can never disagree with the donut.
-  const by = (label: string) => d.status.find((s) => s.label === label)?.value ?? 0;
-  const spark = (key: string) => d.spark[key] ?? [];
-  const donut: DonutDatum[] = d.status;
+  const activeSequence = useProcessSeq(seq);
+  const snapshots = listSnapshots(lines);
+  const latest = snapshots[snapshots.length - 1] ?? '';
+  const snapshot = resolveSnapshot(snapshots, param(sp, 'date'), latest);
+  const stockDates = listStockSnapshots(lines);
+  const packageNames = uniq(
+    lines.filter((line) => line.snapshot === snapshot).map((line) => line.packageName),
+  );
+  const packageName = pick(param(sp, 'package'), packageNames, '');
+  const data = buildAnalyticalDashboard(lines, activeSequence, snapshot, packageName);
+  const statusCount = (name: string) => data.status.find((item) => item.label === name)?.value ?? 0;
+  const trend = data.trend.map((item) => ({ ...item, name: formatIsoDate(item.name) }));
 
   return (
-    <>
+    <div className={styles.dashboardPage}>
       <FilterBar
         fields={[
-          { name: 'process', label: 'Process', type: 'select', options: opts(d.processes.labels) },
-          { name: 'date', label: 'Date', type: 'date' },
+          {
+            name: 'date',
+            label: 'Snapshot',
+            type: 'date',
+            default: latest,
+            availableDates: snapshots,
+            stockDates,
+          },
+          { name: 'package', label: 'Package name', type: 'select', options: opts(packageNames) },
         ]}
       />
       <section className={ui.kpiGrid} data-cols="5" aria-label="Key figures">
-        <KpiCard label="Total packages" value={total} tone="primary" spark={spark('total')} />
-        <KpiCard
-          label="Active packages"
-          value={by('Active')}
-          tone="success"
-          spark={spark('active')}
-        />
-        <KpiCard
-          label="Cancelled"
-          value={by('Cancelled')}
-          tone="danger"
-          spark={spark('cancelled')}
-        />
-        <KpiCard label="Pending" value={by('Pending')} tone="warning" spark={spark('pending')} />
-        <KpiCard
-          label="Exceptions"
-          value={d.exceptions}
-          tone="danger"
-          spark={spark('exceptions')}
-        />
+        <KpiCard label="Packages" value={data.packageCount} tone="primary" />
+        <KpiCard label="Stock" value={data.stock} tone="success" />
+        <KpiCard label="Actual" value={data.actual} tone="primary" />
+        <KpiCard label="New packages" value={statusCount('New')} tone="warning" />
+        <KpiCard label="Cancelled" value={statusCount('Cancelled')} tone="danger" />
       </section>
       <div className={styles.grid}>
-        <Card title="Stock balance by process" className={styles.wide}>
-          <StockBarChart data={bars} target={d.processes.target} />
+        <Card title="Stock and actual by process" className={styles.processCard}>
+          <StockBarChart data={data.processes} />
         </Card>
-        <Card title="Package status">
-          <StatusDonut data={donut} />
-          <ul className={`${styles.legend} ${styles.legendCol}`}>
-            {d.status.map((s) => (
-              <li key={s.label}>
-                <span className={styles.dot} style={{ background: `var(--color-${s.tone})` }} />
-                {s.label} <strong>{formatNumber(s.value)}</strong>{' '}
-                <span className={ui.muted}>({((s.value / total) * 100).toFixed(1)}%)</span>
-              </li>
-            ))}
-          </ul>
-        </Card>
-        <Card title="Stock trend, last 7 days" className={styles.wide}>
-          <TrendLineChart data={trend} />
-        </Card>
-        <Card title="Top 5 alerts">
-          <div className={ui.tableWrap}>
-            <table className={ui.table}>
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Package</th>
-                  <th>Message</th>
-                  <th>Level</th>
-                </tr>
-              </thead>
-              <tbody>
-                {d.alerts.map((a) => (
-                  <tr key={`${a.time}-${a.package}`}>
-                    <td>{a.time}</td>
-                    <td>{a.package}</td>
-                    <td>{a.message}</td>
-                    <td>
-                      <Badge status={a.level} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <Card title="Package status" className={styles.statusCard}>
+          <div className={styles.statusBreakdown}>
+            <StatusDonut data={data.status} />
+            <ul className={`${styles.legend} ${styles.legendCol}`}>
+              {data.status.map((s) => (
+                <li key={s.label}>
+                  <span className={styles.dot} style={{ background: `var(--color-${s.tone})` }} />
+                  {s.label} <strong>{formatNumber(s.value)}</strong>
+                </li>
+              ))}
+            </ul>
           </div>
         </Card>
-        <Card title="System status">
-          <ul className={styles.sys}>
-            {d.systems.map((s) => (
-              <li key={s.name}>
-                <span>{s.name}</span>
-                <Badge status={s.status} />
-              </li>
-            ))}
-          </ul>
+        <Card title="Stock and actual by snapshot" className={styles.trendCard}>
+          <TrendLineChart data={trend} />
         </Card>
       </div>
-    </>
+    </div>
   );
 }

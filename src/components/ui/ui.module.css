@@ -122,6 +122,28 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
 }
+.filterBar {
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
+  scrollbar-width: thin;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.filterBar .field,
+.filterBar > button {
+  flex: none;
+}
+.filterBar .field select,
+.filterBar .field input {
+  min-width: 130px;
+}
 .field {
   display: grid;
   gap: var(--space-1);
@@ -176,6 +198,75 @@
   overflow-x: auto;
   padding: 0;
 }
+.dailyStockTableWrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0;
+}
+.dailyStockPage {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+}
+.dailyStockPanel {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
+.dailyStockPager {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  flex: none;
+  margin: 0;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+.measureLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  align-items: center;
+  padding: 0 var(--space-2) var(--space-2);
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+}
+.measureLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.measureLegend i {
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--color-border);
+}
+.measureCell[data-tone='info'],
+.measureLegend i[data-tone='info'] {
+  background: var(--tint-info);
+}
+.measureCell[data-tone='success'],
+.measureLegend i[data-tone='success'] {
+  background: var(--tint-success);
+}
+.measureCell[data-tone='warning'],
+.measureLegend i[data-tone='warning'] {
+  background: var(--tint-warning);
+}
+.measureCell[data-tone='danger'],
+.measureLegend i[data-tone='danger'] {
+  background: var(--tint-danger);
+}
+.measureCell[data-tone='zero'],
+.measureLegend i[data-tone='zero'] {
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+}
 .table th,
 .table td {
   padding: var(--space-2);
@@ -188,6 +279,11 @@
   color: var(--color-text-inverse);
   font-family: var(--font-family-ui);
   font-weight: 600;
+}
+.dailyStockTableWrap .table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 .grp td {
   background: var(--color-bg);
@@ -205,6 +301,20 @@
 }
 .muted {
   color: var(--color-text-muted);
+}
+
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: var(--space-3);
+}
+.pagerInfo {
+  margin-right: auto;
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-surface);
 }
 
 /* Numbers: monospaced and right aligned so digits line up by place value. */
@@ -232,4 +342,9 @@
 .table tfoot td {
   font-weight: 600;
   background: var(--color-bg);
+}
+.table .packageTotal td {
+  font-weight: 600;
+  background: var(--color-bg);
+  border-top: 2px solid var(--color-charcoal-700);
 }

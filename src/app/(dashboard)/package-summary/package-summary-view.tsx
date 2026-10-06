@@ -8,25 +8,28 @@ import styles from '@/components/packages/packages.module.css';
 import { FilterBar } from '@/components/ui/filter-bar';
 import { KpiCard } from '@/components/ui/kpi-card';
 import ui from '@/components/ui/ui.module.css';
-import { PAGE_SIZE, opts } from '@/lib/filters';
+import { PAGE_SIZE, opts, uniq } from '@/lib/filters';
 import { formatIsoDate } from '@/lib/format';
 import { hrefWith, param, pick } from '@/lib/query';
 import {
   OTHER_GROUP,
+  filterPackageTab,
   filterSummaries,
   listSnapshots,
   sortSummaries,
   summarizePackages,
+  listStockSnapshots,
+  resolveSnapshot,
   type PackageKind,
   type SortKey,
 } from '@/lib/summary/packages';
 
 const PATH = '/package-summary';
 const TABS = [
-  { value: 'all', label: 'All' },
-  { value: 'normal', label: 'Normal' },
+  { value: 'active', label: 'Normal + New' },
   { value: 'new', label: 'New' },
   { value: 'cancelled', label: 'Cancelled' },
+  { value: 'all', label: 'All' },
 ] as const;
 const SORTS: { value: SortKey; label: string }[] = [
   { value: 'stock', label: 'Total stock' },
@@ -46,7 +49,8 @@ export function PackageSummaryView({
 
   const snapshots = listSnapshots(lines);
   const latest = snapshots[snapshots.length - 1] ?? '';
-  const snapshot = pick(param(sp, 'date'), snapshots, latest);
+  const snapshot = resolveSnapshot(snapshots, param(sp, 'date'), latest);
+  const stockDates = listStockSnapshots(lines);
   const previous = snapshots[snapshots.indexOf(snapshot) - 1];
   const previousLabel = previous ? formatIsoDate(previous) : null;
 
@@ -55,7 +59,7 @@ export function PackageSummaryView({
   const tab = pick(
     param(sp, 'tab'),
     TABS.map((t) => t.value),
-    'all',
+    'active',
   );
   const sort = pick(
     param(sp, 'sort'),
@@ -68,9 +72,11 @@ export function PackageSummaryView({
   const base = filterSummaries(summarizePackages(lines, groups, snapshot), {
     group: group || undefined,
   });
+  const packageNames = uniq(base.map((item) => item.name));
+  const packageName = pick(param(sp, 'q'), packageNames, '');
   const count = (kind: PackageKind) => base.filter((p) => p.kind === kind).length;
-  const kind = tab === 'all' ? undefined : tab;
-  const rows = sortSummaries(filterSummaries(base, { kind, query: param(sp, 'q') }), sort);
+  const selectedPackages = packageName ? base.filter((item) => item.name === packageName) : base;
+  const rows = sortSummaries(filterPackageTab(selectedPackages, tab), sort);
 
   const pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
   const page = Math.min(Math.max(1, Number(param(sp, 'page')) || 1), pages); // clamp: a filter can shrink the page count
@@ -83,12 +89,13 @@ export function PackageSummaryView({
           {
             name: 'date',
             label: 'Date',
-            type: 'select',
+            type: 'date',
             default: latest,
-            options: [...snapshots].reverse().map((s) => ({ value: s, label: formatIsoDate(s) })),
+            availableDates: snapshots,
+            stockDates,
           },
           { name: 'group', label: 'Group', type: 'select', options: opts(groupNames) },
-          { name: 'q', label: 'Search', type: 'search' },
+          { name: 'q', label: 'Package name', type: 'select', options: opts(packageNames) },
           { name: 'sort', label: 'Sort', type: 'select', default: 'stock', options: SORTS },
           {
             name: 'view',
@@ -116,7 +123,13 @@ export function PackageSummaryView({
             className={ui.btn}
             aria-current={tab === t.value ? 'page' : undefined}
           >
-            {t.label} ({t.value === 'all' ? base.length : count(t.value)})
+            {t.label} (
+            {t.value === 'all'
+              ? base.length
+              : t.value === 'active'
+                ? count('normal') + count('new')
+                : count(t.value)}
+            )
           </Link>
         ))}
       </nav>
