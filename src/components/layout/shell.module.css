@@ -179,6 +179,9 @@
   background: var(--color-surface);
   border-bottom: 2px solid var(--color-charcoal-800);
 }
+.header[data-daily-stock='true'] {
+  align-items: flex-start;
+}
 .headerTitle {
   flex: none;
   min-width: 0;
@@ -204,30 +207,33 @@
 .headerTools > form {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-columns: max-content;
+  justify-content: start;
 }
 .headerTools[data-daily-stock='true'] {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--space-2) var(--space-3);
+  gap: var(--space-2);
 }
 .headerTools[data-daily-stock='true'] > form {
-  grid-column: 1 / -1;
+  grid-column: 1;
   grid-row: 1;
   grid-auto-flow: row;
   grid-auto-columns: auto;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(5, max-content);
+  justify-content: start;
   min-width: 0;
   width: 100%;
 }
 .headerTools[data-daily-stock='true'] > [data-daily-stock-actions] {
   grid-column: 2;
-  grid-row: 2;
-  justify-self: end;
+  grid-row: 1;
+  align-self: end;
+  justify-self: start;
 }
 .headerTools[data-daily-stock='true'] > [data-daily-stock-info] {
-  grid-column: 1;
+  grid-column: 1 / -1;
   grid-row: 2;
 }
 .headerTools[data-process-master='true'] {
@@ -238,6 +244,7 @@
 }
 .headerTools[data-process-master='true'] > form {
   grid-column: span 2;
+  grid-row: 1;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-auto-flow: row;
   grid-auto-columns: auto;
@@ -248,6 +255,7 @@
   display: contents;
 }
 .headerTools[data-process-master='true'] > [data-process-master-actions] > button {
+  grid-row: 1;
   width: 100%;
   height: 40px;
   justify-content: center;
@@ -262,6 +270,71 @@
 }
 .header[data-daily-stock='true'] .subtitle {
   display: none;
+}
+@media (min-width: 901px) {
+  .header {
+    align-items: flex-end;
+    gap: var(--space-2);
+  }
+  .header[data-daily-stock='true'] {
+    align-items: flex-end;
+  }
+  .headerMeta {
+    gap: var(--space-2);
+  }
+  .headerTools {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: var(--space-2);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    touch-action: pan-x;
+  }
+  .headerTools > form {
+    flex: 0 0 auto;
+    width: max-content;
+  }
+  .headerTools[data-daily-stock='true'] {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: flex-end;
+    gap: var(--space-2);
+  }
+  .headerTools[data-daily-stock='true'] > form {
+    flex: 0 0 auto;
+    width: max-content;
+    min-width: max-content;
+  }
+  .headerTools[data-daily-stock='true'] > [data-daily-stock-actions] {
+    flex: 0 0 auto;
+    align-self: flex-end;
+  }
+  .headerTools[data-daily-stock='true'] > [data-daily-stock-info] {
+    flex: 0 0 auto;
+    width: max-content;
+    max-width: none;
+  }
+  .headerTools[data-process-master='true'] {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: flex-end;
+    gap: var(--space-2);
+  }
+  .headerTools[data-process-master='true'] > form {
+    flex: 0 0 auto;
+    width: max-content;
+    min-width: max-content;
+    grid-template-columns: repeat(2, max-content);
+  }
+  .headerTools[data-process-master='true'] > [data-process-master-actions] > button {
+    flex: 0 0 auto;
+    width: max-content;
+    min-width: max-content;
+    height: var(--control-height);
+  }
 }
 /* The image is bundled (not served from /public) so the build adds the deployment prefix to its URL. Background art sits behind the content; cards are opaque so text stays readable. */
 .contentArea {
@@ -354,15 +427,15 @@
     width: 100%;
   }
   .headerTools[data-daily-stock='true'] {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) auto;
   }
   .headerTools[data-daily-stock='true'] > [data-daily-stock-actions] {
-    grid-column: 1;
-    grid-row: 3;
+    grid-column: 2;
+    grid-row: 1;
     justify-self: start;
   }
   .headerTools[data-daily-stock='true'] > [data-daily-stock-info] {
-    grid-column: 1;
+    grid-column: 1 / -1;
     grid-row: 2;
   }
   .headerTools[data-process-master='true'] {
@@ -438,12 +511,14 @@
     flex: none;
     grid-auto-flow: row;
     grid-auto-columns: auto;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, max-content);
+    justify-content: start;
     overflow: visible;
     touch-action: auto;
   }
   .headerTools[data-daily-stock='true'] > form {
-    grid-template-columns: repeat(5, minmax(120px, 1fr));
+    grid-template-columns: repeat(5, max-content);
+    justify-content: start;
     overflow-x: auto;
     overflow-y: hidden;
     touch-action: pan-x;

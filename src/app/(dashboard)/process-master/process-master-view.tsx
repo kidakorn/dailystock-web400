@@ -143,14 +143,14 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
         <div className={styles.headerActions} data-process-master-actions>
           <button
             type="button"
-            className={`${ui.btn} ${styles.exportButton}`}
+            className={`${ui.btn} ${ui.btnInfo}`}
             onClick={() => downloadJson(entries)}
           >
             <Download size={16} aria-hidden="true" /> Export
           </button>
           <button
             type="button"
-            className={`${ui.btn} ${styles.importButton}`}
+            className={`${ui.btn} ${ui.btnSuccess}`}
             onClick={() => fileInput.current?.click()}
           >
             <Upload size={16} aria-hidden="true" /> Import
@@ -164,14 +164,14 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
           />
           <button
             type="button"
-            className={`${ui.btn} ${styles.resetButton}`}
+            className={`${ui.btn} ${ui.btnWarning}`}
             onClick={() => resetProcessSeq(defaultEntries)}
           >
             <RotateCcw size={16} aria-hidden="true" /> Reset
           </button>
           <button
             type="button"
-            className={`${ui.btn} ${styles.addButton}`}
+            className={`${ui.btn} ${ui.btnPrimary}`}
             onClick={() => {
               setError('');
               setIsAddOpen(true);
@@ -191,7 +191,7 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
           <h2 id="add-process-title">Add process / sub-process</h2>
           <button
             type="button"
-            className={styles.closeDialog}
+            className={`${ui.btn} ${styles.closeDialog}`}
             aria-label="Close dialog"
             onClick={() => setIsAddOpen(false)}
           >
@@ -242,7 +242,7 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
             <button type="button" className={ui.btn} onClick={() => setIsAddOpen(false)}>
               Cancel
             </button>
-            <button type="submit" className={`${ui.btn} ${styles.addButton}`}>
+            <button type="submit" className={`${ui.btn} ${ui.btnPrimary}`}>
               Add entry
             </button>
           </div>

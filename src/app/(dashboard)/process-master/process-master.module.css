@@ -36,12 +36,10 @@
 .closeDialog {
   display: grid;
   flex: none;
-  width: 36px;
-  height: 36px;
+  width: var(--control-height);
+  height: var(--control-height);
+  padding: 0;
   place-items: center;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  cursor: pointer;
 }
 .dialogFields {
   display: grid;
@@ -49,53 +47,34 @@
   align-items: end;
   gap: var(--space-3);
 }
-.dialogFields input {
-  width: 100%;
-  height: 40px;
-  min-width: 0;
-}
 .dialogActions {
   display: flex;
   justify-content: flex-end;
   gap: var(--space-2);
   margin-top: var(--space-4);
 }
-.exportButton {
-  color: var(--color-primary);
-  background: var(--tint-info);
-  border-color: var(--color-primary);
-}
-.importButton,
-.addButton {
-  color: #146b43;
-  background: var(--tint-success);
-  border-color: var(--color-success);
-}
-.resetButton {
-  color: #8a5600;
-  background: var(--tint-warning);
-  border-color: var(--color-warning);
-}
 .fileInput {
   display: none;
 }
 .addForm input,
 .tableWrap input {
+  height: var(--control-height);
   min-width: 100px;
-  padding: var(--space-2);
+  padding: 0 var(--space-2);
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
   background: var(--color-surface);
   color: var(--color-text);
 }
 .addForm input {
   width: 100%;
-  height: 40px;
+  height: var(--control-height);
   min-width: 0;
 }
 .addForm > form > button {
   grid-column: 4;
   width: 100%;
-  height: 40px;
+  height: var(--control-height);
   justify-content: center;
 }
 .error {
