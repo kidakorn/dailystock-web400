@@ -21,7 +21,8 @@ const line = (overrides: Partial<StockLine>): StockLine => ({
 
 const sequence: ProcessSeqEntry[] = [
   { seq: 1, label: 'Master Dicing', processCode: 100, subProcessCode: '' },
-  { seq: 2, label: 'Master Bond', processCode: 101, subProcessCode: '' },
+  { seq: 2, label: 'CUT', processCode: 100, subProcessCode: '100010' },
+  { seq: 3, label: 'Master Bond', processCode: 101, subProcessCode: '' },
 ];
 
 describe('buildAnalyticalDashboard', () => {
@@ -53,6 +54,7 @@ describe('buildAnalyticalDashboard', () => {
       packageCount: 1,
       stock: 12,
       actual: 8,
+      comparison: { snapshot: '2026-05-01', stock: 10, actual: 8 },
       status: [
         { label: 'Normal', value: 0 },
         { label: 'New', value: 1 },
@@ -63,16 +65,50 @@ describe('buildAnalyticalDashboard', () => {
 
   it('orders process chart by master and trends the selected package across snapshots', () => {
     const result = buildAnalyticalDashboard(lines, sequence, '2026-05-05', 'DIP-8');
-    expect(result.processes).toEqual([{ name: 'Master Dicing', stock: 12, actual: 8 }]);
+    expect(result.processes).toEqual([
+      {
+        processCode: 100,
+        name: 'Master Dicing',
+        stock: 12,
+        actual: 8,
+        subProcesses: [
+          { code: '', name: 'Master Dicing (main)', stock: 10, actual: 7 },
+          { code: '100010', name: 'CUT', stock: 2, actual: 1 },
+        ],
+      },
+    ]);
     expect(result.trend).toEqual([
       { name: '2026-05-01', stock: 10, actual: 8 },
       { name: '2026-05-05', stock: 12, actual: 8 },
     ]);
   });
 
+  it('keeps process rows in master order regardless of stock row order', () => {
+    const result = buildAnalyticalDashboard(
+      [
+        line({ processCode: 206, processName: 'PKG DICING' }),
+        line({ processCode: 101, processName: 'BOND' }),
+        line({ processCode: 100, processName: 'DICING' }),
+      ],
+      sequence,
+      '2026-05-05',
+    );
+
+    expect(result.processes.map((process) => process.name)).toEqual([
+      'Master Dicing',
+      'Master Bond',
+    ]);
+    expect(result.unmappedProcesses).toEqual([{ processCode: 206, name: 'PKG DICING' }]);
+  });
+
   it('counts unique packages and their most severe current status', () => {
     const result = buildAnalyticalDashboard(lines, sequence, '2026-05-05');
     expect(result.packageCount).toBe(2);
     expect(result.status.map((item) => item.value)).toEqual([0, 1, 1]);
+  });
+
+  it('omits snapshot comparison when there is no earlier snapshot', () => {
+    const result = buildAnalyticalDashboard([line({})], sequence, '2026-05-05');
+    expect(result.comparison).toBeNull();
   });
 });

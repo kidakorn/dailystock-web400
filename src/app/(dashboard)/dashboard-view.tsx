@@ -1,5 +1,7 @@
 'use client';
 
+import { ArrowLeft } from 'lucide-react';
+import { useState } from 'react';
 import { useSearchRecord } from '@/lib/use-search-record';
 import type { ProcessSeqEntry, StockLine } from '@/types/domain';
 import { StatusDonut } from '@/components/charts/donut-chart';
@@ -36,7 +38,17 @@ export function DashboardView({
   );
   const packageName = pick(param(sp, 'package'), packageNames, '');
   const data = buildAnalyticalDashboard(lines, activeSequence, snapshot, packageName);
-  const statusCount = (name: string) => data.status.find((item) => item.label === name)?.value ?? 0;
+  const [selectedProcessCode, setSelectedProcessCode] = useState<number | null>(null);
+  const selectedProcess = data.processes.find(
+    (process) => process.processCode === selectedProcessCode,
+  );
+  const statusFor = (name: string) => {
+    const status = data.status.find((item) => item.label === name);
+    if (!status) throw new Error(`Dashboard status "${name}" is missing`);
+    return status;
+  };
+  const newStatus = statusFor('New');
+  const cancelledStatus = statusFor('Cancelled');
   const trend = data.trend.map((item) => ({ ...item, name: formatIsoDate(item.name) }));
 
   return (
@@ -56,14 +68,66 @@ export function DashboardView({
       />
       <section className={ui.kpiGrid} data-cols="5" aria-label="Key figures">
         <KpiCard label="Packages" value={data.packageCount} tone="primary" />
-        <KpiCard label="Stock" value={data.stock} tone="success" />
-        <KpiCard label="Actual" value={data.actual} tone="primary" />
-        <KpiCard label="New packages" value={statusCount('New')} tone="warning" />
-        <KpiCard label="Cancelled" value={statusCount('Cancelled')} tone="danger" />
+        <KpiCard
+          label="Stock"
+          value={data.stock}
+          tone="success"
+          comparison={data.comparison ? { value: data.comparison.stock, snapshot: data.comparison.snapshot } : undefined}
+        />
+        <KpiCard
+          label="Actual"
+          value={data.actual}
+          tone="primary"
+          comparison={data.comparison ? { value: data.comparison.actual, snapshot: data.comparison.snapshot } : undefined}
+        />
+        <KpiCard label="New packages" value={newStatus.value} tone={newStatus.tone} />
+        <KpiCard label="Cancelled" value={cancelledStatus.value} tone={cancelledStatus.tone} />
       </section>
       <div className={styles.grid}>
-        <Card title="Stock and actual by process" className={styles.processCard}>
-          <StockBarChart data={data.processes} />
+        <Card
+          title={selectedProcess ? `${selectedProcess.name} subprocesses` : 'Stock and actual by process'}
+          className={styles.processCard}
+        >
+          <div className={styles.processContent}>
+            {selectedProcess ? (
+              <div className={styles.processDrillHeader}>
+                <button
+                  type="button"
+                  className={`${ui.btn} ${ui.btnInfo}`}
+                  onClick={() => setSelectedProcessCode(null)}
+                >
+                  <ArrowLeft size={16} aria-hidden="true" /> All processes
+                </button>
+                <p>
+                  Stock {formatNumber(selectedProcess.stock)} · Actual{' '}
+                  {formatNumber(selectedProcess.actual)}
+                </p>
+              </div>
+            ) : null}
+            {selectedProcess && selectedProcess.subProcesses.length === 0 ? (
+              <p className={styles.processEmpty}>No subprocess data for this snapshot.</p>
+            ) : (
+              <StockBarChart
+                data={selectedProcess ? selectedProcess.subProcesses : data.processes}
+                onSelectProcess={
+                  selectedProcess
+                    ? undefined
+                    : (name) => {
+                        const process = data.processes.find((item) => item.name === name);
+                        if (process) setSelectedProcessCode(process.processCode);
+                      }
+                }
+              />
+            )}
+            {!selectedProcess && data.unmappedProcesses.length > 0 ? (
+              <p className={styles.processNote}>
+                Not in Process Master:{' '}
+                {data.unmappedProcesses
+                  .map((process) => `${process.name} (${process.processCode})`)
+                  .join(', ')}
+              </p>
+            ) : null}
+          </div>
         </Card>
         <Card title="Package status" className={styles.statusCard}>
           <div className={styles.statusBreakdown}>

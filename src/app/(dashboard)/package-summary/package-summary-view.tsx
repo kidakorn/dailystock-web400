@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import { useSearchRecord } from '@/lib/use-search-record';
 import type { PackageGroups, StockLine } from '@/types/domain';
 import Link from 'next/link';
@@ -77,6 +78,8 @@ export function PackageSummaryView({
   groups: PackageGroups;
 }) {
   const sp = useSearchRecord();
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [gridColumns, setGridColumns] = useState(1);
 
   const snapshots = listSnapshots(lines);
   const latest = snapshots[snapshots.length - 1] ?? '';
@@ -99,6 +102,8 @@ export function PackageSummaryView({
   );
   const view = param(sp, 'view') === 'list' ? 'list' : 'grid';
 
+  const pageSize = Math.ceil(PAGE_SIZE / gridColumns) * gridColumns;
+
   // Group narrows the whole page (KPIs and tab counts); status tab and search narrow only the list.
   const summaries = getBaseSummaries(lines, groups, snapshot);
   const base = filterSummaries(summaries, { group: group || undefined });
@@ -108,9 +113,25 @@ export function PackageSummaryView({
   const selectedPackages = packageName ? base.filter((item) => item.name === packageName) : base;
   const rows = sortSummaries(filterPackageTab(selectedPackages, tab), sort);
 
-  const pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  const pages = Math.max(1, Math.ceil(rows.length / pageSize));
   const page = Math.min(Math.max(1, Number(param(sp, 'page')) || 1), pages); // clamp: a filter can shrink the page count
-  const slice = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const slice = rows.slice((page - 1) * pageSize, page * pageSize);
+
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+
+    const updateColumns = () => {
+      const template = window.getComputedStyle(grid).gridTemplateColumns;
+      const columns = template.trim().split(/\s+/).filter(Boolean).length;
+      setGridColumns((current) => (current === columns ? current : columns));
+    };
+
+    updateColumns();
+    const observer = new ResizeObserver(updateColumns);
+    observer.observe(grid);
+    return () => observer.disconnect();
+  }, [view, rows.length]);
 
   return (
     <>
@@ -169,7 +190,7 @@ export function PackageSummaryView({
         ))}
       </nav>
       {slice.length ? (
-        <div className={styles.grid} data-view={view}>
+        <div ref={gridRef} className={styles.grid} data-view={view}>
           {slice.map((p) => (
             <PackageCard key={p.code} item={p} previousLabel={previousLabel} />
           ))}

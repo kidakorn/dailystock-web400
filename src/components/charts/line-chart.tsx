@@ -31,7 +31,7 @@ export function TrendLineChart({ data }: { data: TrendDatum[] }) {
           type="monotone"
           dataKey="stock"
           name="Stock"
-          stroke="var(--color-primary)"
+          stroke="var(--color-success)"
           strokeWidth={2}
           dot={{ r: 5, strokeWidth: 2, fill: 'var(--color-surface)' }}
           activeDot={{ r: 7 }}
@@ -40,7 +40,7 @@ export function TrendLineChart({ data }: { data: TrendDatum[] }) {
           type="monotone"
           dataKey="actual"
           name="Actual"
-          stroke="var(--color-success)"
+          stroke="var(--color-primary)"
           strokeWidth={2}
           dot={{ r: 5, strokeWidth: 2, fill: 'var(--color-surface)' }}
           activeDot={{ r: 7 }}

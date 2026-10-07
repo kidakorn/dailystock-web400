@@ -2,6 +2,15 @@ import type { ProcessSeqEntry, StockLine } from '@/types/domain';
 import { listSnapshots } from './packages';
 
 export interface DashboardProcessDatum {
+  processCode: number;
+  name: string;
+  stock: number;
+  actual: number;
+  subProcesses: DashboardSubProcessDatum[];
+}
+
+export interface DashboardSubProcessDatum {
+  code: string;
   name: string;
   stock: number;
   actual: number;
@@ -23,8 +32,10 @@ export interface AnalyticalDashboardData {
   packageCount: number;
   stock: number;
   actual: number;
+  comparison: { snapshot: string; stock: number; actual: number } | null;
   status: DashboardStatusDatum[];
   processes: DashboardProcessDatum[];
+  unmappedProcesses: { processCode: number; name: string }[];
   trend: DashboardSnapshotDatum[];
 }
 
@@ -46,11 +57,25 @@ export function buildAnalyticalDashboard(
     (line) => line.snapshot === snapshot && (!packageName || line.packageName === packageName),
   );
   const packages = new Map<number, { name: string; kind: 'Normal' | 'New' | 'Cancelled' }>();
-  const processMap = new Map<number, DashboardProcessDatum & { order: number }>();
-  const processOrder = new Map<number, number>();
+  const processMap = new Map<
+    number,
+    Omit<DashboardProcessDatum, 'subProcesses'> & {
+      order: number;
+      subProcesses: Map<string, DashboardSubProcessDatum & { order: number }>;
+    }
+  >();
+  const processMaster = new Map<number, { name: string; order: number }>();
+  const subProcessMaster = new Map<string, { name: string; order: number }>();
+  const unmappedProcesses = new Map<number, string>();
   for (const entry of sequence) {
-    const previous = processOrder.get(entry.processCode);
-    if (previous === undefined || entry.seq < previous) processOrder.set(entry.processCode, entry.seq);
+    if (entry.subProcessCode) {
+      subProcessMaster.set(`${entry.processCode}|${entry.subProcessCode}`, {
+        name: entry.label,
+        order: entry.seq,
+      });
+    } else {
+      processMaster.set(entry.processCode, { name: entry.label, order: entry.seq });
+    }
   }
 
   for (const line of selected) {
@@ -60,17 +85,39 @@ export function buildAnalyticalDashboard(
       packages.set(line.packageCode, { name: line.packageName, kind });
     }
 
+    const master = processMaster.get(line.processCode);
+    if (!master) {
+      unmappedProcesses.set(line.processCode, line.processName);
+      continue;
+    }
+
     const process = processMap.get(line.processCode) ?? {
-      name:
-        sequence.find(
-          (entry) => entry.processCode === line.processCode && entry.subProcessCode === '',
-        )?.label ?? line.processName,
+      processCode: line.processCode,
+      name: master.name,
       stock: 0,
       actual: 0,
-      order: processOrder.get(line.processCode) ?? Number.MAX_SAFE_INTEGER,
+      order: master.order,
+      subProcesses: new Map(),
     };
     process.stock += line.stock;
     process.actual += line.actual;
+
+    const subProcessCode = line.subProcessCode.trim();
+    const subMaster = subProcessCode
+      ? subProcessMaster.get(`${line.processCode}|${subProcessCode}`)
+      : undefined;
+    const subProcess = process.subProcesses.get(subProcessCode) ?? {
+      code: subProcessCode,
+      name: subProcessCode
+        ? subMaster?.name || line.subProcessName.trim() || subProcessCode
+        : `${master.name} (main)`,
+      stock: 0,
+      actual: 0,
+      order: subProcessCode ? subMaster?.order ?? Number.MAX_SAFE_INTEGER : -1,
+    };
+    subProcess.stock += line.stock;
+    subProcess.actual += line.actual;
+    process.subProcesses.set(subProcessCode, subProcess);
     processMap.set(line.processCode, process);
   }
 
@@ -79,7 +126,15 @@ export function buildAnalyticalDashboard(
     value: [...packages.values()].filter((item) => item.kind === label).length,
     tone: STATUS_TONES[label],
   }));
-  const snapshots = listSnapshots(lines).filter((date) => date <= snapshot).slice(-7);
+  const allSnapshots = listSnapshots(lines);
+  const previousSnapshot = allSnapshots.filter((date) => date < snapshot).at(-1) ?? null;
+  const previousRows = previousSnapshot
+    ? lines.filter(
+        (line) =>
+          line.snapshot === previousSnapshot && (!packageName || line.packageName === packageName),
+      )
+    : [];
+  const snapshots = allSnapshots.filter((date) => date <= snapshot).slice(-7);
   const trend = snapshots.map((date) => {
     const rows = lines.filter(
       (line) => line.snapshot === date && (!packageName || line.packageName === packageName),
@@ -95,10 +150,33 @@ export function buildAnalyticalDashboard(
     packageCount: packages.size,
     stock: selected.reduce((total, line) => total + line.stock, 0),
     actual: selected.reduce((total, line) => total + line.actual, 0),
+    comparison: previousSnapshot
+      ? {
+          snapshot: previousSnapshot,
+          stock: previousRows.reduce((total, line) => total + line.stock, 0),
+          actual: previousRows.reduce((total, line) => total + line.actual, 0),
+        }
+      : null,
     status,
     processes: [...processMap.values()]
-      .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name))
-      .map(({ name, stock, actual }) => ({ name, stock, actual })),
+      .sort((a, b) => a.order - b.order)
+      .map((process) => ({
+        processCode: process.processCode,
+        name: process.name,
+        stock: process.stock,
+        actual: process.actual,
+        subProcesses: [...process.subProcesses.values()]
+          .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name))
+          .map((subProcess) => ({
+            code: subProcess.code,
+            name: subProcess.name,
+            stock: subProcess.stock,
+            actual: subProcess.actual,
+          })),
+      })),
+    unmappedProcesses: [...unmappedProcesses.entries()]
+      .sort(([left], [right]) => left - right)
+      .map(([processCode, name]) => ({ processCode, name })),
     trend,
   };
 }

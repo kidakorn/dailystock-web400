@@ -39,6 +39,7 @@ export function DataTable<TData extends RowData>({
   rowCount,
   initialPageSize = 20,
   autoPageSize = false,
+  autoResetPageIndex,
   renderCell,
   renderBody,
   renderFooter,
@@ -59,6 +60,7 @@ export function DataTable<TData extends RowData>({
   rowCount?: number;
   initialPageSize?: number;
   autoPageSize?: boolean;
+  autoResetPageIndex?: boolean;
   renderCell?: (row: DataTableRow<TData>, columnId: string, value: unknown) => ReactNode;
   renderBody?: (table: DataTableInstance<TData>) => ReactNode;
   renderFooter?: (table: DataTableInstance<TData>) => ReactNode;
@@ -72,6 +74,7 @@ export function DataTable<TData extends RowData>({
     data,
     getRowId,
     manualPagination,
+    autoResetPageIndex,
     rowCount,
     initialState: { pagination: { pageIndex: 0, pageSize: initialPageSize } },
     state: paginationState ? { pagination: paginationState } : undefined,
@@ -79,6 +82,15 @@ export function DataTable<TData extends RowData>({
   });
   const tableRef = useRef(table);
   tableRef.current = table;
+
+  useLayoutEffect(() => {
+    if (autoResetPageIndex !== false) return;
+    const pageCount = table.getPageCount();
+    const pageIndex = table.state.pagination.pageIndex;
+    if (pageCount > 0 && pageIndex >= pageCount) {
+      table.setPageIndex(pageCount - 1);
+    }
+  }, [autoResetPageIndex, data, table]);
 
   useLayoutEffect(() => {
     const viewport = viewportRef.current;
@@ -89,7 +101,7 @@ export function DataTable<TData extends RowData>({
       const rowHeights = [...viewport.querySelectorAll('tbody tr')].map(
         (row) => row.getBoundingClientRect().height,
       );
-      const rowHeight = Math.max(40, ...rowHeights);
+      const rowHeight = Math.max(16, ...rowHeights);
       const pageSize = Math.max(1, Math.floor((viewport.clientHeight - headerHeight) / rowHeight));
       if (tableRef.current.state.pagination.pageSize !== pageSize) {
         tableRef.current.setPageSize(pageSize);
@@ -98,8 +110,6 @@ export function DataTable<TData extends RowData>({
 
     const observer = new ResizeObserver(updatePageSize);
     observer.observe(viewport);
-    const body = viewport.querySelector('tbody');
-    if (body) observer.observe(body);
     updatePageSize();
     return () => observer.disconnect();
   }, [autoPageSize]);

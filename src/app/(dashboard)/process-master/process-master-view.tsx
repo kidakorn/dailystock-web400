@@ -1,7 +1,7 @@
 'use client';
 
 import { ArrowDown, ArrowUp, Download, Plus, RotateCcw, Upload, X } from 'lucide-react';
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 import { HeaderPortal } from '@/components/layout/header-portal';
 import { FilterBar } from '@/components/ui/filter-bar';
@@ -105,14 +105,19 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
   const [error, setError] = useState('');
   const fileInput = useRef<HTMLInputElement>(null);
   const addDialog = useRef<HTMLDialogElement>(null);
-  const tableRows = entries
-    .map((entry, index) => ({ entry, index }))
-    .filter(({ entry }) =>
-      !query ||
-      `${entry.processCode} ${processNameOf(entry, entries)} ${entry.subProcessCode} ${subProcessNameOf(entry)}`
-        .toLowerCase()
-        .includes(query),
-    );
+  const tableRows = useMemo(
+    () =>
+      entries
+        .map((entry, index) => ({ entry, index }))
+        .filter(
+          ({ entry }) =>
+            !query ||
+            `${entry.processCode} ${processNameOf(entry, entries)} ${entry.subProcessCode} ${subProcessNameOf(entry)}`
+              .toLowerCase()
+              .includes(query),
+        ),
+    [entries, query],
+  );
 
   useEffect(() => {
     const dialog = addDialog.current;
@@ -285,6 +290,7 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
         getRowId={({ entry }) => `${entry.processCode}|${entry.subProcessCode}`}
         initialPageSize={8}
         autoPageSize
+        autoResetPageIndex={false}
         renderCell={(tableRow, columnId) => {
           const { entry, index } = tableRow.original;
           const editing = editIndex === index;
@@ -330,7 +336,7 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
           if (columnId !== 'actions') return null;
           return editing ? (
             <form className={styles.rowActions} onSubmit={(event) => handleEdit(event, index)}>
-              <button type="submit" className={ui.btn}>
+              <button type="submit" className={`${ui.btn} ${styles.actionSave}`}>
                 Save
               </button>
               <button type="button" className={ui.btn} onClick={() => setEditIndex(null)}>
@@ -341,27 +347,27 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
             <div className={styles.rowActions}>
               <button
                 type="button"
-                className={ui.btn}
+                className={`${ui.btn} ${styles.actionMove}`}
                 aria-label={`Move ${entry.label} up`}
                 title="Move up"
                 disabled={index === 0}
                 onClick={() => commit(() => moveProcessSeq(entries, index, -1))}
               >
-                <ArrowUp size={15} aria-hidden="true" />
+                <ArrowUp size={14} aria-hidden="true" />
               </button>
               <button
                 type="button"
-                className={ui.btn}
+                className={`${ui.btn} ${styles.actionMove}`}
                 aria-label={`Move ${entry.label} down`}
                 title="Move down"
                 disabled={index === entries.length - 1}
                 onClick={() => commit(() => moveProcessSeq(entries, index, 1))}
               >
-                <ArrowDown size={15} aria-hidden="true" />
+                <ArrowDown size={14} aria-hidden="true" />
               </button>
               <button
                 type="button"
-                className={ui.btn}
+                className={`${ui.btn} ${styles.actionEdit}`}
                 onClick={() => {
                   setEditIndex(index);
                   setEditDraft(draftFrom(entry, entries));
@@ -371,7 +377,7 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
               </button>
               <button
                 type="button"
-                className={ui.btn}
+                className={`${ui.btn} ${styles.actionDelete}`}
                 onClick={() => commit(() => removeProcessSeq(entries, index))}
               >
                 Delete

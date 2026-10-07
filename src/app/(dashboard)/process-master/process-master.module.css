@@ -83,12 +83,70 @@
 }
 .tableWrap {
   min-width: 0;
+  overflow-anchor: none;
 }
 .processTable {
   min-width: 920px;
 }
+.tableWrap .processTable th {
+  padding: 1px 6px;
+  font-size: var(--fs-xs);
+}
+.tableWrap .processTable td {
+  padding: 0 6px;
+  font-size: var(--fs-xs);
+  line-height: 1;
+}
 .tableWrap td:last-child {
   min-width: 235px;
+}
+.tableWrap input {
+  height: 18px;
+  min-width: 80px;
+  padding: 0 6px;
+  font-size: var(--fs-xs);
+  line-height: 1;
+}
+.rowActions {
+  gap: var(--space-1);
+}
+.rowActions button {
+  min-height: 16px;
+  padding: 0 var(--space-2);
+  font-size: var(--fs-xs);
+  line-height: 1;
+}
+.rowActions .actionMove {
+  border-color: var(--color-primary);
+  background: var(--tint-info);
+  color: var(--color-primary);
+}
+.rowActions .actionMove:hover:not(:disabled) {
+  background: #d3e3fa;
+}
+.rowActions .actionEdit {
+  border-color: var(--color-warning);
+  background: var(--tint-warning);
+  color: #8a5600;
+}
+.rowActions .actionEdit:hover:not(:disabled) {
+  background: #f8e4bd;
+}
+.rowActions .actionDelete {
+  border-color: var(--color-danger);
+  background: var(--tint-danger);
+  color: var(--color-danger);
+}
+.rowActions .actionDelete:hover:not(:disabled) {
+  background: #f9d2da;
+}
+.rowActions .actionSave {
+  border-color: var(--color-success);
+  background: var(--tint-success);
+  color: #146b43;
+}
+.rowActions .actionSave:hover:not(:disabled) {
+  background: #ccebd9;
 }
 .pagination {
   flex: none;
