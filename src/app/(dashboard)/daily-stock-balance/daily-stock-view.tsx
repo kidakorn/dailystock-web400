@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useSearchRecord } from '@/lib/use-search-record';
-import type { PackageGroups, ProcessSeqEntry, StockLine } from '@/types/domain';
+import type { PackageGroups, PackagePairs, ProcessSeqEntry, StockLine } from '@/types/domain';
 import { DailyStockTable } from '@/components/stock/daily-stock-table';
 import { ExportCsvButton } from '@/components/stock/export-csv-button';
 import { HeaderPortal } from '@/components/layout/header-portal';
@@ -31,10 +31,12 @@ export function DailyStockView({
   lines,
   seq,
   groups,
+  packagePairs = {},
 }: {
   lines: StockLine[];
   seq: ProcessSeqEntry[];
   groups: PackageGroups;
+  packagePairs?: PackagePairs;
 }) {
   const sp = useSearchRecord();
   const { set } = useQueryParams();
@@ -73,7 +75,12 @@ export function DailyStockView({
       : scopedLines.filter((line) => packageKinds.get(line.packageName) === packageStatus);
   const packageNames = uniq(statusLines.map((line) => line.packageName));
   const packageName = pick(param(sp, 'package'), packageNames, '');
-  const hideEmpty = param(sp, 'rows') === 'active';
+  const rowsParam = param(sp, 'rows');
+  const rowsMode = rowsParam === 'all' ? 'all' : 'active';
+  useEffect(() => {
+    if (rowsParam !== rowsMode) set({ rows: rowsMode });
+  }, [rowsMode, rowsParam, set]);
+  const hideEmpty = rowsMode === 'active';
 
   const result = buildDailyStock(statusLines, activeSeq, groups, {
     snapshot,
@@ -109,12 +116,12 @@ export function DailyStockView({
           },
           {
             name: 'rows',
-            label: 'Lines',
+            label: 'Packages',
             type: 'select',
-            default: 'all',
+            default: rowsMode,
             options: [
-              { value: 'all', label: 'All lines' },
-              { value: 'active', label: 'Hide empty lines' },
+              { value: 'active', label: 'Active packages' },
+              { value: 'all', label: 'All packages' },
             ],
           },
         ]}
@@ -127,6 +134,7 @@ export function DailyStockView({
       <DailyStockTable
         result={result}
         packageKinds={packageKinds}
+        packagePairs={packagePairs}
         searchParams={sp}
         summary={{
           processLines: result.rows.length,

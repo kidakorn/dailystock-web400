@@ -6,6 +6,7 @@ import { z } from 'zod';
 import {
   dashboardSchema,
   packageGroupsSchema,
+  packagePairsSchema,
   packageSchema,
   processSeqSchema,
   stockGroupSchema,
@@ -33,3 +34,4 @@ export const getStock = cache(() => readJson('stock.json', z.array(stockGroupSch
 export const getStockLines = cache(() => readJson('wgpgbl.json', z.array(stockLineSchema)));
 export const getProcessSeq = cache(() => readJson('process-seq.json', z.array(processSeqSchema)));
 export const getPackageGroups = cache(() => readJson('package-groups.json', packageGroupsSchema));
+export const getPackagePairs = cache(() => readJson('package-pairs.json', packagePairsSchema));

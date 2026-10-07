@@ -499,6 +499,47 @@
   }
 }
 
+@media (min-width: 901px) and (max-width: 1760px) {
+  .header[data-daily-stock='true'] {
+    flex-wrap: nowrap;
+  }
+  .header[data-daily-stock='true'] .headerMeta {
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
+  }
+  .headerTools[data-daily-stock='true'] {
+    flex-flow: row nowrap;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 2px;
+    scrollbar-width: thin;
+    touch-action: pan-x;
+  }
+  .headerTools[data-daily-stock='true'] > form {
+    display: grid;
+    flex: 0 0 auto;
+    width: max-content;
+    min-width: max-content;
+    max-width: none;
+    overflow: visible;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    grid-template-columns: none;
+    column-gap: 2px;
+  }
+  .headerTools[data-daily-stock='true'] > [data-daily-stock-info] {
+    flex: 0 0 auto;
+    width: max-content;
+    max-width: none;
+    white-space: nowrap;
+  }
+  .headerTools[data-daily-stock='true'] > [data-daily-stock-info] [aria-label='Daily stock summary'] > span:nth-child(3) {
+    display: none;
+  }
+}
+
 @media (max-width: 700px) {
   .app {
     display: block;

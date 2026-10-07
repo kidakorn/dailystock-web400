@@ -161,42 +161,168 @@ describe('DailyStockTable', () => {
     expect(screen.getByText('PKG-9')).toBeTruthy();
     expect(screen.queryByText('PKG-1')).toBeNull();
     expect(screen.getByText('Page 2 of 2')).toBeTruthy();
-    expect(document.getElementById('header-tools')?.textContent).toContain('Showing 1 of 9 packages');
+    expect(document.getElementById('header-tools')?.textContent).toContain('1/9 packages');
   });
 
-  it('places each package subtotal after its process rows', () => {
+  it('keeps one shared header and places package names below it with per-package totals', () => {
+    const dicing = result.rows[0];
+    const dieBond = result.rows[1];
+    if (!dicing || !dieBond) throw new Error('Test fixture needs process rows');
     const packageResult = {
       ...result,
-      packages: [{ key: 'DIP-8', name: 'DIP-8', result }],
+      packages: [
+        {
+          key: 'DIP-8',
+          name: 'DIP-8',
+          result: {
+            ...result,
+            rows: [dicing],
+            totals: { ...base, stock: dicing.stock, actual: dicing.actual, difference: dicing.difference },
+          },
+        },
+        {
+          key: 'DIP-8 Cu',
+          name: 'DIP-8 Cu',
+          result: {
+            ...result,
+            rows: [dieBond],
+            totals: { ...base, stock: dieBond.stock, balDay: dieBond.balDay, difference: dieBond.difference },
+          },
+        },
+      ],
     };
     render(
-      <DailyStockTable result={packageResult} packageKinds={new Map([['DIP-8', 'cancelled']])} />,
+      <DailyStockTable
+        result={packageResult}
+        packagePairs={{ IC2: [['DIP-8', 'DIP-8 Cu']] }}
+        packageKinds={new Map([['DIP-8', 'cancelled']])}
+        searchParams={{ rows: 'all' }}
+      />,
     );
 
-    const cancelledBadge = screen.getByText('Cancelled').closest('span');
-    expect(cancelledBadge?.querySelector('[aria-hidden="true"]')).toBeTruthy();
-    const rows = screen.getAllByRole('row');
-    const processRow = rows.findIndex((row) => within(row).queryByText('BEFORE WIRE BOND'));
-    const totalRow = rows.findIndex((row) => within(row).queryByText('Total DIP-8'));
-    expect(totalRow).toBeGreaterThan(processRow);
-    expect(within(rows[totalRow] as HTMLElement).getByText('745,903')).toBeTruthy();
+    const tables = screen.getAllByRole('table');
+    expect(tables).toHaveLength(1);
+    const table = tables[0] as HTMLElement;
+    const tabs = Array.from(table.querySelectorAll('tbody [data-package-name]'));
+    expect(tabs.map((tab) => tab.getAttribute('data-package-name'))).toEqual(['DIP-8', 'DIP-8 Cu']);
+    expect(table.querySelectorAll('thead tr')).toHaveLength(1);
+    expect(table.querySelectorAll('thead th')).toHaveLength(14);
+    expect(tabs[0]?.closest('tr')?.nextElementSibling?.textContent).toContain('DICING');
+    expect(Array.from(table.querySelectorAll('thead tr:first-child th[data-package-measure]')).map((header) => header.textContent?.trim())).toEqual([
+      'Balance', 'Bal/Day', 'Stock', 'Actual', 'Pending', 'Difference',
+      'Balance', 'Bal/Day', 'Stock', 'Actual', 'Pending', 'Difference',
+    ]);
+    expect(Array.from(table.querySelectorAll('thead tr:first-child th[data-package-measure]')).every((header) => header.className.includes('packageMeasureColumn'))).toBe(true);
+    expect(tabs.map((tab) => tab.parentElement?.getAttribute('colspan'))).toEqual(['6', '6']);
+    expect(tabs[0]?.getAttribute('data-palette')).toBe(tabs[1]?.getAttribute('data-palette'));
+    expect(screen.getByText('Cancelled').closest('span')?.querySelector('[aria-hidden="true"]')).toBeTruthy();
+    const dicingRow = within(table).getByRole('row', { name: /^DICING/ });
+    expect(dicingRow.querySelector('td[data-package="DIP-8 Cu"][data-measure="stock"]')?.textContent).toBe('0');
+    const dieBondRow = within(table).getByRole('row', { name: /^DIE BONDING/ });
+    expect(dieBondRow.querySelector('td[data-package="DIP-8"][data-measure="stock"]')?.textContent).toBe('0');
+    expect(dieBondRow.querySelector('td[data-package="DIP-8 Cu"][data-measure="stock"]')?.textContent).toBe('10');
+    const totalCell = table.querySelector('td[data-total-package="DIP-8"][data-measure="stock"]');
+    const totalRow = totalCell?.closest('tr');
+    expect(totalCell?.textContent).toBe('745,893');
+    expect(totalRow?.querySelector('td[data-total-package="DIP-8 Cu"][data-measure="stock"]')?.textContent).toBe('10');
   });
 
-  it('adds a spacer between package groups without a trailing spacer', () => {
+  it('orders configured package pairs together and gives each pair the same header tint', () => {
     const packageResult = {
       ...result,
       packages: [
         { key: 'PKG-A', name: 'PKG-A', result },
         { key: 'PKG-B', name: 'PKG-B', result },
+        { key: 'PKG-C', name: 'PKG-C', result },
       ],
     };
-    render(<DailyStockTable result={packageResult} />);
+    render(
+      <DailyStockTable
+        result={packageResult}
+        packagePairs={{ IC2: [['PKG-B', 'PKG-A']] }}
+        searchParams={{ rows: 'all' }}
+      />,
+    );
 
-    const tableRows = Array.from(screen.getByRole('table').querySelectorAll('tbody tr'));
-    const separators = tableRows.filter((row) => row.className.includes('packageSeparator'));
-    expect(separators).toHaveLength(1);
-    expect(separators[0]?.previousElementSibling?.textContent).toContain('Total PKG-A');
-    expect(separators[0]?.nextElementSibling?.textContent).toContain('PKG-B');
+    const tabs = Array.from(document.querySelectorAll('table tbody [data-package-name]'));
+    expect(tabs.map((tab) => tab.getAttribute('data-package-name'))).toEqual(['PKG-B', 'PKG-A', 'PKG-C']);
+    expect(tabs[0]?.getAttribute('data-palette')).toBe(tabs[1]?.getAttribute('data-palette'));
+    expect(tabs[2]?.getAttribute('data-palette')).not.toBe(tabs[0]?.getAttribute('data-palette'));
+    expect(tabs[0]?.getAttribute('data-pair-index')).toBe(tabs[1]?.getAttribute('data-pair-index'));
+    expect(tabs[2]?.getAttribute('data-pair-index')).not.toBe(tabs[0]?.getAttribute('data-pair-index'));
+  });
+
+  it('keeps pairs together at the 8-package page boundary and shows unpaired packages alone', () => {
+    const source = result.rows[0];
+    if (!source) throw new Error('Test fixture needs a source row');
+    const names = [
+      'PKG-1', 'PKG-2', 'PKG-3', 'PKG-4', 'PKG-5', 'PKG-6', 'PKG-7', 'PAIR-A', 'PAIR-B',
+    ];
+    const packages = names.map((name) => ({
+      key: name,
+      name,
+      result: { ...result, rows: [{ ...source, key: `${name}|100|` }] },
+    }));
+    const packageResult = { ...result, packages };
+    const pairs = { IC2: [['PKG-1'], ['PKG-2'], ['PKG-3'], ['PKG-4'], ['PKG-5'], ['PKG-6'], ['PKG-7'], ['PAIR-A', 'PAIR-B']] };
+
+    const { unmount } = render(
+      <DailyStockTable result={packageResult} packagePairs={pairs} searchParams={{ rows: 'all' }} />,
+    );
+    let headers = Array.from(document.querySelectorAll('table tbody [data-package-name]'));
+    expect(screen.getAllByRole('table')).toHaveLength(1);
+    expect(document.querySelectorAll('tbody tr[data-pair-section]')).toHaveLength(7);
+    expect(headers.map((header) => header.getAttribute('data-package-name'))).toEqual(names.slice(0, 7));
+    expect(screen.getByText('Page 1 of 2')).toBeTruthy();
+
+    unmount();
+    render(
+      <DailyStockTable
+        result={packageResult}
+        packagePairs={pairs}
+        searchParams={{ page: '2', rows: 'all' }}
+      />,
+    );
+    headers = Array.from(document.querySelectorAll('table tbody [data-package-name]'));
+    expect(screen.getAllByRole('table')).toHaveLength(1);
+    expect(document.querySelectorAll('tbody tr[data-pair-section]')).toHaveLength(1);
+    expect(headers.map((header) => header.getAttribute('data-package-name'))).toEqual(['PAIR-A', 'PAIR-B']);
+    expect(screen.getByText('Page 2 of 2')).toBeTruthy();
+  });
+
+  it('hides an empty pair by default, keeps its empty partner beside an active package, and shows all in All packages mode', () => {
+    const active = result.rows[0];
+    const empty = result.rows[2];
+    if (!active || !empty) throw new Error('Test fixture needs active and empty rows');
+    const packageResult = {
+      ...result,
+      packages: [
+        { key: 'ACTIVE', name: 'ACTIVE', result: { ...result, rows: [active] } },
+        { key: 'ACTIVE-CU', name: 'ACTIVE-CU', result: { ...result, rows: [] } },
+        { key: 'EMPTY', name: 'EMPTY', result: { ...result, rows: [empty] } },
+        { key: 'EMPTY-CU', name: 'EMPTY-CU', result: { ...result, rows: [empty] } },
+      ],
+    };
+    const packagePairs = { IC2: [['ACTIVE', 'ACTIVE-CU'], ['EMPTY', 'EMPTY-CU']] };
+
+    const { unmount } = render(<DailyStockTable result={packageResult} packagePairs={packagePairs} />);
+    let headers = Array.from(document.querySelectorAll('table tbody [data-package-name]'));
+    expect(screen.getAllByRole('table')).toHaveLength(1);
+    expect(document.querySelectorAll('tbody tr[data-pair-section]')).toHaveLength(1);
+    expect(headers.map((header) => header.getAttribute('data-package-name'))).toEqual(['ACTIVE', 'ACTIVE-CU']);
+    const activeRow = screen.getByRole('row', { name: /^DICING/ });
+    expect(activeRow.querySelector('td[data-package="ACTIVE-CU"][data-measure="stock"]')?.textContent).toBe('0');
+
+    unmount();
+    render(
+      <DailyStockTable result={packageResult} packagePairs={packagePairs} searchParams={{ rows: 'all' }} />,
+    );
+    headers = Array.from(document.querySelectorAll('table tbody [data-package-name]'));
+    expect(screen.getAllByRole('table')).toHaveLength(1);
+    expect(document.querySelectorAll('tbody tr[data-pair-section]')).toHaveLength(2);
+    expect(headers.map((header) => header.getAttribute('data-package-name'))).toEqual([
+      'ACTIVE', 'ACTIVE-CU', 'EMPTY', 'EMPTY-CU',
+    ]);
   });
 
   it('labels normal packages as Running with a status marker', () => {

@@ -480,6 +480,19 @@
     margin-left: 0;
   }
 }
+@media (min-width: 901px) and (max-width: 1440px) {
+  .dailyStockHeaderStats > span:nth-child(2) {
+    display: none;
+  }
+  .dailyStockHeaderGroup > button {
+    width: 32px;
+    justify-content: center;
+    padding-inline: 0;
+  }
+  .dailyStockHeaderGroup > button [data-collapse-label] {
+    display: none;
+  }
+}
 .measureLegend {
   display: flex;
   flex-wrap: wrap;
@@ -614,6 +627,165 @@
 }
 .dailyStockTableWrap .table {
   min-width: 980px;
+}
+.dailyStockTableWrap .table th,
+.dailyStockTableWrap .table td {
+  padding: 4px 6px;
+  line-height: 1.25;
+}
+.dailyStockTableWrap .table .packageTab {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  padding: 2px 6px;
+  border: 1px solid;
+  color: #202a33;
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+.dailyStockTableWrap .table .packageTab[data-palette='0'] {
+  border-color: #91abc0;
+  background: #dceaf5;
+}
+.dailyStockTableWrap .table .packageTab[data-palette='1'] {
+  border-color: #9bb291;
+  background: #e3efdc;
+}
+.dailyStockTableWrap .table .packageTab[data-palette='2'] {
+  border-color: #c8ad67;
+  background: #fff0c8;
+}
+.dailyStockTableWrap .table .packageTab[data-palette='3'] {
+  border-color: #c9907f;
+  background: #f8e2d9;
+}
+.dailyStockTableWrap .table .packageTab[data-palette='4'] {
+  border-color: #95a5c2;
+  background: #e0e7f4;
+}
+.dailyStockTableWrap .table .packageTab[data-palette='5'] {
+  border-color: #78a9a0;
+  background: #d9efea;
+}
+.dailyStockTableWrap .table .packageTab[data-palette='6'] {
+  border-color: #c18eaa;
+  background: #f3e3ed;
+}
+.dailyStockTableWrap .table .packageTab[data-palette='7'] {
+  border-color: #9ca5ad;
+  background: #e8ebee;
+}
+.dailyStockTableWrap .packageComparisonTable {
+  width: max-content;
+  min-width: 980px;
+}
+.packagePairList {
+  display: block;
+}
+.packagePairSection {
+  min-width: 0;
+}
+.packagePairSection + .packagePairSection {
+  margin-top: var(--space-3);
+}
+.dailyStockTableWrap .packageComparisonTable thead tr:first-child th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  height: 34px;
+}
+.dailyStockTableWrap .packageComparisonTable .packageGroupHeader {
+  text-align: center;
+}
+.dailyStockTableWrap .packageComparisonTable th {
+  border-color: var(--daily-table-grid);
+}
+.dailyStockTableWrap .packageComparisonTable .packagePairNameRow td {
+  vertical-align: middle;
+  border-color: var(--daily-table-grid);
+  border-top: 1px solid var(--daily-table-grid);
+}
+.dailyStockTableWrap .packageComparisonTable .packagePairNameRow td:first-child {
+  border-left: 1px solid var(--daily-table-grid);
+}
+.dailyStockTableWrap .packageComparisonTable .packageGroupStart,
+.dailyStockTableWrap .packageComparisonTable .packageMeasureStart,
+.dailyStockTableWrap .packageComparisonTable td[data-package-start='true'] {
+  border-left: 1px solid var(--daily-table-grid);
+}
+.dailyStockTableWrap .packageComparisonTable .packageTotal td {
+  border-color: var(--daily-table-grid);
+  border-top: 1px solid var(--daily-table-grid);
+}
+.dailyStockTableWrap .packageComparisonTable tbody tr[data-row-stripe='alternate'] td:not([data-tone='success']):not([data-tone='warning']):not([data-tone='danger']) {
+  background-color: #f2f5f7;
+}
+.dailyStockTableWrap .packageComparisonTable tbody tr.packageTotal td,
+.dailyStockTableWrap .packageComparisonTable tbody tr.packageTotal td.measureCell[data-measure][data-tone] {
+  background-color: #e9eef2;
+  border-color: #c3cbd2;
+}
+.dailyStockTableWrap .packageComparisonTable .packageMeasureColumn {
+  white-space: nowrap;
+}
+.dailyStockTableWrap .packageComparisonTable tbody td.measureCell,
+.dailyStockTableWrap .packageComparisonTable tfoot td.measureCell {
+  width: 88px;
+  min-width: 88px;
+  max-width: 88px;
+}
+.dailyStockTableWrap .packageComparisonTable td[data-empty-package-slot='true'] {
+  background: var(--color-surface);
+}
+@media (min-width: 901px) {
+  .dailyStockTableWrap .packageComparisonTable {
+    width: 100%;
+    min-width: 100%;
+    table-layout: fixed;
+  }
+  .dailyStockTableWrap .packageComparisonTable .processColumn {
+    width: 10.5%;
+    min-width: 0;
+  }
+  .dailyStockTableWrap .packageComparisonTable .subProcessColumn {
+    width: 11.5%;
+    min-width: 0;
+  }
+  .dailyStockTableWrap .packageComparisonTable .packageMeasureColumn,
+  .dailyStockTableWrap .packageComparisonTable tbody td.measureCell,
+  .dailyStockTableWrap .packageComparisonTable tfoot td.measureCell {
+    width: 6.45%;
+    min-width: 0;
+    max-width: none;
+    padding-right: 2px;
+    padding-left: 2px;
+  }
+  .dailyStockTableWrap .packageComparisonTable .packageGroupHeader {
+    width: 38.7%;
+    min-width: 0;
+  }
+}
+@media (min-width: 901px) and (max-width: 1500px) {
+  .dailyStockTableWrap .packageComparisonTable .packageMeasureColumn,
+  .dailyStockTableWrap .packageComparisonTable tbody td.measureCell,
+  .dailyStockTableWrap .packageComparisonTable tfoot td.measureCell {
+    font-size: 11px;
+  }
+}
+@media (min-width: 1501px) and (max-width: 1539px) {
+  .dailyStockTableWrap .packageComparisonTable .packageMeasureColumn,
+  .dailyStockTableWrap .packageComparisonTable tbody td.measureCell,
+  .dailyStockTableWrap .packageComparisonTable tfoot td.measureCell {
+    font-size: 12px;
+  }
+}
+@media (min-width: 1540px) and (max-width: 1760px) {
+  .dailyStockTableWrap .packageComparisonTable .packageMeasureColumn,
+  .dailyStockTableWrap .packageComparisonTable tbody td.measureCell,
+  .dailyStockTableWrap .packageComparisonTable tfoot td.measureCell {
+    font-size: 13px;
+  }
 }
 .dailyStockTableWrap
   .table
@@ -803,4 +975,7 @@
 .dailyStockTableWrap .table tfoot td.measureCell[data-measure][data-tone='zero'] {
   background: var(--color-surface);
   color: var(--color-text-muted);
+}
+.dailyStockTableWrap .packageComparisonTable tbody tr[data-row-stripe='alternate'] td:not([data-tone='success']):not([data-tone='warning']):not([data-tone='danger']) {
+  background-color: #f2f5f7;
 }

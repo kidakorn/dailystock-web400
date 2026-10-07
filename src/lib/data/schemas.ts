@@ -99,3 +99,9 @@ export const processSeqSchema = z.object({
 
 /** Package names per group, e.g. { IC2: [...], IC3: [...] }. Edit data/package-groups.json to move a package. */
 export const packageGroupsSchema = z.record(z.string(), z.array(z.string()));
+
+/** Package pairs and display order for Daily Stock Balance. */
+export const packagePairsSchema = z.record(
+  z.string(),
+  z.array(z.array(z.string().min(1)).min(1)),
+);

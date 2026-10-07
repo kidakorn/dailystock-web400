@@ -92,7 +92,8 @@ describe('DailyStockView package status filter', () => {
     const { unmount } = renderView();
     expect((screen.getByLabelText('Package status') as HTMLSelectElement).value).toBe('cancelled');
     expect(screen.getByRole('table').textContent).toContain('CANCELLED-PKG');
-    expect(mocks.set).not.toHaveBeenCalled();
+    expect(mocks.set).not.toHaveBeenCalledWith({ status: 'cancelled' });
+    expect(mocks.set).toHaveBeenCalledWith({ rows: 'active' });
 
     unmount();
     mocks.params = { package: 'NEW-PKG' };
@@ -109,5 +110,20 @@ describe('DailyStockView package status filter', () => {
     renderView();
     fireEvent.change(screen.getByLabelText('Package status'), { target: { value: 'new' } });
     expect(mocks.set).toHaveBeenLastCalledWith({ status: 'new' });
+  });
+
+  it('defaults to active packages and supports showing all packages', () => {
+    renderView();
+
+    expect((screen.getByLabelText('Packages') as HTMLSelectElement).value).toBe('active');
+    expect(mocks.set).toHaveBeenCalledWith({ rows: 'active' });
+
+    cleanup();
+    mocks.params = { rows: 'all' };
+    mocks.set.mockClear();
+    renderView();
+
+    expect((screen.getByLabelText('Packages') as HTMLSelectElement).value).toBe('all');
+    expect(mocks.set).not.toHaveBeenCalledWith({ rows: 'active' });
   });
 });
