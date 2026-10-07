@@ -2,8 +2,10 @@
 
 import { ArrowDown, ArrowUp, Download, Plus, RotateCcw, Upload, X } from 'lucide-react';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { createColumnHelper } from '@tanstack/react-table';
 import { HeaderPortal } from '@/components/layout/header-portal';
 import { FilterBar } from '@/components/ui/filter-bar';
+import { DataTable, dataTableFeatures, type DataTableColumn } from '@/components/ui/data-table';
 import ui from '@/components/ui/ui.module.css';
 import {
   addProcessSeq,
@@ -30,6 +32,18 @@ const emptyDraft: Draft = {
   subProcessCode: '',
   subProcessName: '',
 };
+
+type ProcessMasterRow = { entry: ProcessSeqEntry; index: number };
+
+const columnHelper = createColumnHelper<typeof dataTableFeatures, ProcessMasterRow>();
+const PROCESS_MASTER_COLUMNS: DataTableColumn<ProcessMasterRow>[] = columnHelper.columns([
+  columnHelper.display({ id: 'order', header: 'Order' }),
+  columnHelper.display({ id: 'processCode', header: 'Process code' }),
+  columnHelper.display({ id: 'processName', header: 'Process name' }),
+  columnHelper.display({ id: 'subProcessCode', header: 'Sub-process code' }),
+  columnHelper.display({ id: 'subProcessName', header: 'Sub-process name' }),
+  columnHelper.display({ id: 'actions', header: 'Actions' }),
+]);
 
 function processNameOf(entry: ProcessSeqEntry, entries: ProcessSeqEntry[]) {
   const parent = entries.find(
@@ -91,6 +105,14 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
   const [error, setError] = useState('');
   const fileInput = useRef<HTMLInputElement>(null);
   const addDialog = useRef<HTMLDialogElement>(null);
+  const tableRows = entries
+    .map((entry, index) => ({ entry, index }))
+    .filter(({ entry }) =>
+      !query ||
+      `${entry.processCode} ${processNameOf(entry, entries)} ${entry.subProcessCode} ${subProcessNameOf(entry)}`
+        .toLowerCase()
+        .includes(query),
+    );
 
   useEffect(() => {
     const dialog = addDialog.current;
@@ -253,136 +275,149 @@ export function ProcessMasterView({ defaultEntries }: { defaultEntries: ProcessS
           {error}
         </p>
       ) : null}
-      <div className={styles.tableWrap}>
-        <table className={ui.table} aria-label="Process sequence master">
-          <thead>
-            <tr>
-              <th>Order</th>
-              <th>Process code</th>
-              <th>Process name</th>
-              <th>Sub-process code</th>
-              <th>Sub-process name</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map((entry, index) => {
-              if (
-                query &&
-                !`${entry.processCode} ${processNameOf(entry, entries)} ${entry.subProcessCode} ${subProcessNameOf(entry)}`
-                  .toLowerCase()
-                  .includes(query)
-              )
-                return null;
-              return editIndex === index ? (
-                <tr key={`${entry.processCode}|${entry.subProcessCode}`}>
-                  <td>{entry.seq}</td>
-                  <td>
-                    <input
-                      aria-label="Edit process code"
-                      type="number"
-                      step="1"
-                      value={editDraft.processCode}
-                      onChange={(event) =>
-                        setEditDraft({ ...editDraft, processCode: event.target.value })
-                      }
-                    />
-                  </td>
-                  <td>
-                    <input
-                      aria-label="Edit process name"
-                      value={editDraft.processName}
-                      onChange={(event) =>
-                        setEditDraft({ ...editDraft, processName: event.target.value })
-                      }
-                    />
-                  </td>
-                  <td>
-                    <input
-                      aria-label="Edit sub-process code"
-                      value={editDraft.subProcessCode}
-                      onChange={(event) =>
-                        setEditDraft({ ...editDraft, subProcessCode: event.target.value })
-                      }
-                    />
-                  </td>
-                  <td>
-                    <input
-                      aria-label="Edit sub-process name"
-                      value={editDraft.subProcessName}
-                      onChange={(event) =>
-                        setEditDraft({ ...editDraft, subProcessName: event.target.value })
-                      }
-                    />
-                  </td>
-                  <td>
-                    <form
-                      className={styles.rowActions}
-                      onSubmit={(event) => handleEdit(event, index)}
-                    >
-                      <button type="submit" className={ui.btn}>
-                        Save
-                      </button>
-                      <button type="button" className={ui.btn} onClick={() => setEditIndex(null)}>
-                        Cancel
-                      </button>
-                    </form>
-                  </td>
-                </tr>
-              ) : (
-                <tr key={`${entry.processCode}|${entry.subProcessCode}`}>
-                  <td className={ui.num}>{entry.seq}</td>
-                  <td>{entry.processCode}</td>
-                  <td>{processNameOf(entry, entries) || '—'}</td>
-                  <td>{entry.subProcessCode || '—'}</td>
-                  <td>{subProcessNameOf(entry) || '—'}</td>
-                  <td>
-                    <div className={styles.rowActions}>
-                      <button
-                        type="button"
-                        className={ui.btn}
-                        aria-label={`Move ${entry.label} up`}
-                        title="Move up"
-                        disabled={index === 0}
-                        onClick={() => commit(() => moveProcessSeq(entries, index, -1))}
-                      >
-                        <ArrowUp size={15} aria-hidden="true" />
-                      </button>
-                      <button
-                        type="button"
-                        className={ui.btn}
-                        aria-label={`Move ${entry.label} down`}
-                        title="Move down"
-                        disabled={index === entries.length - 1}
-                        onClick={() => commit(() => moveProcessSeq(entries, index, 1))}
-                      >
-                        <ArrowDown size={15} aria-hidden="true" />
-                      </button>
-                      <button
-                        type="button"
-                        className={ui.btn}
-                        onClick={() => {
-                          setEditIndex(index);
-                          setEditDraft(draftFrom(entry, entries));
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        className={ui.btn}
-                        onClick={() => commit(() => removeProcessSeq(entries, index))}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        data={tableRows}
+        columns={PROCESS_MASTER_COLUMNS}
+        ariaLabel="Process sequence master"
+        viewportClassName={styles.tableWrap}
+        tableClassName={styles.processTable}
+        columnClassName={{ order: ui.num }}
+        getRowId={({ entry }) => `${entry.processCode}|${entry.subProcessCode}`}
+        initialPageSize={8}
+        autoPageSize
+        renderCell={(tableRow, columnId) => {
+          const { entry, index } = tableRow.original;
+          const editing = editIndex === index;
+          if (columnId === 'order') return entry.seq;
+          if (columnId === 'processCode') {
+            return editing ? (
+              <input
+                aria-label="Edit process code"
+                type="number"
+                step="1"
+                value={editDraft.processCode}
+                onChange={(event) => setEditDraft({ ...editDraft, processCode: event.target.value })}
+              />
+            ) : entry.processCode;
+          }
+          if (columnId === 'processName') {
+            return editing ? (
+              <input
+                aria-label="Edit process name"
+                value={editDraft.processName}
+                onChange={(event) => setEditDraft({ ...editDraft, processName: event.target.value })}
+              />
+            ) : processNameOf(entry, entries) || '—';
+          }
+          if (columnId === 'subProcessCode') {
+            return editing ? (
+              <input
+                aria-label="Edit sub-process code"
+                value={editDraft.subProcessCode}
+                onChange={(event) => setEditDraft({ ...editDraft, subProcessCode: event.target.value })}
+              />
+            ) : entry.subProcessCode || '—';
+          }
+          if (columnId === 'subProcessName') {
+            return editing ? (
+              <input
+                aria-label="Edit sub-process name"
+                value={editDraft.subProcessName}
+                onChange={(event) => setEditDraft({ ...editDraft, subProcessName: event.target.value })}
+              />
+            ) : subProcessNameOf(entry) || '—';
+          }
+          if (columnId !== 'actions') return null;
+          return editing ? (
+            <form className={styles.rowActions} onSubmit={(event) => handleEdit(event, index)}>
+              <button type="submit" className={ui.btn}>
+                Save
+              </button>
+              <button type="button" className={ui.btn} onClick={() => setEditIndex(null)}>
+                Cancel
+              </button>
+            </form>
+          ) : (
+            <div className={styles.rowActions}>
+              <button
+                type="button"
+                className={ui.btn}
+                aria-label={`Move ${entry.label} up`}
+                title="Move up"
+                disabled={index === 0}
+                onClick={() => commit(() => moveProcessSeq(entries, index, -1))}
+              >
+                <ArrowUp size={15} aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                className={ui.btn}
+                aria-label={`Move ${entry.label} down`}
+                title="Move down"
+                disabled={index === entries.length - 1}
+                onClick={() => commit(() => moveProcessSeq(entries, index, 1))}
+              >
+                <ArrowDown size={15} aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                className={ui.btn}
+                onClick={() => {
+                  setEditIndex(index);
+                  setEditDraft(draftFrom(entry, entries));
+                }}
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                className={ui.btn}
+                onClick={() => commit(() => removeProcessSeq(entries, index))}
+              >
+                Delete
+              </button>
+            </div>
+          );
+        }}
+        renderPagination={(table) => {
+          const pageCount = Math.max(1, table.getPageCount());
+          const page = table.state.pagination.pageIndex + 1;
+          return (
+            <nav className={`${ui.pager} ${styles.pagination}`} aria-label="Pagination">
+              <span className={`${ui.pagerInfo} ${styles.pageInfo}`}>
+                Page {page} of {pageCount} · {table.getRowCount()} entries
+              </span>
+              <button
+                type="button"
+                className={ui.btn}
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                Previous
+              </button>
+              {table.getPageOptions().map((pageIndex) => (
+                <button
+                  key={pageIndex}
+                  type="button"
+                  className={ui.btn}
+                  aria-current={pageIndex + 1 === page ? 'page' : undefined}
+                  onClick={() => table.setPageIndex(pageIndex)}
+                >
+                  {pageIndex + 1}
+                </button>
+              ))}
+              <button
+                type="button"
+                className={ui.btn}
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                Next
+              </button>
+            </nav>
+          );
+        }}
+      />
     </section>
   );
 }

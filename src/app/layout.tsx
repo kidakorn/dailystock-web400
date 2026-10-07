@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import 'react-day-picker/style.css';
-import { plexMono, plexSansThai } from '@/lib/fonts';
+import { robotoMono, sarabun } from '@/lib/fonts';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${plexMono.variable} ${plexSansThai.variable}`}>
+    <html lang="en" className={`${robotoMono.variable} ${sarabun.variable}`}>
       <body>{children}</body>
     </html>
   );

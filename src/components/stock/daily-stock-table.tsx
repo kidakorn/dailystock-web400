@@ -2,11 +2,24 @@
 
 import { Fragment, useState } from 'react';
 import Link from 'next/link';
-import { CalendarDays, Package, Rows3 } from 'lucide-react';
+import {
+  CalendarDays,
+  Minus,
+  Package,
+  Plus,
+  Rows3,
+} from 'lucide-react';
+import { createColumnHelper } from '@tanstack/react-table';
 import { HeaderPortal } from '@/components/layout/header-portal';
 import ui from '@/components/ui/ui.module.css';
+import {
+  DataTable,
+  dataTableFeatures,
+  type DataTableColumn,
+} from '@/components/ui/data-table';
 import { formatDecimal3, formatNumber } from '@/lib/format';
 import { differenceOf } from '@/lib/summary/daily-stock';
+import type { PackageKind } from '@/lib/summary/packages';
 import type { DailyStockResult, DailyStockRow, Measures } from '@/lib/summary/daily-stock';
 import { hrefWith } from '@/lib/query';
 import type { SearchParams } from '@/lib/query';
@@ -22,12 +35,28 @@ const MEASURE_COLUMNS = [
   ['pending', 'Pending'],
 ] as const;
 
+type DailyStockTableGroup = {
+  key: string;
+  label: string;
+  kind?: PackageKind;
+  rows: DailyStockRow[];
+  totals: DailyStockResult['totals'];
+};
+
+const columnHelper = createColumnHelper<typeof dataTableFeatures, DailyStockTableGroup>();
+const DAILY_STOCK_COLUMNS: DataTableColumn<DailyStockTableGroup>[] = columnHelper.columns([
+  columnHelper.display({ id: 'process', header: 'Process name' }),
+  columnHelper.display({ id: 'subProcess', header: 'Sub-process name' }),
+  ...MEASURE_COLUMNS.map(([key, label]) => columnHelper.display({ id: key, header: label })),
+  columnHelper.display({ id: 'difference', header: 'Difference' }),
+]);
+
 function Cells({ values }: { values: DailyStockResult['totals'] }) {
   const toneFor = (key: string, value: number) => {
     if (value === 0) return 'zero';
     if (key === 'pending') return 'warning';
-    if (key === 'difference') return value < 0 ? 'danger' : 'success';
-    if (key === 'stock' || key === 'actual') return value < 0 ? 'danger' : 'success';
+    if (key === 'difference' || key === 'stock') return value < 0 ? 'danger' : 'success';
+    if (key === 'actual') return value < 0 ? 'danger' : 'info';
     return value < 0 ? 'danger' : 'info';
   };
   return (
@@ -38,6 +67,7 @@ function Cells({ values }: { values: DailyStockResult['totals'] }) {
           className={`${ui.num} ${ui.measureCell}`}
           data-measure={key}
           data-tone={toneFor(key, values[key])}
+          aria-label={key === 'stock' && values[key] < 0 ? `Negative stock: ${formatNumber(values[key])}` : undefined}
         >
           {formatNumber(values[key])}
         </td>
@@ -46,6 +76,7 @@ function Cells({ values }: { values: DailyStockResult['totals'] }) {
         className={`${ui.num} ${ui.measureCell}`}
         data-measure="difference"
         data-tone={toneFor('difference', values.difference)}
+        aria-label={values.difference < 0 ? `Negative difference: ${formatDecimal3(values.difference)}` : undefined}
       >
         {formatDecimal3(values.difference)}
       </td>
@@ -63,7 +94,9 @@ function groupRows(rows: DailyStockRow[]): ProcessGroup[] {
   const groups = new Map<string, DailyStockRow[]>();
   for (const row of rows) {
     const key = String(row.processCode);
-    groups.set(key, [...(groups.get(key) ?? []), row]);
+    const groupedRows = groups.get(key);
+    if (groupedRows) groupedRows.push(row);
+    else groups.set(key, [row]);
   }
   return [...groups].map(([key, groupedRows]) => {
     const totals: Measures = { balance: 0, balDay: 0, stock: 0, actual: 0, pending: 0 };
@@ -96,27 +129,47 @@ function Row({ row }: { row: DailyStockRow }) {
   );
 }
 
+const PACKAGE_STATUS: Record<PackageKind, string> = {
+  normal: 'Normal',
+  new: 'New',
+  cancelled: 'Cancelled',
+};
+
+function PackageStatusBadge({ kind }: { kind: PackageKind }) {
+  const label = PACKAGE_STATUS[kind];
+  return (
+    <span className={ui.packageStatus} data-kind={kind}>
+      <span className={ui.packageStatusMark} aria-hidden="true" />
+      {label}
+    </span>
+  );
+}
+
 export function DailyStockTable({
   result,
+  packageKinds,
   searchParams = {},
   summary = { processLines: 0, packages: 0, date: '' },
 }: {
   result: DailyStockResult;
+  packageKinds?: ReadonlyMap<string, PackageKind>;
   searchParams?: SearchParams;
   summary?: { processLines: number; packages: number; date: string };
 }) {
   const { rows, totals } = result;
   const packageView = Boolean(result.packages?.length);
-  const groups = packageView
+  const groups: DailyStockTableGroup[] = packageView
     ? (result.packages ?? []).map((item) => ({
         key: item.key,
         label: item.name,
+        kind: packageKinds?.get(item.name),
         rows: item.result.rows,
         totals: item.result.totals,
       }))
     : groupRows(rows).map((group) => ({
         ...group,
         label: group.rows[0]?.processName ?? group.key,
+        kind: undefined,
       }));
   const pages = packageView ? Math.max(1, Math.ceil(groups.length / PACKAGE_PAGE_SIZE)) : 1;
   const page = Math.min(Math.max(1, Number(searchParams.page) || 1), pages);
@@ -181,47 +234,50 @@ export function DailyStockTable({
         </div>
       </HeaderPortal>
       <div className={ui.measureLegend} aria-label="Table color legend">
+        <span>Balance / Bal per day / Actual / positive Difference</span>
         <span>
-          <i data-tone="info" /> Balance / Bal per day
-        </span>
-        <span>
-          <i data-tone="success" /> Stock / Actual / positive difference
+          <i data-tone="success" /> Positive Stock
         </span>
         <span>
           <i data-tone="warning" /> Pending
         </span>
         <span>
-          <i data-tone="danger" /> Negative values
+          <i data-tone="danger" /> Negative Stock / Difference
         </span>
         <span>
           <i data-tone="zero" /> Zero
         </span>
       </div>
-      <div className={`${ui.card} ${ui.dailyStockTableWrap}`}>
-        <table className={ui.table} aria-label="Daily stock balance by process">
-          <thead>
+      <DataTable
+        data={visibleGroups}
+        columns={DAILY_STOCK_COLUMNS}
+        ariaLabel="Daily stock balance by process"
+        viewportClassName={ui.dailyStockTableWrap}
+        columnClassName={{
+          process: ui.processColumn,
+          subProcess: ui.subProcessColumn,
+          balance: ui.num,
+          balDay: ui.num,
+          stock: ui.num,
+          actual: ui.num,
+          pending: ui.num,
+          difference: ui.num,
+        }}
+        manualPagination
+        rowCount={groups.length}
+        paginationState={{ pageIndex: page - 1, pageSize: PACKAGE_PAGE_SIZE }}
+        initialPageSize={PACKAGE_PAGE_SIZE}
+        renderBody={(table) =>
+          !hasGroups ? (
             <tr>
-              <th className={ui.processColumn}>Process name</th>
-              <th className={ui.subProcessColumn}>Sub-process name</th>
-              {MEASURE_COLUMNS.map(([key, label]) => (
-                <th key={key} className={ui.num}>
-                  {label}
-                </th>
-              ))}
-              <th className={ui.num} title="(Actual - Bal/Day) / 1000">
-                Difference
-              </th>
+              <td colSpan={8} className={ui.muted}>
+                No process lines match the current filters.
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {!hasGroups ? (
-              <tr>
-                <td colSpan={8} className={ui.muted}>
-                  No process lines match the current filters.
-                </td>
-              </tr>
-            ) : (
-              visibleGroups.map((group) => {
+          ) : (
+            <>
+              {table.getRowModel().rows.map((tableRow, groupIndex, tableRows) => {
+                const group = tableRow.original;
                 const first = group.rows[0];
                 if (!first && !packageView) return null;
                 if (!packageView && group.rows.length === 1 && first) {
@@ -229,7 +285,7 @@ export function DailyStockTable({
                 }
                 const open = !collapsed.has(group.key);
                 return (
-                  <Fragment key={group.key}>
+                  <Fragment key={tableRow.id}>
                     <tr className={ui.grp}>
                       <td>
                         <button
@@ -239,9 +295,14 @@ export function DailyStockTable({
                           aria-expanded={open}
                           aria-label={`Toggle ${group.key}`}
                         >
-                          {open ? '-' : '+'}
+                          {open ? (
+                            <Minus size={14} aria-hidden="true" />
+                          ) : (
+                            <Plus size={14} aria-hidden="true" />
+                          )}
                         </button>{' '}
                         {group.label}
+                        {group.kind ? <PackageStatusBadge kind={group.kind} /> : null}
                       </td>
                       <td colSpan={7} />
                     </tr>
@@ -250,52 +311,59 @@ export function DailyStockTable({
                       <td colSpan={2}>Total {group.label}</td>
                       <Cells values={group.totals} />
                     </tr>
+                    {packageView && groupIndex < tableRows.length - 1 ? (
+                      <tr className={ui.packageSeparator} aria-hidden="true">
+                        <td colSpan={8} />
+                      </tr>
+                    ) : null}
                   </Fragment>
                 );
-              })
-            )}
-          </tbody>
-          {rows.length > 0 && !packageView ? (
-            <tfoot>
-              <tr>
-                <td colSpan={2}>Total</td>
-                <Cells values={totals} />
-              </tr>
-            </tfoot>
-          ) : null}
-        </table>
-      </div>
-      {packageView && pages > 1 ? (
-        <nav className={`${ui.pager} ${ui.dailyStockPager}`} aria-label="Pagination">
-          <span className={ui.pagerInfo}>
-            Page {page} of {pages}
-          </span>
-          <Link
-            href={hrefWith(PATH, searchParams, { page: String(page - 1) })}
-            className={`${ui.btn} ${page === 1 ? ui.disabled : ''}`}
-            aria-disabled={page === 1}
-          >
-            Previous
-          </Link>
-          {Array.from({ length: pages }, (_, index) => (
-            <Link
-              key={index + 1}
-              href={hrefWith(PATH, searchParams, { page: String(index + 1) })}
-              className={ui.btn}
-              aria-current={index + 1 === page ? 'page' : undefined}
-            >
-              {index + 1}
-            </Link>
-          ))}
-          <Link
-            href={hrefWith(PATH, searchParams, { page: String(page + 1) })}
-            className={`${ui.btn} ${page === pages ? ui.disabled : ''}`}
-            aria-disabled={page === pages}
-          >
-            Next
-          </Link>
-        </nav>
-      ) : null}
+              })}
+            </>
+          )
+        }
+        renderFooter={() =>
+          rows.length > 0 && !packageView ? (
+            <tr>
+              <td colSpan={2}>Total</td>
+              <Cells values={totals} />
+            </tr>
+          ) : null
+        }
+        renderPagination={(table) =>
+          packageView && table.getPageCount() > 1 ? (
+            <nav className={`${ui.pager} ${ui.dailyStockPager}`} aria-label="Pagination">
+              <span className={ui.pagerInfo}>
+                Page {page} of {table.getPageCount()}
+              </span>
+              <Link
+                href={hrefWith(PATH, searchParams, { page: String(page - 1) })}
+                className={`${ui.btn} ${page === 1 ? ui.disabled : ''}`}
+                aria-disabled={page === 1}
+              >
+                Previous
+              </Link>
+              {table.getPageOptions().map((pageIndex) => (
+                <Link
+                  key={pageIndex + 1}
+                  href={hrefWith(PATH, searchParams, { page: String(pageIndex + 1) })}
+                  className={ui.btn}
+                  aria-current={pageIndex + 1 === page ? 'page' : undefined}
+                >
+                  {pageIndex + 1}
+                </Link>
+              ))}
+              <Link
+                href={hrefWith(PATH, searchParams, { page: String(page + 1) })}
+                className={`${ui.btn} ${page === table.getPageCount() ? ui.disabled : ''}`}
+                aria-disabled={page === table.getPageCount()}
+              >
+                Next
+              </Link>
+            </nav>
+          ) : null
+        }
+      />
     </div>
   );
 }

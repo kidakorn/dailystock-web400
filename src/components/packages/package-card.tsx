@@ -1,8 +1,14 @@
 import { Sparkline } from '@/components/charts/sparkline';
-import { Ban, Sparkles } from 'lucide-react';
 import { formatNumber } from '@/lib/format';
 import type { PackageSummary } from '@/lib/summary/packages';
+import ui from '@/components/ui/ui.module.css';
 import styles from './packages.module.css';
+
+const PACKAGE_STATUS: Record<PackageSummary['kind'], string> = {
+  normal: 'Normal',
+  new: 'New',
+  cancelled: 'Cancelled',
+};
 
 function changeText(pct: number | null, previousLabel: string | null): string {
   if (pct === null || previousLabel === null) return 'No comparison';
@@ -26,15 +32,10 @@ export function PackageCard({
         </div>
         <div className={styles.badges}>
           <span className={styles.group}>{item.group}</span>
-          {item.kind === 'new' ? (
-            <span className={styles.kind} data-kind="new">
-              <Sparkles size={14} aria-hidden="true" /> New
-            </span>
-          ) : item.kind === 'cancelled' ? (
-            <span className={styles.kind} data-kind="cancelled">
-              <Ban size={14} aria-hidden="true" /> Cancelled
-            </span>
-          ) : null}
+          <span className={ui.packageStatus} data-kind={item.kind}>
+            <span className={ui.packageStatusMark} aria-hidden="true" />
+            {PACKAGE_STATUS[item.kind]}
+          </span>
         </div>
       </header>
       <div>

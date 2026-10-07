@@ -8,12 +8,14 @@ import {
   listActiveSnapshots,
   listActiveStockSnapshots,
   listSnapshots,
+  listStockSnapshots,
+  moreSeverePackageKind,
+  packageKindOf,
+  preferredPackageStatus,
+  resolvePackageStatusFilter,
+  resolveSnapshot,
   sortSummaries,
   summarizePackages,
-} from './packages';
-import {
-  listStockSnapshots,
-  resolveSnapshot,
 } from './packages';
 
 let n = 0;
@@ -36,6 +38,21 @@ const line = (o: Partial<StockLine>): StockLine => ({
 const groups = { IC2: ['DIP-8'], IC3: ['SSOP-8'] };
 
 describe('summarizePackages', () => {
+  it('maps stored package kinds and chooses the preferred initial status', () => {
+    expect(packageKindOf('0')).toBe('normal');
+    expect(packageKindOf('1')).toBe('new');
+    expect(packageKindOf('2')).toBe('cancelled');
+    expect(moreSeverePackageKind('normal', 'new')).toBe('new');
+    expect(moreSeverePackageKind('new', 'cancelled')).toBe('cancelled');
+    expect(preferredPackageStatus(['normal', 'new', 'cancelled'])).toBe('normal');
+    expect(preferredPackageStatus(['new', 'cancelled'])).toBe('new');
+    expect(preferredPackageStatus(['cancelled'])).toBe('all');
+    expect(preferredPackageStatus([])).toBe('all');
+    expect(resolvePackageStatusFilter('new', ['normal'], false)).toBe('new');
+    expect(resolvePackageStatusFilter('', ['new'], true)).toBe('all');
+    expect(resolvePackageStatusFilter('cancelled', ['normal'], false)).toBe('cancelled');
+  });
+
   it('sums STOCK over all lines and counts lines with stock', () => {
     const lines = [
       line({ stock: 100 }),

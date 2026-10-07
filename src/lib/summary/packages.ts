@@ -13,6 +13,7 @@ export const INCLUDE_SUB_PROCESS = true;
 export const OTHER_GROUP = 'Other';
 
 export type PackageKind = 'normal' | 'new' | 'cancelled';
+export type PackageStatusFilter = PackageKind | 'all';
 export type PackageTab = PackageKind | 'active' | 'all';
 export type SortKey = 'stock' | 'name' | 'code' | 'processes';
 
@@ -40,8 +41,28 @@ const KIND: Record<StockLine['packageKind'], PackageKind> = {
   '1': 'new',
   '2': 'cancelled',
 };
+export const packageKindOf = (kind: StockLine['packageKind']): PackageKind => KIND[kind];
 // If one package ever carries mixed kinds inside a snapshot, the more severe one wins.
 const SEVERITY: Record<PackageKind, number> = { normal: 0, new: 1, cancelled: 2 };
+export const moreSeverePackageKind = (a: PackageKind, b: PackageKind): PackageKind =>
+  SEVERITY[a] >= SEVERITY[b] ? a : b;
+
+export function preferredPackageStatus(kinds: readonly PackageKind[]): PackageKind | 'all' {
+  if (kinds.includes('normal')) return 'normal';
+  if (kinds.includes('new')) return 'new';
+  return 'all';
+}
+
+export function resolvePackageStatusFilter(
+  requested: string,
+  kinds: readonly PackageKind[],
+  hasPackageSelection: boolean,
+): PackageStatusFilter {
+  if (['normal', 'new', 'cancelled', 'all'].includes(requested)) {
+    return requested as PackageStatusFilter;
+  }
+  return hasPackageSelection ? 'all' : preferredPackageStatus(kinds);
+}
 
 export const listSnapshots = (lines: readonly StockLine[]): string[] =>
   [...new Set(lines.map((l) => l.snapshot))].sort();
@@ -99,7 +120,7 @@ export function summarizePackages(
       withStock: 0,
     };
     const kind = KIND[l.packageKind];
-    if (SEVERITY[kind] > SEVERITY[entry.kind]) entry.kind = kind;
+    entry.kind = moreSeverePackageKind(entry.kind, kind);
     if (counted(l)) {
       entry.count += 1;
       if (l.stock > 0) entry.withStock += 1;

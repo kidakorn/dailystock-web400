@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useSearchRecord } from '@/lib/use-search-record';
 import type { PackageGroups, ProcessSeqEntry, StockLine } from '@/types/domain';
 import { DailyStockTable } from '@/components/stock/daily-stock-table';
@@ -10,6 +11,7 @@ import ui from '@/components/ui/ui.module.css';
 import { opts, uniq } from '@/lib/filters';
 import { formatIsoDate } from '@/lib/format';
 import { param, pick } from '@/lib/query';
+import { useQueryParams } from '@/lib/use-query-params';
 import { buildDailyStock } from '@/lib/summary/daily-stock';
 import {
   OTHER_GROUP,
@@ -17,7 +19,11 @@ import {
   listActiveSnapshots,
   listActiveStockSnapshots,
   listSnapshots,
+  moreSeverePackageKind,
+  packageKindOf,
+  resolvePackageStatusFilter,
   resolveSnapshot,
+  type PackageKind,
 } from '@/lib/summary/packages';
 import { useProcessSeq } from '@/lib/use-process-seq';
 
@@ -31,6 +37,7 @@ export function DailyStockView({
   groups: PackageGroups;
 }) {
   const sp = useSearchRecord();
+  const { set } = useQueryParams();
   const activeSeq = useProcessSeq(seq);
 
   const snapshots = listSnapshots(lines);
@@ -40,14 +47,35 @@ export function DailyStockView({
   const stockDates = listActiveStockSnapshots(lines);
   const groupNames = [...Object.keys(groups), OTHER_GROUP];
   const group = pick(param(sp, 'group'), groupNames, '');
-  // The package list follows the chosen group, so it can never offer a package the group filter would hide.
-  const packageNames = uniq(
-    lines.filter((l) => l.snapshot === snapshot).map((l) => l.packageName),
-  ).filter((n) => !group || groupOf(n, groups) === group);
+  const scopedLines = lines.filter(
+    (line) =>
+      line.snapshot === snapshot && (!group || groupOf(line.packageName, groups) === group),
+  );
+  const packageKinds = new Map<string, PackageKind>();
+  for (const line of scopedLines) {
+    const kind = packageKindOf(line.packageKind);
+    const current = packageKinds.get(line.packageName);
+    packageKinds.set(line.packageName, current ? moreSeverePackageKind(current, kind) : kind);
+  }
+  const statusParam = param(sp, 'status');
+  const packageStatus = resolvePackageStatusFilter(
+    statusParam,
+    [...new Set(packageKinds.values())],
+    Boolean(param(sp, 'package')),
+  );
+  useEffect(() => {
+    if (statusParam !== packageStatus) set({ status: packageStatus });
+  }, [packageStatus, set, statusParam]);
+
+  const statusLines =
+    packageStatus === 'all'
+      ? scopedLines
+      : scopedLines.filter((line) => packageKinds.get(line.packageName) === packageStatus);
+  const packageNames = uniq(statusLines.map((line) => line.packageName));
   const packageName = pick(param(sp, 'package'), packageNames, '');
   const hideEmpty = param(sp, 'rows') === 'active';
 
-  const result = buildDailyStock(lines, activeSeq, groups, {
+  const result = buildDailyStock(statusLines, activeSeq, groups, {
     snapshot,
     group: group || undefined,
     packageName: packageName || undefined,
@@ -68,6 +96,18 @@ export function DailyStockView({
           { name: 'group', label: 'Group', type: 'select', options: opts(groupNames) },
           { name: 'package', label: 'Package name', type: 'select', options: opts(packageNames) },
           {
+            name: 'status',
+            label: 'Package status',
+            type: 'select',
+            default: packageStatus,
+            options: [
+              { value: 'normal', label: 'Normal' },
+              { value: 'new', label: 'New' },
+              { value: 'cancelled', label: 'Cancelled' },
+              { value: 'all', label: 'All' },
+            ],
+          },
+          {
             name: 'rows',
             label: 'Lines',
             type: 'select',
@@ -86,6 +126,7 @@ export function DailyStockView({
       </HeaderPortal>
       <DailyStockTable
         result={result}
+        packageKinds={packageKinds}
         searchParams={sp}
         summary={{
           processLines: result.rows.length,

@@ -4,6 +4,7 @@
   --color-charcoal-900: #1f2124;
   --color-charcoal-800: #2b2d31;
   --color-charcoal-700: #3c3f45;
+  --color-charcoal-400: #d1d1d1;
   --color-bg: #d9d9d9;
   --color-surface: #ffffff;
   --color-border: #8a8d93;
@@ -23,12 +24,10 @@
   --tint-info: #e3eefc;
 
   /* Role-based font tokens: heading, data (tables and numbers), UI (menu, button, filter). */
-  --font-family-heading: var(--font-heading), 'Segoe UI', sans-serif;
-    --font-family-heading: var(--font-ui), 'Segoe UI', sans-serif;
+  --font-family-heading: var(--font-ui), 'Segoe UI', sans-serif;
   --font-family-data: var(--font-data), 'Consolas', monospace;
   --font-family-ui: var(--font-ui), 'Segoe UI', sans-serif;
 
-  /* Rajdhani runs small for its nominal size, so the base is a touch larger than before. */
   --fs-xs: 0.75rem;
   --fs-xs: 0.8125rem;
   --fs-sm: 0.875rem;

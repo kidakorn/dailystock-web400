@@ -55,23 +55,11 @@ function compareRows(a: DailyStockRow, b: DailyStockRow): number {
   return a.processCode - b.processCode || a.subProcessCode.localeCompare(b.subProcessCode);
 }
 
-export function buildDailyStock(
-  lines: readonly StockLine[],
-  seq: readonly ProcessSeqEntry[],
-  groups: PackageGroups,
-  q: DailyStockQuery,
-  includePackages = true,
-): DailyStockResult {
-  const sequenceByKey = new Map(seq.map((entry) => [`${entry.processCode}|${entry.subProcessCode}`, entry]));
-  // A package filter wins over the group filter, as picking one package is the more specific request.
-  const selected = lines.filter(
-    (l) =>
-      l.snapshot === q.snapshot &&
-      (q.packageName
-        ? l.packageName === q.packageName
-        : !q.group || groupOf(l.packageName, groups) === q.group),
-  );
-
+function summarizeSelected(
+  selected: readonly StockLine[],
+  sequenceByKey: ReadonlyMap<string, ProcessSeqEntry>,
+  hideEmpty: boolean,
+): Omit<DailyStockResult, 'packages'> {
   const acc = new Map<
     string,
     Measures & { processCode: number; subProcessCode: string; names: Map<string, number> }
@@ -115,24 +103,58 @@ export function buildDailyStock(
       difference: differenceOf(e),
     };
   });
-  const shown = (q.hideEmpty ? rows.filter((r) => !isEmpty(r)) : rows).sort(compareRows);
+  const shown = (hideEmpty ? rows.filter((r) => !isEmpty(r)) : rows).sort(compareRows);
 
   const totals = { balance: 0, balDay: 0, stock: 0, actual: 0, pending: 0, difference: 0 };
   for (const r of shown) for (const k of MEASURES) totals[k] += r[k];
   totals.difference = differenceOf(totals);
-  const packages = includePackages
-    ? [...new Map(selected.map((line) => [line.packageName, line])).keys()]
-        .sort((a, b) => a.localeCompare(b))
-        .map((name) => ({
-          key: name,
-          name,
-          result: buildDailyStock(lines, seq, groups, { ...q, packageName: name }, false),
-        }))
-    : undefined;
   return {
     rows: shown,
     totals,
     packageCount: new Set(selected.map((l) => l.packageCode)).size,
-    packages,
   };
+}
+
+export function buildDailyStock(
+  lines: readonly StockLine[],
+  seq: readonly ProcessSeqEntry[],
+  groups: PackageGroups,
+  q: DailyStockQuery,
+  includePackages = true,
+): DailyStockResult {
+  const sequenceByKey = new Map(seq.map((entry) => [`${entry.processCode}|${entry.subProcessCode}`, entry]));
+  // A package filter wins over the group filter, as picking one package is the more specific request.
+  const selected: StockLine[] = [];
+  const selectedByPackage = new Map<string, StockLine[]>();
+  for (const line of lines) {
+    if (
+      line.snapshot !== q.snapshot ||
+      (q.packageName
+        ? line.packageName !== q.packageName
+        : q.group && groupOf(line.packageName, groups) !== q.group)
+    ) {
+      continue;
+    }
+    selected.push(line);
+    if (includePackages) {
+      const packageLines = selectedByPackage.get(line.packageName);
+      if (packageLines) packageLines.push(line);
+      else selectedByPackage.set(line.packageName, [line]);
+    }
+  }
+
+  const result = summarizeSelected(selected, sequenceByKey, q.hideEmpty ?? false);
+  if (!includePackages) return { ...result, packages: undefined };
+
+  const packages = [...selectedByPackage.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([name, packageLines]) => ({
+      key: name,
+      name,
+      result: {
+        ...summarizeSelected(packageLines, sequenceByKey, q.hideEmpty ?? false),
+        packages: undefined,
+      },
+    }));
+  return { ...result, packages };
 }

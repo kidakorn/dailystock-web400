@@ -38,6 +38,37 @@ const SORTS: { value: SortKey; label: string }[] = [
   { value: 'processes', label: 'Processes with stock' },
 ];
 
+type PackageSummaries = ReturnType<typeof summarizePackages>;
+const summaryCache = new WeakMap<
+  StockLine[],
+  WeakMap<PackageGroups, Map<string, PackageSummaries>>
+>();
+
+function getBaseSummaries(
+  lines: StockLine[],
+  groups: PackageGroups,
+  snapshot: string,
+): PackageSummaries {
+  let byGroups = summaryCache.get(lines);
+  if (!byGroups) {
+    byGroups = new WeakMap();
+    summaryCache.set(lines, byGroups);
+  }
+
+  let bySnapshot = byGroups.get(groups);
+  if (!bySnapshot) {
+    bySnapshot = new Map();
+    byGroups.set(groups, bySnapshot);
+  }
+
+  const cached = bySnapshot.get(snapshot);
+  if (cached) return cached;
+
+  const summaries = summarizePackages(lines, groups, snapshot);
+  bySnapshot.set(snapshot, summaries);
+  return summaries;
+}
+
 export function PackageSummaryView({
   lines,
   groups,
@@ -69,9 +100,8 @@ export function PackageSummaryView({
   const view = param(sp, 'view') === 'list' ? 'list' : 'grid';
 
   // Group narrows the whole page (KPIs and tab counts); status tab and search narrow only the list.
-  const base = filterSummaries(summarizePackages(lines, groups, snapshot), {
-    group: group || undefined,
-  });
+  const summaries = getBaseSummaries(lines, groups, snapshot);
+  const base = filterSummaries(summaries, { group: group || undefined });
   const packageNames = uniq(base.map((item) => item.name));
   const packageName = pick(param(sp, 'q'), packageNames, '');
   const count = (kind: PackageKind) => base.filter((p) => p.kind === kind).length;
@@ -109,7 +139,12 @@ export function PackageSummaryView({
           },
         ]}
       />
-      <section className={ui.kpiGrid} data-cols="4" aria-label="Key figures">
+      <section
+        className={ui.kpiGrid}
+        data-cols="4"
+        data-package-summary="true"
+        aria-label="Key figures"
+      >
         <KpiCard label="Packages" value={base.length} tone="primary" />
         <KpiCard label="Total stock" value={base.reduce((t, p) => t + p.stock, 0)} tone="success" />
         <KpiCard label="New" value={count('new')} tone="warning" />

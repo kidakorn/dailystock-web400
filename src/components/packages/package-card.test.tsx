@@ -27,14 +27,19 @@ describe('PackageCard', () => {
     expect(screen.queryByText('New')).toBeNull();
   });
 
-  it('shows a status badge only for new and cancelled packages', () => {
-    render(<PackageCard item={{ ...item, kind: 'new' }} previousLabel={null} />);
-    expect(screen.getByText('New')).toBeTruthy();
-    expect(screen.getByText('New').closest('span')?.querySelector('svg')).toBeTruthy();
-    cleanup();
-    render(<PackageCard item={{ ...item, kind: 'cancelled' }} previousLabel={null} />);
-    expect(screen.getByText('Cancelled')).toBeTruthy();
-    expect(screen.getByText('Cancelled').closest('span')?.querySelector('svg')).toBeTruthy();
+  it('uses the shared text and marker treatment for every package status', () => {
+    for (const [kind, label] of [
+      ['normal', 'Normal'],
+      ['new', 'New'],
+      ['cancelled', 'Cancelled'],
+    ] as const) {
+      const { unmount } = render(<PackageCard item={{ ...item, kind }} previousLabel={null} />);
+      const badge = screen.getByText(label).closest('span');
+      expect(badge?.getAttribute('data-kind')).toBe(kind);
+      expect(badge?.querySelector('[aria-hidden="true"]')).toBeTruthy();
+      expect(badge?.querySelector('svg')).toBeNull();
+      unmount();
+    }
   });
 
   it('says so when there is nothing to compare with, and never shows -0.00%', () => {

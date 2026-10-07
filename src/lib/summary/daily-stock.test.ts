@@ -99,6 +99,27 @@ describe('buildDailyStock', () => {
     expect(run(lines, { group: 'IC3', packageName: 'DIP-8' }).totals.stock).toBe(1);
   });
 
+  it('builds package summaries in name order with package-specific totals and rows', () => {
+    const result = run([
+      line({ packageCode: 1, packageName: 'DIP-8', stock: 5, processCode: 100 }),
+      line({ packageCode: 2, packageName: 'SSOP-8', stock: 7, processCode: 101 }),
+      line({ packageCode: 1, packageName: 'DIP-8', stock: 3, processCode: 101 }),
+    ]);
+
+    expect(result.packages?.map(({ name }) => name)).toEqual(['DIP-8', 'SSOP-8']);
+    expect(result.packages?.[0]?.result).toMatchObject({
+      packageCount: 1,
+      totals: { stock: 8 },
+      rows: [{ key: '100|', stock: 5 }, { key: '101|', stock: 3 }],
+    });
+    expect(result.packages?.[1]?.result).toMatchObject({
+      packageCount: 1,
+      totals: { stock: 7 },
+      rows: [{ key: '101|', stock: 7 }],
+    });
+    expect(result.totals.stock).toBe(15);
+  });
+
   it('only uses the selected snapshot and can hide all-zero lines', () => {
     const lines = [
       line({ stock: 4 }),
