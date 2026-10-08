@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useSearchRecord } from '@/lib/use-search-record';
+import { useQueryParams } from '@/lib/use-query-params';
 import type { PackageGroups, StockLine } from '@/types/domain';
 import Link from 'next/link';
 import { PackageCard } from '@/components/packages/package-card';
@@ -78,6 +79,7 @@ export function PackageSummaryView({
   groups: PackageGroups;
 }) {
   const sp = useSearchRecord();
+  const { linkTo } = useQueryParams();
   const gridRef = useRef<HTMLDivElement>(null);
   const [gridColumns, setGridColumns] = useState(1);
 
@@ -175,6 +177,8 @@ export function PackageSummaryView({
         {TABS.map((t) => (
           <Link
             key={t.value}
+            onClick={linkTo({ tab: t.value === 'all' ? null : t.value })}
+            prefetch={false}
             href={hrefWith(PATH, sp, { tab: t.value === 'all' ? null : t.value, page: null })}
             className={ui.btn}
             aria-current={tab === t.value ? 'page' : undefined}
@@ -204,6 +208,8 @@ export function PackageSummaryView({
         </span>
         <Link
           href={hrefWith(PATH, sp, { page: String(page - 1) })}
+          onClick={linkTo({ page: String(page - 1) })}
+          prefetch={false}
           className={`${ui.btn} ${page === 1 ? ui.disabled : ''}`}
           aria-disabled={page === 1}
         >
@@ -215,12 +221,16 @@ export function PackageSummaryView({
             href={hrefWith(PATH, sp, { page: String(i + 1) })}
             className={ui.btn}
             aria-current={i + 1 === page ? 'page' : undefined}
+            onClick={linkTo({ page: String(i + 1) })}
+            prefetch={false}
           >
             {i + 1}
           </Link>
         ))}
         <Link
           href={hrefWith(PATH, sp, { page: String(page + 1) })}
+          onClick={linkTo({ page: String(page + 1) })}
+          prefetch={false}
           className={`${ui.btn} ${page === pages ? ui.disabled : ''}`}
           aria-disabled={page === pages}
         >

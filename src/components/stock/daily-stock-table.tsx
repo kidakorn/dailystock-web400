@@ -13,6 +13,7 @@ import type { PackageKind } from '@/lib/summary/packages';
 import type { DailyStockResult, DailyStockRow, Measures } from '@/lib/summary/daily-stock';
 import type { PackagePairs } from '@/types/domain';
 import { hrefWith, param } from '@/lib/query';
+import { useQueryParams } from '@/lib/use-query-params';
 import type { SearchParams } from '@/lib/query';
 
 const PACKAGE_PAGE_SIZE = 8;
@@ -374,6 +375,7 @@ export function DailyStockTable({
   const { rows, totals } = result;
   const packageView = result.packages !== undefined;
   const showAllPackages = param(searchParams, 'rows') === 'all';
+  const { linkTo } = useQueryParams();
   const rawGroups: DailyStockTableGroup[] = packageView
     ? (result.packages ?? []).map((item) => ({ key: item.key, label: item.name, kind: packageKinds?.get(item.name), rows: item.result.rows, totals: item.result.totals }))
     : groupRows(rows).map((group) => ({ ...group, label: group.rows[0]?.processName ?? group.key, kind: undefined }));
@@ -441,9 +443,9 @@ export function DailyStockTable({
           {pageCount > 1 ? (
             <nav className={`${ui.pager} ${ui.dailyStockPager}`} aria-label="Pagination">
               <span className={ui.pagerInfo}>Page {page} of {pageCount}</span>
-              <Link href={hrefWith(PATH, searchParams, { page: String(page - 1) })} className={`${ui.btn} ${page === 1 ? ui.disabled : ''}`} aria-disabled={page === 1}>Previous</Link>
-              {packagePages.map((_, pageIndex) => <Link key={pageIndex + 1} href={hrefWith(PATH, searchParams, { page: String(pageIndex + 1) })} className={ui.btn} aria-current={pageIndex + 1 === page ? 'page' : undefined}>{pageIndex + 1}</Link>)}
-              <Link href={hrefWith(PATH, searchParams, { page: String(page + 1) })} className={`${ui.btn} ${page === pageCount ? ui.disabled : ''}`} aria-disabled={page === pageCount}>Next</Link>
+              <Link href={hrefWith(PATH, searchParams, { page: String(page - 1) })} onClick={linkTo({ page: String(page - 1) })} prefetch={false} className={`${ui.btn} ${page === 1 ? ui.disabled : ''}`} aria-disabled={page === 1}>Previous</Link>
+              {packagePages.map((_, pageIndex) => <Link key={pageIndex + 1} href={hrefWith(PATH, searchParams, { page: String(pageIndex + 1) })} onClick={linkTo({ page: String(pageIndex + 1) })} prefetch={false} className={ui.btn} aria-current={pageIndex + 1 === page ? 'page' : undefined}>{pageIndex + 1}</Link>)}
+              <Link href={hrefWith(PATH, searchParams, { page: String(page + 1) })} onClick={linkTo({ page: String(page + 1) })} prefetch={false} className={`${ui.btn} ${page === pageCount ? ui.disabled : ''}`} aria-disabled={page === pageCount}>Next</Link>
             </nav>
           ) : null}
         </>

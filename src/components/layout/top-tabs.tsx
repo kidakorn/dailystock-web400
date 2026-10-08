@@ -19,6 +19,7 @@ export function TopTabs() {
               href={item.href}
               className={styles.tab}
               aria-current={isActive(pathname, item.href) ? 'page' : undefined}
+              prefetch={false}
             >
               <Icon size={14} aria-hidden="true" />
               {item.label}

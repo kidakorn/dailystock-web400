@@ -19,10 +19,11 @@ Background art: public/images/warehouse-bg.svg (replace with a photo by changing
 `next.config.ts` uses `output: 'export'`, so `npm run build` writes plain files to `out/`.
 
 - Development: `npm run dev` -> http://localhost:3000/ (no base path).
-- Production build: `npm run build` (NODE_ENV=production) -> every URL is prefixed with `/kidakorn`, so copy the
-  contents of `out/` to `\\THWEB08\WebApps\AS400WebApp\kidakorn\` and open http://as400webappdev/kidakorn/.
+- Production build: `npm run build` -> every URL is prefixed with `/kidakorn/dailystock`, so copy the
+  contents of `out/` to `\\THWEB08\WebApps\AS400WebApp\kidakorn\dailystock\` and open
+  http://as400webappdev/kidakorn/dailystock/daily-stock-balance/.
 - Filters, tab, search, sort, view and pagination live in the URL query string (for example
-  `/kidakorn/package-summary/?group=IC2&tab=cancelled&page=2`) and are read in the browser.
+  `/kidakorn/dailystock/package-summary/?group=IC2&tab=cancelled&page=2`) and are read in the browser.
 - The data in `data/*.json` is read when the build runs and is embedded in the pages: after importing new AS400 data
   (`scripts/import-wgpgbl.py`) run `npm run build` again and redeploy `out/`.
 - The build downloads the Google fonts, so the build machine needs internet access.

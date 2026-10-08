@@ -15,6 +15,7 @@ vi.mock('@/lib/use-query-params', () => ({
   useQueryParams: () => ({
     get: (key: string) => mocks.params[key] ?? '',
     set: mocks.set,
+    linkTo: () => () => {},
     refresh: vi.fn(),
     pending: false,
   }),
