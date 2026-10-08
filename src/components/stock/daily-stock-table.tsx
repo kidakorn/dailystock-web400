@@ -27,7 +27,7 @@ const MEASURE_COLUMNS = [
 ] as const;
 const PACKAGE_MEASURE_COLUMNS = [...MEASURE_COLUMNS, ['difference', 'Difference']] as const;
 
- type DailyStockTableGroup = {
+type DailyStockTableGroup = {
   key: string;
   label: string;
   kind?: PackageKind;
@@ -165,13 +165,12 @@ function Cells({
   const toneFor = (key: string, value: number) => {
     if (value === 0) return 'zero';
     if (key === 'pending') return 'warning';
-    if (key === 'difference' || key === 'stock') return value < 0 ? 'danger' : 'success';
-    if (key === 'actual') return value < 0 ? 'danger' : 'info';
-    return value < 0 ? 'danger' : 'info';
+    if (value < 0) return 'danger';
+    return key === 'difference' || key === 'stock' ? 'success' : 'info';
   };
   return (
     <>
-      {MEASURE_COLUMNS.map(([key]) => (
+      {MEASURE_COLUMNS.map(([key, label]) => (
         <td
           key={key}
           className={`${ui.num} ${ui.measureCell} ${packageStart && key === 'balance' ? ui.packageMeasureStart : ''}`.trim()}
@@ -180,7 +179,7 @@ function Cells({
           data-package-start={packageStart && key === 'balance' ? 'true' : undefined}
           data-measure={key}
           data-tone={toneFor(key, values[key])}
-          aria-label={key === 'stock' && values[key] < 0 ? `Negative stock: ${formatNumber(values[key])}` : undefined}
+          aria-label={values[key] < 0 ? `Negative ${label.toLowerCase()}: ${formatNumber(values[key])}` : undefined}
         >
           {formatNumber(values[key])}
         </td>
@@ -228,7 +227,7 @@ function groupRows(rows: DailyStockRow[]): ProcessGroup[] {
 
 function Row({ row }: { row: DailyStockRow }) {
   return (
-    <tr key={row.key}>
+    <tr>
       <td>
         {row.processName}
         {row.seq === null ? (
@@ -458,7 +457,6 @@ export function DailyStockTable({
           manualPagination
           rowCount={groups.length}
           paginationState={{ pageIndex: page - 1, pageSize: PACKAGE_PAGE_SIZE }}
-          initialPageSize={PACKAGE_PAGE_SIZE}
           renderBody={(table) => !hasRows ? <tr><td colSpan={8} className={ui.muted}>No process lines match the current filters.</td></tr> : <>
             {table.getRowModel().rows.map((tableRow) => {
               const group = tableRow.original;

@@ -380,7 +380,8 @@
   --daily-table-grid: #d3d8de;
   --daily-table-header-border: var(--color-charcoal-700);
   --daily-table-group: #f1f3f5;
-  --daily-table-total-text: var(--color-text-inverse);
+  --daily-table-total: #c9d4df;
+  --daily-table-total-border: #5f7a8f;
 }
 .dailyStockPage {
   display: flex;
@@ -559,7 +560,10 @@
   background: var(--tint-success);
 }
 .measureCell[data-measure='stock'][data-tone='danger'],
-.measureCell[data-measure='difference'][data-tone='danger'] {
+.measureCell[data-measure='difference'][data-tone='danger'],
+.measureCell[data-measure='balance'][data-tone='danger'],
+.measureCell[data-measure='balDay'][data-tone='danger'],
+.measureCell[data-measure='actual'][data-tone='danger'] {
   color: var(--color-danger);
   font-weight: 700;
   background: var(--tint-danger);
@@ -733,11 +737,6 @@
 }
 .dailyStockTableWrap .packageComparisonTable tbody tr[data-row-stripe='alternate'] td:not([data-tone='success']):not([data-tone='warning']):not([data-tone='danger']) {
   background-color: #f2f5f7;
-}
-.dailyStockTableWrap .packageComparisonTable tbody tr.packageTotal td,
-.dailyStockTableWrap .packageComparisonTable tbody tr.packageTotal td.measureCell[data-measure][data-tone] {
-  background-color: #e9eef2;
-  border-color: #c3cbd2;
 }
 .dailyStockTableWrap .packageComparisonTable .packageMeasureColumn {
   white-space: nowrap;
@@ -915,77 +914,17 @@
   }
 }
 
-/* Daily stock table: zero values fade so the lines that hold stock stand out; totals sit on a tinted row. */
-.table .num[data-zero='true'] {
-  color: var(--color-text-muted);
-}
-.table tfoot td,
-.table .packageTotal td {
-  font-weight: 700;
-  color: var(--daily-table-total-text, var(--color-text-inverse));
-  background: var(--daily-table-total, var(--color-charcoal-800));
-  border-top: 2px solid #71899b;
-  border-bottom: 1px solid var(--daily-table-grid, var(--color-primary));
-}
-.table tfoot td.measureCell {
-  color: var(--daily-table-total-text, var(--color-text-inverse));
-  background: var(--daily-table-total, var(--color-charcoal-800));
-}
-.table .packageTotal td.measureCell[data-tone],
-.table tfoot td.measureCell[data-measure][data-tone] {
-  color: var(--daily-table-total-text, var(--color-text-inverse));
-  background: var(--daily-table-total, var(--color-charcoal-800));
-}
-.table .packageTotal td.measureCell[data-measure='stock'][data-tone='success'],
-.table tfoot td.measureCell[data-measure='stock'][data-tone='success'] {
-  color: var(--color-success);
-  background: var(--tint-success);
-}
-.table .packageTotal td.measureCell[data-measure='stock'][data-tone='danger'],
-.table .packageTotal td.measureCell[data-measure='difference'][data-tone='danger'],
-.table tfoot td.measureCell[data-measure='stock'][data-tone='danger'],
-.table tfoot td.measureCell[data-measure='difference'][data-tone='danger'] {
-  color: var(--color-danger);
-  background: var(--tint-danger);
-}
-.table .packageTotal td.measureCell[data-measure='stock'][data-tone='zero'],
-.table tfoot td.measureCell[data-measure='stock'][data-tone='zero'] {
-  color: var(--color-text-muted);
-  background: #edf2f6;
-}
-.table .packageTotal td.measureCell[data-measure='pending'][data-tone='warning'],
-.table tfoot td.measureCell[data-measure='pending'][data-tone='warning'] {
-  color: #8a5600;
-  background: var(--tint-warning);
-}
+/* Totals use a solid darker band with solid text colors; no tint backgrounds. */
 .dailyStockTableWrap .table .packageTotal td,
-.dailyStockTableWrap .table tfoot td,
-.dailyStockTableWrap .table .packageTotal td.measureCell[data-measure][data-tone],
-.dailyStockTableWrap .table tfoot td.measureCell[data-measure][data-tone] {
-  color: var(--color-text);
-  background: var(--color-surface);
-  border-color: var(--daily-table-grid);
-  font-weight: 600;
+.dailyStockTableWrap .table tfoot td {
+  color: #000000;
+  background: var(--daily-table-total);
+  border-color: var(--daily-table-total-border);
+  border-top: 2px solid var(--daily-table-total-border);
+  font-weight: 700;
 }
-.dailyStockTableWrap .table .packageTotal td.measureCell[data-tone='success'],
-.dailyStockTableWrap .table tfoot td.measureCell[data-tone='success'] {
-  color: var(--color-success);
-}
-.dailyStockTableWrap .table .packageTotal td.measureCell[data-tone='danger'],
-.dailyStockTableWrap .table tfoot td.measureCell[data-tone='danger'] {
-  color: var(--color-danger);
-}
-.dailyStockTableWrap .table .packageTotal td.measureCell[data-tone='warning'],
-.dailyStockTableWrap .table tfoot td.measureCell[data-tone='warning'] {
-  color: #895700;
-}
-.dailyStockTableWrap .table .packageTotal td.measureCell[data-tone='zero'],
-.dailyStockTableWrap .table tfoot td.measureCell[data-tone='zero'] {
-  color: var(--color-text-muted);
-}
-.dailyStockTableWrap .table tbody td.measureCell[data-tone='zero'],
-.dailyStockTableWrap .table .packageTotal td.measureCell[data-measure][data-tone='zero'],
-.dailyStockTableWrap .table tfoot td.measureCell[data-measure][data-tone='zero'] {
+
+.dailyStockTableWrap .table tbody td.measureCell[data-tone='zero'] {
   background: var(--color-surface);
   color: var(--color-text-muted);
 }
