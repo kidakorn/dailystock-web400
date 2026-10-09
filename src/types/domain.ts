@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import type {
   dashboardSchema,
+  mgpgstSchema,
   packageGroupsSchema,
   packagePairsSchema,
   packageSchema,
@@ -20,3 +21,4 @@ export type StockLine = z.infer<typeof stockLineSchema>;
 export type ProcessSeqEntry = z.infer<typeof processSeqSchema>;
 export type PackageGroups = z.infer<typeof packageGroupsSchema>;
 export type PackagePairs = z.infer<typeof packagePairsSchema>;
+export type GroupPackageEntry = z.infer<typeof mgpgstSchema>[number];

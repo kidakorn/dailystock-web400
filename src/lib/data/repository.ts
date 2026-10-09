@@ -5,6 +5,7 @@ import { cache } from 'react';
 import { z } from 'zod';
 import {
   dashboardSchema,
+  mgpgstSchema,
   packageGroupsSchema,
   packagePairsSchema,
   packageSchema,
@@ -35,3 +36,4 @@ export const getStockLines = cache(() => readJson('wgpgbl.json', z.array(stockLi
 export const getProcessSeq = cache(() => readJson('process-seq.json', z.array(processSeqSchema)));
 export const getPackageGroups = cache(() => readJson('package-groups.json', packageGroupsSchema));
 export const getPackagePairs = cache(() => readJson('package-pairs.json', packagePairsSchema));
+export const getGroupPackageMaster = cache(() => readJson('mgpgst.json', mgpgstSchema));

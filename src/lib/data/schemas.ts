@@ -105,3 +105,22 @@ export const packagePairsSchema = z.record(
   z.string(),
   z.array(z.array(z.string().min(1)).min(1)),
 );
+
+/** Group-package master, raw AS400 MGPGST columns. Key: CDGPGS + CDPAKG. */
+export const mgpgstSchema = z.array(
+  z.object({
+    CDGPGS: z.number().int(),
+    NMGPGS: z.string(),
+    CDPAKG: z.number().int(),
+    KBGPGS: z.number().int().nullable(),
+    D6DATC: z.number().int(),
+    TMTIMC: z.number().int(),
+    CNJNMC: z.string().nullable(),
+    CNFUNC: z.string().nullable(),
+    D6DATU: z.number().int(),
+    TMTIMU: z.number().int(),
+    CNJNMU: z.string().nullable(),
+    CNFUNU: z.string().nullable(),
+    UPDATE_IDENT: z.number().int(),
+  }),
+);

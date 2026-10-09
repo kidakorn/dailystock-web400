@@ -42,9 +42,11 @@ function SearchInput({ name }: { name: string }) {
 export function FilterBar({
   fields,
   inHeader = true,
+  showRefresh = true,
 }: {
   fields: FilterField[];
   inHeader?: boolean;
+  showRefresh?: boolean;
 }) {
   const { get, set, refresh, pending } = useQueryParams();
   const form = (
@@ -81,16 +83,18 @@ export function FilterBar({
             )}
           </label>
         ))}
-        <button
-          type="button"
-          className={`${styles.btn} ${styles.btnPrimary}`}
-          onClick={refresh}
-          aria-busy={pending}
-          disabled={pending}
-        >
-          <RefreshCw size={14} className={pending ? styles.spin : undefined} aria-hidden="true" />
-          Refresh
-        </button>
+        {showRefresh ? (
+          <button
+            type="button"
+            className={`${styles.btn} ${styles.btnPrimary}`}
+            onClick={refresh}
+            aria-busy={pending}
+            disabled={pending}
+          >
+            <RefreshCw size={14} className={pending ? styles.spin : undefined} aria-hidden="true" />
+            Refresh
+          </button>
+        ) : null}
       </form>
   );
   return inHeader ? <HeaderPortal>{form}</HeaderPortal> : form;

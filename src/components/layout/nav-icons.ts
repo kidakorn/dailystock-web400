@@ -1,4 +1,4 @@
-import { ClipboardList, LayoutDashboard, Package, Warehouse, type LucideIcon } from 'lucide-react';
+import { Boxes, ClipboardList, LayoutDashboard, Package, Warehouse, type LucideIcon } from 'lucide-react';
 import type { NavKey } from '@/lib/nav';
 
 export const NAV_ICONS: Record<NavKey, LucideIcon> = {
@@ -6,4 +6,5 @@ export const NAV_ICONS: Record<NavKey, LucideIcon> = {
   packages: Package,
   stock: Warehouse,
   processMaster: ClipboardList,
+  groupPackageMaster: Boxes,
 };

@@ -1,0 +1,75 @@
+.page,
+.page * {
+  color: #000;
+  font-weight: 400;
+}
+.page {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+}
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.page .error {
+  margin: 0 0 var(--space-3);
+  color: var(--color-danger);
+}
+.tableWrap {
+  min-width: 0;
+  overflow-anchor: none;
+}
+.masterTable {
+  min-width: 1400px;
+}
+.code {
+  color: #000;
+  font-variant-numeric: tabular-nums;
+}
+.groupName {
+  color: #000;
+}
+.summary p {
+  color: #000;
+}
+.statusChip {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: var(--radius-sm);
+}
+.statusChip[data-tone='success'] {
+  background: var(--tint-success);
+  color: #146b43;
+}
+.statusChip[data-tone='info'] {
+  background: var(--tint-info);
+  color: var(--color-primary);
+}
+.statusChip[data-tone='danger'] {
+  background: var(--tint-danger);
+  color: var(--color-danger);
+}
+.tableWrap .masterTable th {
+  padding: 1px 6px;
+  font-size: var(--fs-xs);
+}
+.tableWrap .masterTable td {
+  padding: 0 6px;
+  font-size: var(--fs-xs);
+  line-height: 1;
+}
+.pagination {
+  flex: none;
+}
+.pageInfo {
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .headerActions {
+    width: 100%;
+  }
+}

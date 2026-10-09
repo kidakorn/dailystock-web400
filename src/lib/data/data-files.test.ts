@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
-import { packageGroupsSchema, processSeqSchema, stockLineSchema } from './schemas';
+import { mgpgstSchema, packageGroupsSchema, processSeqSchema, stockLineSchema } from './schemas';
 
 // Reads the real files in data/, so a bad import or a hand edit fails here instead of on a page.
 const load = (file: string): unknown =>
@@ -29,6 +29,13 @@ describe('data files', () => {
   it('process-seq.json matches the schema with unique process/sub-process keys', () => {
     const seq = z.array(processSeqSchema).parse(load('process-seq.json'));
     const keys = seq.map((s) => `${s.processCode}|${s.subProcessCode}`);
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  it('mgpgst.json matches the schema with unique group/package keys', () => {
+    const master = mgpgstSchema.parse(load('mgpgst.json'));
+    const keys = master.map((m) => `${m.CDGPGS}|${m.CDPAKG}`);
+    expect(master.length).toBeGreaterThan(0);
     expect(new Set(keys).size).toBe(keys.length);
   });
 
