@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { GroupPackageEntry } from '@/types/domain';
 import { GroupPackageMasterView } from './group-package-master-view';
@@ -64,34 +64,10 @@ describe('GroupPackageMasterView', () => {
     expect(screen.queryByText('Group 21')).toBeNull();
   });
 
-  it('refreshes the table from the static master file', async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => [entry(1), entry(2)],
-    });
-    vi.stubGlobal('fetch', fetchMock);
+  it('renders one GET DATA button', () => {
     render(<GroupPackageMasterView defaultEntries={entries} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /Refresh/ }));
-
-    await waitFor(() => expect(screen.getByText('Page 1 of 1 · 2 entries')).toBeTruthy());
-    expect(fetchMock).toHaveBeenCalledWith('/data/mgpgst.json', { cache: 'no-store' });
-  });
-
-  it('shows an error and keeps the current rows when refresh fails', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 500 }));
-    render(<GroupPackageMasterView defaultEntries={entries} />);
-
-    fireEvent.click(screen.getByRole('button', { name: /Refresh/ }));
-
-    expect((await screen.findByRole('alert')).textContent).toBe('Refresh failed (500)');
-    expect(screen.getByText('Page 1 of 3 · 23 entries')).toBeTruthy();
-  });
-
-  it('renders a single refresh button', () => {
-    render(<GroupPackageMasterView defaultEntries={entries} />);
-
-    expect(screen.getAllByRole('button', { name: /Refresh/ })).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: /GET DATA/ })).toHaveLength(1);
   });
 
   it('jumps to a page from the numbered pagination', () => {

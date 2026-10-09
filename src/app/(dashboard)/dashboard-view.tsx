@@ -9,6 +9,8 @@ import { TrendLineChart } from '@/components/charts/line-chart';
 import { StockBarChart } from '@/components/charts/bar-chart';
 import { Card } from '@/components/ui/card';
 import { FilterBar } from '@/components/ui/filter-bar';
+import { HeaderPortal } from '@/components/layout/header-portal';
+import { GetDataButton } from '@/components/ui/get-data-button';
 import { KpiCard } from '@/components/ui/kpi-card';
 import ui from '@/components/ui/ui.module.css';
 import { opts, uniq } from '@/lib/filters';
@@ -17,16 +19,18 @@ import { formatIsoDate } from '@/lib/format';
 import { param, pick } from '@/lib/query';
 import { buildAnalyticalDashboard } from '@/lib/summary/analytical-dashboard';
 import { listSnapshots, listStockSnapshots, resolveSnapshot } from '@/lib/summary/packages';
+import { useLiveStockLines } from '@/lib/data/live-data';
 import { useProcessSeq } from '@/lib/use-process-seq';
 import styles from './dashboard.module.css';
 
 export function DashboardView({
-  lines,
+  lines: initialLines,
   seq,
 }: {
   lines: StockLine[];
   seq: ProcessSeqEntry[];
 }) {
+  const lines = useLiveStockLines(initialLines);
   const sp = useSearchRecord();
   const activeSequence = useProcessSeq(seq);
   const snapshots = listSnapshots(lines);
@@ -53,6 +57,9 @@ export function DashboardView({
 
   return (
     <div className={styles.dashboardPage}>
+      <HeaderPortal>
+        <GetDataButton dataset="lines" />
+      </HeaderPortal>
       <FilterBar
         fields={[
           {

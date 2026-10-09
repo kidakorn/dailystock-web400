@@ -112,7 +112,10 @@ export const mgpgstSchema = z.array(
     CDGPGS: z.number().int(),
     NMGPGS: z.string(),
     CDPAKG: z.number().int(),
-    KBGPGS: z.number().int().nullable(),
+    // AS400 returns a blank CHAR as ""; normalize it to null.
+    KBGPGS: z
+      .union([z.number().int(), z.literal(''), z.null()])
+      .transform((value) => (value === '' ? null : value)),
     D6DATC: z.number().int(),
     TMTIMC: z.number().int(),
     CNJNMC: z.string().nullable(),

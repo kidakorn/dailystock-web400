@@ -6,6 +6,7 @@ import type { PackageGroups, PackagePairs, ProcessSeqEntry, StockLine } from '@/
 import { DailyStockTable } from '@/components/stock/daily-stock-table';
 import { ExportCsvButton } from '@/components/stock/export-csv-button';
 import { HeaderPortal } from '@/components/layout/header-portal';
+import { GetDataButton } from '@/components/ui/get-data-button';
 import { FilterBar } from '@/components/ui/filter-bar';
 import ui from '@/components/ui/ui.module.css';
 import { opts, uniq } from '@/lib/filters';
@@ -25,10 +26,11 @@ import {
   resolveSnapshot,
   type PackageKind,
 } from '@/lib/summary/packages';
+import { useLiveStockLines } from '@/lib/data/live-data';
 import { useProcessSeq } from '@/lib/use-process-seq';
 
 export function DailyStockView({
-  lines,
+  lines: initialLines,
   seq,
   groups,
   packagePairs = {},
@@ -38,6 +40,7 @@ export function DailyStockView({
   groups: PackageGroups;
   packagePairs?: PackagePairs;
 }) {
+  const lines = useLiveStockLines(initialLines);
   const sp = useSearchRecord();
   const { set } = useQueryParams();
   const activeSeq = useProcessSeq(seq);
@@ -128,6 +131,7 @@ export function DailyStockView({
       />
       <HeaderPortal>
         <div className={ui.dailyStockHeaderActions} data-daily-stock-actions>
+          <GetDataButton dataset="lines" />
           <ExportCsvButton rows={result.rows} filename={`daily-stock-${snapshot}.csv`} />
         </div>
       </HeaderPortal>

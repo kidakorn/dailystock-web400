@@ -8,7 +8,10 @@ import Link from 'next/link';
 import { PackageCard } from '@/components/packages/package-card';
 import styles from '@/components/packages/packages.module.css';
 import { FilterBar } from '@/components/ui/filter-bar';
+import { HeaderPortal } from '@/components/layout/header-portal';
+import { GetDataButton } from '@/components/ui/get-data-button';
 import { KpiCard } from '@/components/ui/kpi-card';
+import { useLiveStockLines } from '@/lib/data/live-data';
 import ui from '@/components/ui/ui.module.css';
 import { PAGE_SIZE, opts, uniq } from '@/lib/filters';
 import { formatIsoDate } from '@/lib/format';
@@ -72,12 +75,13 @@ function getBaseSummaries(
 }
 
 export function PackageSummaryView({
-  lines,
+  lines: initialLines,
   groups,
 }: {
   lines: StockLine[];
   groups: PackageGroups;
 }) {
+  const lines = useLiveStockLines(initialLines);
   const sp = useSearchRecord();
   const { linkTo } = useQueryParams();
   const gridRef = useRef<HTMLDivElement>(null);
@@ -137,6 +141,9 @@ export function PackageSummaryView({
 
   return (
     <>
+      <HeaderPortal>
+        <GetDataButton dataset="lines" />
+      </HeaderPortal>
       <FilterBar
         fields={[
           {

@@ -1,20 +1,18 @@
 'use client';
 
-import { RotateCw } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 import { HeaderPortal } from '@/components/layout/header-portal';
 import { FilterBar } from '@/components/ui/filter-bar';
+import { GetDataButton } from '@/components/ui/get-data-button';
 import { KpiCard } from '@/components/ui/kpi-card';
 import { DataTable, dataTableFeatures, type DataTableColumn } from '@/components/ui/data-table';
 import ui from '@/components/ui/ui.module.css';
-import { mgpgstSchema } from '@/lib/data/schemas';
+import { useLiveMasterEntries } from '@/lib/data/live-data';
 import { param } from '@/lib/query';
 import { useSearchRecord } from '@/lib/use-search-record';
 import type { GroupPackageEntry } from '@/types/domain';
 import styles from './group-package-master.module.css';
-
-const MASTER_URL = '/data/mgpgst.json';
 
 const columnHelper = createColumnHelper<typeof dataTableFeatures, GroupPackageEntry>();
 const MASTER_COLUMNS: DataTableColumn<GroupPackageEntry>[] = columnHelper.columns([
@@ -67,9 +65,7 @@ export function GroupPackageMasterView({ defaultEntries }: { defaultEntries: Gro
   const query = param(searchParams, 'q').trim().toLowerCase();
   const statusFilter = param(searchParams, 'status');
   const groupFilter = param(searchParams, 'group');
-  const [entries, setEntries] = useState(defaultEntries);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState('');
+  const entries = useLiveMasterEntries(defaultEntries);
   const tableRows = useMemo(
     () =>
       entries.filter(
@@ -96,20 +92,6 @@ export function GroupPackageMasterView({ defaultEntries }: { defaultEntries: Gro
     [tableRows],
   );
 
-  async function refresh() {
-    setIsRefreshing(true);
-    try {
-      const response = await fetch(MASTER_URL, { cache: 'no-store' });
-      if (!response.ok) throw new Error(`Refresh failed (${response.status})`);
-      setEntries(mgpgstSchema.parse(await response.json()));
-      setError('');
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Unable to refresh group package master');
-    } finally {
-      setIsRefreshing(false);
-    }
-  }
-
   return (
     <section className={styles.page}>
       <FilterBar
@@ -122,14 +104,7 @@ export function GroupPackageMasterView({ defaultEntries }: { defaultEntries: Gro
       />
       <HeaderPortal>
         <div className={styles.headerActions}>
-          <button
-            type="button"
-            className={`${ui.btn} ${ui.btnPrimary}`}
-            onClick={() => void refresh()}
-            disabled={isRefreshing}
-          >
-            <RotateCw size={16} aria-hidden="true" /> {isRefreshing ? 'Refreshing…' : 'Refresh'}
-          </button>
+          <GetDataButton dataset="master" />
         </div>
       </HeaderPortal>
       <div className={`${ui.kpiGrid} ${styles.summary}`} data-cols="4">
@@ -138,11 +113,6 @@ export function GroupPackageMasterView({ defaultEntries }: { defaultEntries: Gro
         <KpiCard label="Cancelled" value={kpi.cancelled} tone="danger" />
         <KpiCard label="Updated records" value={kpi.updated} tone="warning" />
       </div>
-      {error ? (
-        <p className={styles.error} role="alert">
-          {error}
-        </p>
-      ) : null}
       <DataTable
         data={tableRows}
         columns={MASTER_COLUMNS}

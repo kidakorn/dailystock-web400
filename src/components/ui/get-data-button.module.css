@@ -1,0 +1,15 @@
+/* Retro toast: square frame, monospace text, hard shadow. */
+.toast {
+  border: 2px solid #1a1a1a;
+  border-radius: 0;
+  background: #f4efe1;
+  color: #1a1a1a;
+  box-shadow: 4px 4px 0 #1a1a1a;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+}
+
+.toastProgress {
+  background: #1a1a1a;
+  height: 4px;
+}
