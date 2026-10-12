@@ -46,11 +46,8 @@ export function DashboardView({
   const selectedProcess = data.processes.find(
     (process) => process.processCode === selectedProcessCode,
   );
-  const statusFor = (name: string) => {
-    const status = data.status.find((item) => item.label === name);
-    if (!status) throw new Error(`Dashboard status "${name}" is missing`);
-    return status;
-  };
+  const statusFor = (name: string) =>
+    data.status.find((item) => item.label === name) ?? { label: name, value: 0, tone: 'warning' as const };
   const newStatus = statusFor('New');
   const cancelledStatus = statusFor('Cancelled');
   const trend = data.trend.map((item) => ({ ...item, name: formatIsoDate(item.name) }));

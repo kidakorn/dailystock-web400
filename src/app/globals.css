@@ -28,7 +28,6 @@
   --font-family-data: var(--font-data), 'Consolas', monospace;
   --font-family-ui: var(--font-ui), 'Segoe UI', sans-serif;
 
-  --fs-xs: 0.75rem;
   --fs-xs: 0.8125rem;
   --fs-sm: 0.875rem;
   --fs-md: 0.9375rem;

@@ -1,0 +1,8 @@
+.banner {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 2px solid var(--color-warning);
+  background: var(--tint-warning);
+  color: #8a5600;
+  font-size: var(--fs-sm);
+}

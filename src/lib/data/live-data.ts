@@ -14,10 +14,12 @@ export type Dataset = 'lines' | 'master';
 type LiveState = {
   stockLines?: StockLine[];
   masterEntries?: GroupPackageEntry[];
+  failed?: Partial<Record<Dataset, string>>;
 };
 type LoadResult = { count: number; payload: unknown[] };
 
 const EMPTY: LiveState = {};
+const EMPTY_FAILURES: Partial<Record<Dataset, string>> = {};
 let state: LiveState = EMPTY;
 const listeners = new Set<() => void>();
 const inFlight: Partial<Record<Dataset, Promise<LoadResult>>> = {};
@@ -55,9 +57,18 @@ const LOADERS: Record<Dataset, () => Promise<LoadResult>> = { lines: loadLines, 
 export function loadDataset(dataset: Dataset): Promise<LoadResult> {
   const pending =
     inFlight[dataset] ??
-    LOADERS[dataset]().finally(() => {
-      delete inFlight[dataset];
-    });
+    LOADERS[dataset]()
+      .then((result) => {
+        setState({ failed: { ...state.failed, [dataset]: undefined } });
+        return result;
+      })
+      .catch((cause: unknown) => {
+        setState({ failed: { ...state.failed, [dataset]: reasonOf(cause) } });
+        throw cause;
+      })
+      .finally(() => {
+        delete inFlight[dataset];
+      });
   inFlight[dataset] = pending;
   return pending;
 }
@@ -83,6 +94,10 @@ function useAutoLoad(dataset: Dataset) {
 export function useLiveStockLines(initial: StockLine[]): StockLine[] {
   useAutoLoad('lines');
   return useSyncExternalStore(subscribe, getState, () => EMPTY).stockLines ?? initial;
+}
+
+export function useLoadFailures(): Partial<Record<Dataset, string>> {
+  return useSyncExternalStore(subscribe, getState, () => EMPTY).failed ?? EMPTY_FAILURES;
 }
 
 export function useLiveMasterEntries(initial: GroupPackageEntry[]): GroupPackageEntry[] {
