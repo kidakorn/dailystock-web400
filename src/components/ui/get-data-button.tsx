@@ -5,13 +5,11 @@ import { useRef, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { loadDataset, reasonOf, type Dataset } from '@/lib/data/live-data';
-import { downloadDataFile } from '@/lib/data/save-data-files';
 import ui from './ui.module.css';
 import styles from './get-data-button.module.css';
 
 // Client-side only: the API's own rate limit is the real server-side guard.
 const COOLDOWN_MS = 30_000;
-const FILE_NAME: Record<Dataset, string> = { lines: 'wgpgbl.json', master: 'mgpgst.json' };
 
 export function GetDataButton({ dataset }: { dataset: Dataset }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,10 +24,8 @@ export function GetDataButton({ dataset }: { dataset: Dataset }) {
     lastStartedAt.current = Date.now();
     setIsLoading(true);
     try {
-      const { count, payload } = await loadDataset(dataset);
-      const name = FILE_NAME[dataset];
-      downloadDataFile(name, payload);
-      toast.success(`Downloaded ${name}: ${count} rows. Copy it to the data folder`);
+      const { count } = await loadDataset(dataset);
+      toast.success(`Loaded ${count} rows from API`);
     } catch (cause) {
       toast.error(`Load failed: ${reasonOf(cause)}`);
     } finally {

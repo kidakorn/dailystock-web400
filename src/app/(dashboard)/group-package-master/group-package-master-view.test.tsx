@@ -83,9 +83,9 @@ describe('GroupPackageMasterView', () => {
     const statuses = [entry(1), { ...entry(2), KBGPGS: 1 }, { ...entry(3), KBGPGS: 2 }];
     render(<GroupPackageMasterView defaultEntries={statuses} />);
 
-    expect(screen.getByText('Running').getAttribute('data-tone')).toBe('success');
-    expect(screen.getByText('New').getAttribute('data-tone')).toBe('info');
-    expect(screen.getByText('Cancelled').getAttribute('data-tone')).toBe('danger');
+    expect(screen.getByText('Running', { selector: '[data-tone]' }).getAttribute('data-tone')).toBe('success');
+    expect(screen.getByText('New', { selector: '[data-tone]' }).getAttribute('data-tone')).toBe('info');
+    expect(screen.getByText('Cancelled', { selector: '[data-tone]' }).getAttribute('data-tone')).toBe('danger');
   });
 
   it('filters rows by status division', () => {

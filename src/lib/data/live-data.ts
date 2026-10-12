@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useSyncExternalStore } from 'react';
-import { toast } from 'react-toastify';
 import { z } from 'zod';
 import type { GroupPackageEntry, StockLine } from '@/types/domain';
 import { ApiError, fetchMgpgstRows, fetchWgpgblRows } from './api-client';
@@ -81,13 +80,11 @@ function isLoaded(dataset: Dataset) {
   return dataset === 'lines' ? Boolean(state.stockLines) : Boolean(state.masterEntries);
 }
 
-/** Loads a dataset once per session when its page opens; on failure the built-in data stays visible. */
+/** Loads a dataset once per session when its page opens; failures show in StaleDataBanner. */
 function useAutoLoad(dataset: Dataset) {
   useEffect(() => {
     if (isLoaded(dataset)) return;
-    loadDataset(dataset).catch((cause: unknown) => {
-      toast.error(`Using built-in data: ${reasonOf(cause)}`);
-    });
+    loadDataset(dataset).catch(() => undefined);
   }, [dataset]);
 }
 
