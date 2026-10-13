@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiError, fetchMgpgstRows, fetchWgpgblRows } from './api-client';
 
 afterEach(() => {
@@ -38,10 +38,51 @@ describe('fetchMgpgstRows', () => {
 });
 
 describe('fetchWgpgblRows', () => {
-  it('fails with the HTTP status when the API responds with an error', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({}, 503)));
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
 
-    await expect(fetchWgpgblRows()).rejects.toThrow(new ApiError('API responded 503'));
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('retries a 503 with backoff and returns the rows when a later attempt succeeds', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({}, 503))
+      .mockResolvedValueOnce(jsonResponse({ rows: rowsOf(2) }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const pending = fetchWgpgblRows();
+    await vi.runAllTimersAsync();
+
+    await expect(pending).resolves.toHaveLength(2);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('gives up after three attempts and reports the last HTTP status', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({}, 429));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const pending = expect(fetchWgpgblRows()).rejects.toThrow('API responded 429');
+    await vi.runAllTimersAsync();
+
+    await pending;
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it('does not retry a 400 response', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({}, 400));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(fetchWgpgblRows()).rejects.toThrow('API responded 400');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('fails with the HTTP status when the API responds with an error', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({}, 500)));
+
+    await expect(fetchWgpgblRows()).rejects.toThrow(new ApiError('API responded 500'));
   });
 
   it('does not expose the API error body', async () => {
@@ -56,6 +97,9 @@ describe('fetchWgpgblRows', () => {
   it('reports an unreachable API without the network detail', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
 
-    await expect(fetchWgpgblRows()).rejects.toThrow('API unavailable');
+    const pending = expect(fetchWgpgblRows()).rejects.toThrow('API unavailable');
+    await vi.runAllTimersAsync();
+
+    await pending;
   });
 });

@@ -8,7 +8,7 @@ export function StaleDataBanner({ asOf }: { asOf: string }) {
   if (failures.length === 0) return null;
   return (
     <p role="status" className={styles.banner}>
-      Live data unavailable ({failures[0]}). Showing built-in data as of {asOf}.
+      ข้อมูลสดไม่พร้อมใช้งาน ({failures[0]}) กำลังแสดงข้อมูลที่มาพร้อมระบบ ณ {asOf}
     </p>
   );
 }

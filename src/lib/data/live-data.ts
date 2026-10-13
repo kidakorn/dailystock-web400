@@ -72,8 +72,21 @@ export function loadDataset(dataset: Dataset): Promise<LoadResult> {
   return pending;
 }
 
-export function reasonOf(cause: unknown) {
-  return cause instanceof ApiError ? cause.message : 'unexpected response format';
+const REASONS: Record<string, string> = {
+  'API timed out': 'เชื่อมต่อ API เกินเวลาที่กำหนด',
+  'API unavailable': 'ไม่สามารถเชื่อมต่อ API',
+  'API returned an error': 'API ส่งข้อผิดพลาดกลับมา',
+  'API response has no rows': 'ไม่พบข้อมูลในการตอบกลับจาก API',
+  'MGPGST has more rows than the page limit': 'จำนวนข้อมูลเกินขีดจำกัดการดึง',
+};
+
+export function reasonOf(cause: unknown): string {
+  if (!(cause instanceof ApiError)) return 'รูปแบบข้อมูลไม่ถูกต้อง';
+  const status = /^API responded (\d+)$/.exec(cause.message)?.[1];
+  if (status === '429') return 'ส่งคำขอถี่เกินไป กรุณาลองใหม่ภายหลัง';
+  if (status === '503') return 'ฐานข้อมูลไม่พร้อมใช้งานหรือคิวเต็ม';
+  if (status) return `เซิร์ฟเวอร์ตอบกลับ HTTP ${status}`;
+  return REASONS[cause.message] ?? cause.message;
 }
 
 function isLoaded(dataset: Dataset) {
