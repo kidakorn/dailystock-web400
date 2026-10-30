@@ -6,7 +6,7 @@
     ["DMP-8(OLD)"],
     ["DMP-8N", "DMP-8N Cu"],
     ["SC-82AB", "SC-88A"],
-    ["SIP-8"],
+    ["SIP-8"],["ESON-4E1LH"],
     ["SOT23-5", "SOT23-6"],
     ["SOT89-3", "SOT89-3N"],
     ["SOT89-5", "SOT-89-5RH"],
@@ -27,7 +27,6 @@
     ["EMP-8"]
   ],
   "Other": [
-    ["ESON-4E1LH"],
     ["HSOP-8"],
     ["SOT-23-3"],
     ["TSOT-23-3"]
